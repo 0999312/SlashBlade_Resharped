@@ -134,8 +134,8 @@ public class BladeStandEntity extends ItemFrame implements IEntityAdditionalSpaw
 		ISlashBladeState state = blade.getCapability(ItemSlashBlade.BLADESTATE).orElseThrow(NullPointerException::new);
 		
 		if(MinecraftForge.EVENT_BUS.post(new SlashBladeEvent.BladeStandAttackEvent(blade, state, this, damageSource)))
-			return super.hurt(damageSource, cat);
-		
+			return true;//事件取消则不掉落拔刀
+
 		return super.hurt(damageSource, cat);
 		
 //		if (entity instanceof Player player) {	
@@ -233,7 +233,7 @@ public class BladeStandEntity extends ItemFrame implements IEntityAdditionalSpaw
 //				return true;
 //		}
 
-		
+
 	}
 
 	@Override
