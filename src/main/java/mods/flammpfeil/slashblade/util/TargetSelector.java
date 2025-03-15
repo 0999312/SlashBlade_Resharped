@@ -39,7 +39,7 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 
 public class TargetSelector {
-	static public final TargetingConditions lockon = new SlashBladeTargetingConditions().range(12.0D)
+	static public final TargetingConditions lockon = new SlashBladeTargetingConditions().range(40.0D)
 			.selector(new AttackablePredicate());
 
 	static public final TargetingConditions test = new SlashBladeTargetingConditions()

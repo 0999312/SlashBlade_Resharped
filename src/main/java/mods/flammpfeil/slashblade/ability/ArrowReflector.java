@@ -56,11 +56,7 @@ public class ArrowReflector {
 
             } while (false);
 
-            arrow.setDeltaMovement(dir);
-
-            ((Projectile) arrow).shoot(dir.x, dir.y, dir.z, 1.1f, 0.5f);
-
-            arrow.setNoGravity(true);
+            ((Projectile) arrow).shoot(dir.x, dir.y, dir.z, 3.5f, 0.2f);
 
             if (arrow instanceof AbstractArrow)
                 ((AbstractArrow) arrow).setCritArrow(true);

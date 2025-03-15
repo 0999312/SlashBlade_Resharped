@@ -156,12 +156,28 @@ public class AttackManager {
                                         (double) (-Math.sin(yRot * (float) Math.PI / 180.0F) * 0.5),
                                         0.05D,
                                         (double) (Math.cos(yRot * (float) Math.PI / 180.0F) * 0.5)));
-                                float scale = 1f;
+                                double baseAmount = living.getAttributeValue(Attributes.ATTACK_DAMAGE);
+                                int powerLevel = living.getMainHandItem().getEnchantmentLevel(Enchantments.POWER_ARROWS);
+                                baseAmount *= (1 + (float) powerLevel * 0.1F);
+                                //评分等级加成
+                                if (living instanceof Player player){
+                                    IConcentrationRank.ConcentrationRanks rankBonus = player
+                                            .getCapability(ConcentrationRankCapabilityProvider.RANK_POINT)
+                                            .map(rp -> rp.getRank(player.getCommandSenderWorld().getGameTime()))
+                                            .orElse(IConcentrationRank.ConcentrationRanks.NONE);
+                                    float rankDamageBonus = rankBonus.level / 2.0f;
+                                    if (IConcentrationRank.ConcentrationRanks.S.level <= rankBonus.level) {
+                                        int refine = player.getMainHandItem().getCapability(ItemSlashBlade.BLADESTATE).map(rp -> rp.getRefine()).orElse(0);
+                                        int level = player.experienceLevel;
+                                        rankDamageBonus = (float) Math.max(rankDamageBonus, Math.min(level, refine) * REFINE_DAMAGE_MULTIPLIER.get());
+                                    }
+                                    baseAmount += rankDamageBonus;
+                                }
                                 if (this.getShooter() instanceof LivingEntity shooter){
-                                    scale = (float) (getSlashBladeDamageScale(shooter) * SLASHBLADE_DAMAGE_MULTIPLIER.get());
+                                    baseAmount *= getSlashBladeDamageScale(shooter) * SLASHBLADE_DAMAGE_MULTIPLIER.get();
                                 }
                                 doAttackWith(this.damageSources().indirectMagic(this, this.getShooter()),
-                                        (float) (living.getAttributeValue(Attributes.ATTACK_DAMAGE) * 2F * scale), entity, true,
+                                        ((float) (baseAmount) * 5.1f), entity, true,
                                         true);
                             }
                         });
@@ -233,7 +249,13 @@ public class AttackManager {
     }
 
     static public <E extends Entity & IShootable> List<Entity> areaAttack(E owner, Consumer<LivingEntity> beforeHit,
-            double reach, boolean forceHit, boolean resetHit, List<Entity> exclude) {
+                                                                          double reach, boolean forceHit, boolean resetHit, List<Entity> exclude) {
+
+        return areaAttack(owner, beforeHit, reach, forceHit, resetHit, 1.0F, exclude);
+    }
+
+    static public <E extends Entity & IShootable> List<Entity> areaAttack(E owner, Consumer<LivingEntity> beforeHit,
+            double reach, boolean forceHit, boolean resetHit, float comboRatio, List<Entity> exclude) {
         List<Entity> founds = Lists.newArrayList();
 
         // AABB bb = owner.getBoundingBox();
@@ -256,7 +278,23 @@ public class AttackManager {
 	                	int powerLevel = living.getMainHandItem().getEnchantmentLevel(Enchantments.POWER_ARROWS);
 	                	baseAmount += ((float) powerLevel * 0.1F);
                 	}
-                	baseAmount *= living.getAttributeValue(Attributes.ATTACK_DAMAGE) * getSlashBladeDamageScale(living) * SLASHBLADE_DAMAGE_MULTIPLIER.get();
+                    baseAmount *= living.getAttributeValue(Attributes.ATTACK_DAMAGE);
+                    //评分等级加成
+                    if (owner instanceof Player player){
+                        IConcentrationRank.ConcentrationRanks rankBonus = player
+                                .getCapability(ConcentrationRankCapabilityProvider.RANK_POINT)
+                                .map(rp -> rp.getRank(player.getCommandSenderWorld().getGameTime()))
+                                .orElse(IConcentrationRank.ConcentrationRanks.NONE);
+                        float rankDamageBonus = rankBonus.level / 2.0f;
+                        if (IConcentrationRank.ConcentrationRanks.S.level <= rankBonus.level) {
+                            int refine = player.getMainHandItem().getCapability(ItemSlashBlade.BLADESTATE).map(rp -> rp.getRefine()).orElse(0);
+                            int level = player.experienceLevel;
+                            rankDamageBonus = (float) Math.max(rankDamageBonus, Math.min(level, refine) * REFINE_DAMAGE_MULTIPLIER.get());
+                        }
+                        baseAmount += rankDamageBonus;
+                    }
+
+                	baseAmount *= comboRatio * getSlashBladeDamageScale(living) * SLASHBLADE_DAMAGE_MULTIPLIER.get();
 
                 }
 

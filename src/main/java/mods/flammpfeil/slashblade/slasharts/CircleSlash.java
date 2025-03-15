@@ -44,7 +44,7 @@ public class CircleSlash {
         jc.setMute(false);
         jc.setIsCritical(true);
 
-        jc.setDamage(1D);
+        jc.setDamage(0.325D);
 
         jc.setKnockBack(KnockBacks.cancel);
 

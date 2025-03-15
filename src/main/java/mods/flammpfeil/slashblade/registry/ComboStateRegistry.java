@@ -1061,7 +1061,7 @@ public class ComboStateRegistry {
             ComboState.Builder.newInstance().startAndEnd(1816, 1859).speed(6F).priority(50)
                     .next((entity) -> SlashBlade.prefix("sakura_end_right"))
                     .nextOfTimeout(entity -> SlashBlade.prefix("sakura_end_right"))
-                    .clickAction((entityIn) -> SakuraEnd.doSlash(entityIn, 22.5F, Vec3.ZERO, false, false, 1.2))
+                    .clickAction((entityIn) -> SakuraEnd.doSlash(entityIn, 22.5F, Vec3.ZERO, false, false, 0.5))
                     .addTickAction((entityIn) -> UserPoseOverrider.resetRot(entityIn))
                     .addHitEffect(StunManager::setStun)::build);
 
@@ -1069,7 +1069,7 @@ public class ComboStateRegistry {
             ComboState.Builder.newInstance().startAndEnd(204, 218).speed(1.1F).priority(50)
                     .next((entity) -> SlashBlade.prefix("none"))
                     .nextOfTimeout(entity -> SlashBlade.prefix("sakura_end_finish"))
-                    .clickAction((entityIn) -> SakuraEnd.doSlash(entityIn, 180F - 22.5F, Vec3.ZERO, false, true, 1.5))
+                    .clickAction((entityIn) -> SakuraEnd.doSlash(entityIn, 180F - 22.5F, Vec3.ZERO, false, true, 0.76))
                     .addTickAction((entityIn) -> UserPoseOverrider.resetRot(entityIn))
                     .addHitEffect((t, a) -> StunManager.setStun(t, 36))::build);
 
@@ -1088,7 +1088,7 @@ public class ComboStateRegistry {
             ComboState.Builder.newInstance().startAndEnd(1300, 1328).speed(3.2F).priority(50)
                     .next((entity) -> SlashBlade.prefix("sakura_end_right_air"))
                     .nextOfTimeout(entity -> SlashBlade.prefix("sakura_end_right_air"))
-                    .clickAction((entityIn) -> SakuraEnd.doSlash(entityIn, 22.5F, Vec3.ZERO, false, false, 1.2))
+                    .clickAction((entityIn) -> SakuraEnd.doSlash(entityIn, 22.5F, Vec3.ZERO, false, false, 0.5))
                     .addTickAction((entityIn) -> UserPoseOverrider.resetRot(entityIn))
                     .addTickAction(FallHandler::fallDecrease).addHitEffect(StunManager::setStun).aerial()::build);
 
@@ -1096,7 +1096,7 @@ public class ComboStateRegistry {
             ComboState.Builder.newInstance().startAndEnd(1200, 1210).priority(50)
                     .next((entity) -> SlashBlade.prefix("none"))
                     .nextOfTimeout(entity -> SlashBlade.prefix("sakura_end_finish_air"))
-                    .clickAction((entityIn) -> SakuraEnd.doSlash(entityIn, 180F - 22.5F, Vec3.ZERO, false, true, 1.5))
+                    .clickAction((entityIn) -> SakuraEnd.doSlash(entityIn, 180F - 22.5F, Vec3.ZERO, false, true, 0.76))
                     .addTickAction((entityIn) -> UserPoseOverrider.resetRot(entityIn))
                     .addTickAction(FallHandler::fallDecrease).addHitEffect(StunManager::setStun).aerial()::build);
 
@@ -1148,7 +1148,7 @@ public class ComboStateRegistry {
                     .next(ComboState.TimeoutNext.buildFromFrame(15, entity -> SlashBlade.prefix("none")))
                     .nextOfTimeout(entity -> SlashBlade.prefix("drive_horizontal_end"))
                     .addTickAction(ComboState.TimeLineTickAction.getBuilder()
-                            .put(2, (entityIn) -> AttackManager.doSlash(entityIn, -30F, Vec3.ZERO, false, false, 0.1F))
+                            .put(2, (entityIn) -> AttackManager.doSlash(entityIn, -30F, Vec3.ZERO, false, false, 0.21F))
                             .put(3, (entityIn) -> Drive.doSlash(entityIn, 0F, 10, Vec3.ZERO, false, 1.5f, 2f)).build())
                     .addHitEffect(StunManager::setStun)
                     ::build);
@@ -1168,7 +1168,7 @@ public class ComboStateRegistry {
             .next(ComboState.TimeoutNext.buildFromFrame(15, entity -> SlashBlade.prefix("none")))
             .nextOfTimeout(entity -> SlashBlade.prefix("drive_vertical_end"))
             .addTickAction(ComboState.TimeLineTickAction.getBuilder()
-                    .put(2, (entityIn) -> AttackManager.doSlash(entityIn, -80F, Vec3.ZERO, false, false, 0.1F))
+                    .put(2, (entityIn) -> AttackManager.doSlash(entityIn, -80F, Vec3.ZERO, false, false, 0.21F))
                     .put(3, (entityIn) -> Drive.doSlash(entityIn, -90F, 10, Vec3.ZERO, false, 1.5f, 2f)).build())
             .addHitEffect(StunManager::setStun)
             ::build
@@ -1193,8 +1193,8 @@ public class ComboStateRegistry {
             .next(ComboState.TimeoutNext.buildFromFrame(15, entity -> SlashBlade.prefix("none")))
             .nextOfTimeout(entity -> SlashBlade.prefix("drive_vertical_end"))
             .addTickAction(ComboState.TimeLineTickAction.getBuilder()
-                     .put(2, (entityIn) -> AttackManager.doSlash(entityIn, -80F, Vec3.ZERO, false, false, 0.1F))
-                     .put(3, (entityIn) -> WaveEdge.doSlash(entityIn, 90F, 20, Vec3.ZERO, false, 0.5F, 0.2f, 1f, 4)).build())
+                     .put(2, (entityIn) -> AttackManager.doSlash(entityIn, -80F, Vec3.ZERO, false, false, 0.21F))
+                     .put(3, (entityIn) -> WaveEdge.doSlash(entityIn, 90F, 20, Vec3.ZERO, false, 0.4F, 0.2f, 1f, 4)).build())
             .addHitEffect(StunManager::setStun)
             ::build
     );
@@ -1231,7 +1231,7 @@ public class ComboStateRegistry {
                 if (elapsed < 3) {
                     if (entity.onGround())
                     	entity.moveRelative(entity.isInWater() ? 0.35f : 0.8f, new Vec3(0, 0, 1));
-                    AttackManager.areaAttack(entity, KnockBacks.toss.action, 1.1f, true, false, true);
+                    AttackManager.areaAttack(entity, KnockBacks.toss.action, 1.01f, true, false, true);
                 } 
                 if(elapsed == 1)
                 	AttackManager.playPiercingSoundAction(entity);
@@ -1250,7 +1250,7 @@ public class ComboStateRegistry {
                 if (elapsed < 3) {
                     if (entity.onGround())
                         entity.moveRelative(entity.isInWater() ? 0.35f : 0.8f, new Vec3(0, 0, 1));
-                    AttackManager.areaAttack(entity, KnockBacks.toss.action, 1.1f, true, false, true);
+                    AttackManager.areaAttack(entity, KnockBacks.toss.action, 1.01f, true, false, true);
                 } 
                 if(elapsed == 1)
                 	AttackManager.playPiercingSoundAction(entity);

@@ -3,7 +3,9 @@ package mods.flammpfeil.slashblade.entity;
 import com.google.common.collect.Lists;
 import mods.flammpfeil.slashblade.SlashBlade;
 import mods.flammpfeil.slashblade.ability.StunManager;
+import mods.flammpfeil.slashblade.capability.concentrationrank.ConcentrationRankCapabilityProvider;
 import mods.flammpfeil.slashblade.capability.concentrationrank.IConcentrationRank;
+import mods.flammpfeil.slashblade.item.ItemSlashBlade;
 import mods.flammpfeil.slashblade.util.AttackManager;
 import mods.flammpfeil.slashblade.util.EnumSetConverter;
 import mods.flammpfeil.slashblade.util.KnockBacks;
@@ -42,6 +44,7 @@ import net.minecraftforge.network.PlayMessages;
 import javax.annotation.Nullable;
 import java.util.List;
 
+import static mods.flammpfeil.slashblade.SlashBladeConfig.REFINE_DAMAGE_MULTIPLIER;
 import static mods.flammpfeil.slashblade.SlashBladeConfig.SLASHBLADE_DAMAGE_MULTIPLIER;
 
 public class EntityDrive extends EntityAbstractSummonedSword {
@@ -64,8 +67,6 @@ public class EntityDrive extends EntityAbstractSummonedSword {
     private KnockBacks action = KnockBacks.cancel;
 
     private double damage = 7.0D;
-
-    private List<Entity> alreadyHits = Lists.newArrayList();
 
     public KnockBacks getKnockBack() {
         return action;
@@ -170,30 +171,7 @@ public class EntityDrive extends EntityAbstractSummonedSword {
     @Override
     public void tick() {
         super.tick();
-
-        if (this.getShooter() != null) {
-            // no cyclehit
-            if (this.tickCount % 2 == 0) {
-                boolean forceHit = true;
-
-                // this::onHitEntity ro KnockBackHandler::setCancel
-                List<Entity> hits;
-                if (getShooter() instanceof LivingEntity shooter) {
-                    float ratio = (float) damage * (getIsCritical() ? 1.1f : 1.0f);
-                    hits = AttackManager.areaAttack(shooter, this.action.action, ratio, forceHit, false, true,
-                            alreadyHits);
-                } else {
-                    hits = AttackManager.areaAttack(this, this.action.action, 4.0, forceHit, false, alreadyHits);
-                }
-                alreadyHits.addAll(hits);
-            }
-        }
-
         tryDespawn();
-    }
-
-    public List<Entity> getAlreadyHits() {
-        return alreadyHits;
     }
 
     protected void tryDespawn() {
@@ -324,10 +302,27 @@ public class EntityDrive extends EntityAbstractSummonedSword {
         targetEntity.invulnerableTime = 0;
         float damageValue = i;
         if(this.getOwner() instanceof LivingEntity living) {
-        	damageValue *= living.getAttributeValue(Attributes.ATTACK_DAMAGE) * AttackManager.getSlashBladeDamageScale(living) * SLASHBLADE_DAMAGE_MULTIPLIER.get();
+            damageValue *= living.getAttributeValue(Attributes.ATTACK_DAMAGE);
+            System.out.println(living.getAttributeValue(Attributes.ATTACK_DAMAGE));
+            System.out.println("man" + i);
+            //评分等级加成
+            if (living instanceof Player player){
+                IConcentrationRank.ConcentrationRanks rankBonus = player
+                        .getCapability(ConcentrationRankCapabilityProvider.RANK_POINT)
+                        .map(rp -> rp.getRank(player.getCommandSenderWorld().getGameTime()))
+                        .orElse(IConcentrationRank.ConcentrationRanks.NONE);
+                float rankDamageBonus = rankBonus.level / 2.0f;
+                if (IConcentrationRank.ConcentrationRanks.S.level <= rankBonus.level) {
+                    int refine = player.getMainHandItem().getCapability(ItemSlashBlade.BLADESTATE).map(rp -> rp.getRefine()).orElse(0);
+                    int level = player.experienceLevel;
+                    rankDamageBonus = (float) Math.max(rankDamageBonus, Math.min(level, refine) * REFINE_DAMAGE_MULTIPLIER.get());
+                }
+                damageValue += rankDamageBonus;
+            }
+            damageValue *= AttackManager.getSlashBladeDamageScale(living) * SLASHBLADE_DAMAGE_MULTIPLIER.get();
         }
 
-		if (targetEntity.hurt(damagesource, damageValue)) {
+        if (targetEntity.hurt(damagesource, damageValue)) {
             Entity hits = targetEntity;
             if (targetEntity instanceof PartEntity) {
                 hits = ((PartEntity<?>) targetEntity).getParent();
