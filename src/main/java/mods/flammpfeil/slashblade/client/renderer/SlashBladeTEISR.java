@@ -48,7 +48,7 @@ public class SlashBladeTEISR extends BlockEntityWithoutLevelRenderer {
         // IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
         if (!(itemStackIn.getItem() instanceof ItemSlashBlade))
             return;
-        
+
         renderBlade(itemStackIn, type, matrixStack, bufferIn, combinedLightIn, combinedOverlayIn);
     }
 
@@ -66,7 +66,7 @@ public class SlashBladeTEISR extends BlockEntityWithoutLevelRenderer {
         return false;
     }
 
-    private boolean renderBlade(ItemStack stack, ItemDisplayContext transformType, PoseStack matrixStack,
+    public boolean renderBlade(ItemStack stack, ItemDisplayContext transformType, PoseStack matrixStack,
             MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
 
         if (transformType == ItemDisplayContext.THIRD_PERSON_LEFT_HAND
@@ -129,12 +129,12 @@ public class SlashBladeTEISR extends BlockEntityWithoutLevelRenderer {
         return true;
     }
 
-    private void renderIcon(ItemStack stack, PoseStack matrixStack, MultiBufferSource bufferIn, int lightIn,
+    public void renderIcon(ItemStack stack, PoseStack matrixStack, MultiBufferSource bufferIn, int lightIn,
             float scale) {
         renderIcon(stack, matrixStack, bufferIn, lightIn, scale, false);
     }
 
-    private void renderIcon(ItemStack stack, PoseStack matrixStack, MultiBufferSource bufferIn, int lightIn,
+    public void renderIcon(ItemStack stack, PoseStack matrixStack, MultiBufferSource bufferIn, int lightIn,
             float scale, boolean renderDurability) {
 
         matrixStack.scale(scale, scale, scale);
@@ -190,7 +190,7 @@ public class SlashBladeTEISR extends BlockEntityWithoutLevelRenderer {
         }
     }
 
-	private ResourceLocation stackDefaultModel(ItemStack stack) {
+    public ResourceLocation stackDefaultModel(ItemStack stack) {
 		CompoundTag stateTag = stack.getOrCreateTagElement("bladeState");
 		String name = stateTag.getString("ModelName");
 		if(!(stack.getItem() instanceof ItemSlashBladeDetune)) {
@@ -207,8 +207,8 @@ public class SlashBladeTEISR extends BlockEntityWithoutLevelRenderer {
 		return !name.isBlank() 
 				? ResourceLocation.tryParse(name) : DefaultResources.resourceDefaultModel;
 	}
-	
-	private ResourceLocation stackDefaultTexture(ItemStack stack) {
+
+    public ResourceLocation stackDefaultTexture(ItemStack stack) {
 		CompoundTag stateTag = stack.getOrCreateTagElement("bladeState");
 		String name = stateTag.getString("TextureName");
 		if(!(stack.getItem() instanceof ItemSlashBladeDetune)) {
@@ -225,7 +225,7 @@ public class SlashBladeTEISR extends BlockEntityWithoutLevelRenderer {
 				? ResourceLocation.tryParse(name) : DefaultResources.resourceDefaultTexture;
 	}
 
-    private void renderModel(ItemStack stack, PoseStack matrixStack, MultiBufferSource bufferIn, int lightIn) {
+    public void renderModel(ItemStack stack, PoseStack matrixStack, MultiBufferSource bufferIn, int lightIn) {
 
         float scale = 0.003125f;
         matrixStack.scale(scale, scale, scale);
