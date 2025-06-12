@@ -197,10 +197,10 @@ dependencies {
 	//runtimeOnly fg.deobf("dev.emi:emi-forge:${emi_version}") 
 	
 	//FTB Quests
-    implementation fg.deobf("curse.maven:ftb-quests-forge-289412:6167056")
-    implementation fg.deobf("curse.maven:ftb-library-forge-404465:6164053")
-    implementation fg.deobf("curse.maven:ftb-teams-forge-404468:6130786")
-    implementation fg.deobf("curse.maven:item-filters-309674:4838266")
+//    implementation fg.deobf("curse.maven:ftb-quests-forge-289412:6431737")
+//    implementation fg.deobf("curse.maven:ftb-library-forge-404465:6164053")
+//    implementation fg.deobf("curse.maven:ftb-teams-forge-404468:6130786")
+//    implementation fg.deobf("curse.maven:item-filters-309674:4838266")
 }
 
 tasks.named('processResources', ProcessResources).configure {
