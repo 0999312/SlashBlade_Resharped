@@ -2,6 +2,7 @@ package mods.flammpfeil.slashblade.entity;
 
 import mods.flammpfeil.slashblade.SlashBlade;
 import mods.flammpfeil.slashblade.capability.slashblade.ISlashBladeState;
+import mods.flammpfeil.slashblade.data.tag.SlashBladeItemTags;
 import mods.flammpfeil.slashblade.event.SlashBladeEvent;
 import mods.flammpfeil.slashblade.item.ItemSlashBlade;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
@@ -19,6 +20,8 @@ import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.entity.IEntityAdditionalSpawnData;
 import net.minecraftforge.network.NetworkHooks;
@@ -120,9 +123,16 @@ public class BladeStandEntity extends ItemFrame implements IEntityAdditionalSpaw
 			return super.hurt(damageSource, cat);
 		
 		ISlashBladeState state = blade.getCapability(ItemSlashBlade.BLADESTATE).orElseThrow(NullPointerException::new);
-		
+
 		if(MinecraftForge.EVENT_BUS.post(new SlashBladeEvent.BladeStandAttackEvent(blade, state, this, damageSource)))
-			return true;
+			return false;
+
+		if (damageSource.getEntity() instanceof Player player){
+			ItemStack stack = player.getItemInHand(InteractionHand.MAIN_HAND);
+			if (stack.is(SlashBladeItemTags.PROUD_SOULS)){
+				return false;
+			}
+		}
 
 		return super.hurt(damageSource, cat);
 	}
@@ -173,4 +183,8 @@ public class BladeStandEntity extends ItemFrame implements IEntityAdditionalSpaw
 		return new ItemStack(currentType);
 	}
 
+	@Override
+	public boolean survives() {
+		return true;
+	}
 }
