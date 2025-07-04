@@ -1,7 +1,11 @@
 package mods.flammpfeil.slashblade.util;
 
-import net.minecraft.nbt.*;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.DoubleTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.world.phys.Vec3;
+
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -39,16 +43,19 @@ public class NBTHelper {
             this.instance = tag;
         }
 
-        public <T> NBTCoupler put(String key, T... value) {
+        @SafeVarargs
+        public final <T> NBTCoupler put(String key, T... value) {
             writeNBT(instance, key, value);
             return this;
         }
 
-        public <T> NBTCoupler get(String key, Consumer<T> dest, T... values) {
+        @SafeVarargs
+        public final <T> NBTCoupler get(String key, Consumer<T> dest, T... values) {
             return this.get(key, dest, false, values);
         }
 
-        public <T> NBTCoupler get(String key, Consumer<T> dest, boolean isNullable, T... values) {
+        @SafeVarargs
+        public final <T> NBTCoupler get(String key, Consumer<T> dest, boolean isNullable, T... values) {
             readNBT(this.instance, key, dest, isNullable, values);
             return this;
         }
@@ -58,17 +65,18 @@ public class NBTHelper {
                 this.instance.remove(key + "Most");
                 this.instance.remove(key + "Least");
 
-            } else
+            } else {
                 this.instance.remove(key);
+            }
             return this;
         }
 
         public NBTCoupler getChild(String key) {
             CompoundTag tag;
 
-            if (this.instance.contains(key, 10))
+            if (this.instance.contains(key, 10)) {
                 tag = this.instance.getCompound(key);
-            else {
+            } else {
                 tag = new CompoundTag();
                 this.instance.put(key, tag);
             }
@@ -77,10 +85,7 @@ public class NBTHelper {
         }
 
         public NBTCoupler getParent() {
-            if (parent != null)
-                return parent;
-            else
-                return this;
+            return Objects.requireNonNullElse(parent, this);
         }
 
         public CompoundTag getRawCompound() {
@@ -88,9 +93,9 @@ public class NBTHelper {
         }
 
         public CompoundTag getRawCompound(String key) {
-            if (this.instance.contains(key, 10))
+            if (this.instance.contains(key, 10)) {
                 return this.instance.getCompound(key);
-            else {
+            } else {
                 CompoundTag nbt = new CompoundTag();
                 this.instance.put(key, nbt);
                 return nbt;
@@ -98,8 +103,9 @@ public class NBTHelper {
         }
 
         public NBTCoupler doRawCompound(String key, Consumer<CompoundTag> action) {
-            if (this.instance.contains(key, 10))
+            if (this.instance.contains(key, 10)) {
                 action.accept(this.instance.getCompound(key));
+            }
 
             return this;
         }
@@ -109,9 +115,11 @@ public class NBTHelper {
         return new NBTCoupler(tag);
     }
 
+    @SafeVarargs
     public static <T> void writeNBT(CompoundTag dest, String key, T... value) {
-        if (value == null || value.length != 1 || value[0] == null)
+        if (value == null || value.length != 1 || value[0] == null) {
             return;
+        }
 
         @SuppressWarnings("unchecked")
         Class<T> type = (Class<T>) value.getClass().getComponentType();
@@ -130,7 +138,7 @@ public class NBTHelper {
             dest.putDouble(key, (Double) value[0]);
         } else if (type.equals(Boolean.class)) {
             dest.putBoolean(key, (Boolean) value[0]);
-        } else if (value[0] != null) {
+        } else {
             if (type.equals(UUID.class)) {
                 dest.putUUID(key, (UUID) value[0]);
             } else if (type.equals(byte[].class)) {
@@ -149,21 +157,26 @@ public class NBTHelper {
         }
     }
 
+    @SafeVarargs
     public static <T> void readNBT(CompoundTag src, String key, Consumer<T> dest, T... values) {
         readNBT(src, key, dest, false, values);
     }
 
+    @SafeVarargs
     public static <T> void readNBT(CompoundTag src, String key, Consumer<T> dest, boolean isNullable,
-            T... defaultValue) {
-        if (isNullable)
-            dest.accept(((Optional<T>) castValue(key, src, defaultValue)).orElse(null));
-        else
-            ((Optional<T>) castValue(key, src, defaultValue)).ifPresent(dest);
+                                   T... defaultValue) {
+        if (isNullable) {
+            dest.accept(castValue(key, src, defaultValue).orElse(null));
+        } else {
+            castValue(key, src, defaultValue).ifPresent(dest);
+        }
     }
 
+    @SafeVarargs
     public static <T> Optional<T> castValue(String key, CompoundTag src, T... defaultValue) {
-        if (defaultValue == null)
+        if (defaultValue == null) {
             return Optional.empty();
+        }
 
         @SuppressWarnings("unchecked")
         Class<T> type = (Class<T>) defaultValue.getClass().getComponentType();
@@ -195,8 +208,9 @@ public class NBTHelper {
         } else if (src.contains(key)) {
             if (type.equals(UUID.class)) {
                 typeId = -2;
-                if (src.hasUUID(key))
+                if (src.hasUUID(key)) {
                     result = src.getUUID(key);
+                }
             } else if (type.equals(byte[].class)) {
                 typeId = 7;
                 result = src.getByteArray(key);
@@ -220,8 +234,9 @@ public class NBTHelper {
 
         if (0 < defaultValue.length) {
             boolean exists = (typeId == -2) ? src.hasUUID(key) : src.contains(key, typeId);
-            if (!exists)
+            if (!exists) {
                 result = defaultValue;
+            }
         }
 
         return Optional.ofNullable((T) result);

@@ -15,9 +15,9 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import java.util.Map;
 
 public class PlayerAnimationOverrider {
-    private Map<ResourceLocation, VmdAnimation> animation = initAnimations();
+    private final Map<ResourceLocation, VmdAnimation> animation = initAnimations();
 
-	private static final class SingletonHolder {
+    private static final class SingletonHolder {
         private static final PlayerAnimationOverrider instance = new PlayerAnimationOverrider();
     }
 
@@ -36,14 +36,14 @@ public class PlayerAnimationOverrider {
             "model/pa/player_motion.vmd");
 
     public Map<ResourceLocation, VmdAnimation> getAnimation() {
-		return animation;
-	}
-    
+        return animation;
+    }
+
     @SubscribeEvent
     public void onBladeAnimationStart(BladeMotionEvent event) {
-        if (!(event.getEntity() instanceof AbstractClientPlayer))
+        if (!(event.getEntity() instanceof AbstractClientPlayer player)) {
             return;
-        AbstractClientPlayer player = (AbstractClientPlayer) event.getEntity();
+        }
 
         AnimationStack animationStack = PlayerAnimationAccess.getPlayerAnimLayer(player);
 
@@ -62,7 +62,7 @@ public class PlayerAnimationOverrider {
 
         map.put(ComboStateRegistry.PIERCING.getId(), new VmdAnimation(DefaultResources.testPLLocation, 1, 90, false));
         map.put(ComboStateRegistry.PIERCING_JUST.getId(), new VmdAnimation(DefaultResources.testPLLocation, 34, 90, false));
-        
+
         // guard
         map.put(ComboStateRegistry.COMBO_A1_END2.getId(), new VmdAnimation(MotionLocation, 21, 41, false));
 

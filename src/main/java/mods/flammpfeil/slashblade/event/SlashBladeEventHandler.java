@@ -12,17 +12,19 @@ import net.minecraftforge.fml.common.Mod;
 @Mod.EventBusSubscriber
 public class SlashBladeEventHandler {
 
-	@SubscribeEvent
-	public static void onLivingOnFire(LivingAttackEvent event) {
-		LivingEntity victim = event.getEntity();
-		DamageSource source = event.getSource();
+    @SubscribeEvent
+    public static void onLivingOnFire(LivingAttackEvent event) {
+        LivingEntity victim = event.getEntity();
+        DamageSource source = event.getSource();
 
-		ItemStack stack = victim.getMainHandItem();
-		if (stack.getEnchantmentLevel(Enchantments.FIRE_PROTECTION) <= 0)
-			return;
-		if (!source.is(DamageTypeTags.IS_FIRE))
-			return;
+        ItemStack stack = victim.getMainHandItem();
+        if (stack.getEnchantmentLevel(Enchantments.FIRE_PROTECTION) <= 0) {
+            return;
+        }
+        if (!source.is(DamageTypeTags.IS_FIRE)) {
+            return;
+        }
 
-		event.setCanceled(true);
-	}
+        event.setCanceled(true);
+    }
 }

@@ -2,22 +2,21 @@ package mods.flammpfeil.slashblade.registry.slashblade;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-
 import mods.flammpfeil.slashblade.client.renderer.CarryType;
 import mods.flammpfeil.slashblade.init.DefaultResources;
 import net.minecraft.resources.ResourceLocation;
 
 public class RenderDefinition {
     public static final Codec<RenderDefinition> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            ResourceLocation.CODEC.optionalFieldOf("texture", DefaultResources.resourceDefaultTexture)
-                    .forGetter(RenderDefinition::getTextureName),
-            ResourceLocation.CODEC.optionalFieldOf("model", DefaultResources.resourceDefaultModel)
-                    .forGetter(RenderDefinition::getModelName),
-            Codec.INT.optionalFieldOf("summon_sword_color", 0xFF3333FF)
-                    .forGetter(RenderDefinition::getSummonedSwordColor),
-            Codec.BOOL.optionalFieldOf("color_inverse", false).forGetter(RenderDefinition::isSummonedSwordColorInverse),
-            CarryType.CODEC.optionalFieldOf("carry_type", CarryType.PSO2)
-                    .forGetter(RenderDefinition::getStandbyRenderType))
+                    ResourceLocation.CODEC.optionalFieldOf("texture", DefaultResources.resourceDefaultTexture)
+                            .forGetter(RenderDefinition::getTextureName),
+                    ResourceLocation.CODEC.optionalFieldOf("model", DefaultResources.resourceDefaultModel)
+                            .forGetter(RenderDefinition::getModelName),
+                    Codec.INT.optionalFieldOf("summon_sword_color", 0xFF3333FF)
+                            .forGetter(RenderDefinition::getSummonedSwordColor),
+                    Codec.BOOL.optionalFieldOf("color_inverse", false).forGetter(RenderDefinition::isSummonedSwordColorInverse),
+                    CarryType.CODEC.optionalFieldOf("carry_type", CarryType.PSO2)
+                            .forGetter(RenderDefinition::getStandbyRenderType))
             .apply(instance, RenderDefinition::new));
 
     private final ResourceLocation TextureName;
@@ -27,7 +26,7 @@ public class RenderDefinition {
     private final CarryType StandbyRenderType;
 
     private RenderDefinition(ResourceLocation texture, ResourceLocation model, int color, boolean colorInverse,
-            CarryType standby) {
+                             CarryType standby) {
         this.TextureName = texture;
         this.ModelName = model;
         this.SummonedSwordColor = color;

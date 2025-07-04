@@ -15,34 +15,39 @@ import net.minecraftforge.event.entity.living.MobSpawnEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
+import java.util.Objects;
+
 @Mod.EventBusSubscriber
 public class EntitySpawnEventHandler {
     @SubscribeEvent
     public static void onMobSpawn(MobSpawnEvent.FinalizeSpawn event) {
         LivingEntity entity = event.getEntity();
         boolean isZombie = isZombie(entity);
-        if (!isZombie)
+        if (!isZombie) {
             return;
-        if (!entity.getItemBySlot(EquipmentSlot.MAINHAND).isEmpty())
+        }
+        if (!entity.getItemBySlot(EquipmentSlot.MAINHAND).isEmpty()) {
             return;
+        }
 
         RandomSource random = event.getLevel().getRandom();
         float difficultyMultiplier = event.getDifficulty().getSpecialMultiplier();
 
         Registry<SlashBladeDefinition> bladeRegistry = SlashBlade
                 .getSlashBladeDefinitionRegistry(event.getEntity().level());
-        if (!bladeRegistry.containsKey(SlashBladeBuiltInRegistry.SABIGATANA.location()))
+        if (!bladeRegistry.containsKey(SlashBladeBuiltInRegistry.SABIGATANA.location())) {
             return;
+        }
 
         float rngResult = random.nextFloat();
 
         if (rngResult < SlashBladeConfig.BROKEN_SABIGATANA_SPAWN_CHANCE.get() * difficultyMultiplier) {
             if (rngResult < SlashBladeConfig.SABIGATANA_SPAWN_CHANCE.get() * difficultyMultiplier) {
                 entity.setItemSlot(EquipmentSlot.MAINHAND,
-                        bladeRegistry.get(SlashBladeBuiltInRegistry.SABIGATANA.location()).getBlade());
+                        Objects.requireNonNull(bladeRegistry.get(SlashBladeBuiltInRegistry.SABIGATANA.location())).getBlade());
             } else {
                 entity.setItemSlot(EquipmentSlot.MAINHAND,
-                        bladeRegistry.get(SlashBladeBuiltInRegistry.SABIGATANA_BROKEN.location()).getBlade());
+                        Objects.requireNonNull(bladeRegistry.get(SlashBladeBuiltInRegistry.SABIGATANA_BROKEN.location())).getBlade());
             }
         }
     }

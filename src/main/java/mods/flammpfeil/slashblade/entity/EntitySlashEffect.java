@@ -27,29 +27,33 @@ import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.*;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.network.PlayMessages;
 import net.minecraftforge.network.NetworkHooks;
+import net.minecraftforge.network.PlayMessages;
+import org.jetbrains.annotations.NotNull;
+import org.joml.Vector4f;
 
 import javax.annotation.Nullable;
 import java.util.EnumSet;
 import java.util.List;
-import org.joml.Vector4f;
 
 public class EntitySlashEffect extends Projectile implements IShootable {
     private static final EntityDataAccessor<Integer> COLOR = SynchedEntityData
-            .<Integer>defineId(EntitySlashEffect.class, EntityDataSerializers.INT);
+            .defineId(EntitySlashEffect.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> FLAGS = SynchedEntityData
-            .<Integer>defineId(EntitySlashEffect.class, EntityDataSerializers.INT);
-    private static final EntityDataAccessor<Float> RANK = SynchedEntityData.<Float>defineId(EntitySlashEffect.class,
+            .defineId(EntitySlashEffect.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Float> RANK = SynchedEntityData.defineId(EntitySlashEffect.class,
             EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<Float> ROTATION_OFFSET = SynchedEntityData
-            .<Float>defineId(EntitySlashEffect.class, EntityDataSerializers.FLOAT);
+            .defineId(EntitySlashEffect.class, EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<Float> ROTATION_ROLL = SynchedEntityData
-            .<Float>defineId(EntitySlashEffect.class, EntityDataSerializers.FLOAT);
-    private static final EntityDataAccessor<Float> BASESIZE = SynchedEntityData.<Float>defineId(EntitySlashEffect.class,
+            .defineId(EntitySlashEffect.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Float> BASESIZE = SynchedEntityData.defineId(EntitySlashEffect.class,
             EntityDataSerializers.FLOAT);
 
     private int lifetime = 10;
@@ -59,7 +63,7 @@ public class EntitySlashEffect extends Projectile implements IShootable {
 
     private boolean cycleHit = false;
 
-    private List<Entity> alreadyHits = Lists.newArrayList();
+    private final List<Entity> alreadyHits = Lists.newArrayList();
 
     public KnockBacks getKnockBack() {
         return action;
@@ -70,10 +74,11 @@ public class EntitySlashEffect extends Projectile implements IShootable {
     }
 
     public void setKnockBackOrdinal(int ordinal) {
-        if (0 <= ordinal && ordinal < KnockBacks.values().length)
+        if (0 <= ordinal && ordinal < KnockBacks.values().length) {
             this.action = KnockBacks.values()[ordinal];
-        else
+        } else {
             this.action = KnockBacks.cancel;
+        }
     }
 
     public boolean doCycleHit() {
@@ -84,7 +89,7 @@ public class EntitySlashEffect extends Projectile implements IShootable {
         this.cycleHit = cycleHit;
     }
 
-    private SoundEvent livingEntitySound = SoundEvents.WITHER_HURT;
+    private final SoundEvent livingEntitySound = SoundEvents.WITHER_HURT;
 
     protected SoundEvent getHitEntitySound() {
         return this.livingEntitySound;
@@ -113,7 +118,7 @@ public class EntitySlashEffect extends Projectile implements IShootable {
     }
 
     @Override
-    protected void addAdditionalSaveData(CompoundTag compound) {
+    protected void addAdditionalSaveData(@NotNull CompoundTag compound) {
         super.addAdditionalSaveData(compound);
 
         NBTHelper.getNBTCoupler(compound).put("RotationOffset", this.getRotationOffset())
@@ -124,7 +129,7 @@ public class EntitySlashEffect extends Projectile implements IShootable {
     }
 
     @Override
-    protected void readAdditionalSaveData(CompoundTag compound) {
+    protected void readAdditionalSaveData(@NotNull CompoundTag compound) {
         super.readAdditionalSaveData(compound);
 
         NBTHelper.getNBTCoupler(compound).get("RotationOffset", this::setRotationOffset)
@@ -136,7 +141,7 @@ public class EntitySlashEffect extends Projectile implements IShootable {
     }
 
     @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
+    public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 
@@ -146,8 +151,9 @@ public class EntitySlashEffect extends Projectile implements IShootable {
 
     @Override
     public void shoot(double x, double y, double z, float velocity, float inaccuracy) {
-        if (!this.isWave())
+        if (!this.isWave()) {
             this.setDeltaMovement(0, 0, 0);
+        }
     }
 
     @Override
@@ -165,7 +171,7 @@ public class EntitySlashEffect extends Projectile implements IShootable {
     @Override
     @OnlyIn(Dist.CLIENT)
     public void lerpTo(double x, double y, double z, float yaw, float pitch, int posRotationIncrements,
-            boolean teleport) {
+                       boolean teleport) {
         this.setPos(x, y, z);
         this.setRot(yaw, pitch);
     }
@@ -195,7 +201,7 @@ public class EntitySlashEffect extends Projectile implements IShootable {
 
     private void refreshFlags() {
         if (this.level().isClientSide()) {
-            int newValue = this.entityData.get(FLAGS).intValue();
+            int newValue = this.entityData.get(FLAGS);
             if (intFlags != newValue) {
                 intFlags = newValue;
                 flags = EnumSetConverter.convertToEnumSet(FlagsState.class, intFlags);
@@ -210,10 +216,11 @@ public class EntitySlashEffect extends Projectile implements IShootable {
     }
 
     public void setIndirect(boolean value) {
-        if (value)
+        if (value) {
             setFlags(FlagsState.Indirect);
-        else
+        } else {
             removeFlags(FlagsState.Indirect);
+        }
     }
 
     public boolean getIndirect() {
@@ -222,10 +229,11 @@ public class EntitySlashEffect extends Projectile implements IShootable {
     }
 
     public void setMute(boolean value) {
-        if (value)
+        if (value) {
             setFlags(FlagsState.Mute);
-        else
+        } else {
             removeFlags(FlagsState.Mute);
+        }
     }
 
     public boolean getMute() {
@@ -234,10 +242,11 @@ public class EntitySlashEffect extends Projectile implements IShootable {
     }
 
     public void setIsCritical(boolean value) {
-        if (value)
+        if (value) {
             setFlags(FlagsState.Critical);
-        else
+        } else {
             removeFlags(FlagsState.Critical);
+        }
     }
 
     public boolean getIsCritical() {
@@ -247,10 +256,11 @@ public class EntitySlashEffect extends Projectile implements IShootable {
 
     public void setNoClip(boolean value) {
         this.noPhysics = value;
-        if (value)
+        if (value) {
             setFlags(FlagsState.NoClip);
-        else
+        } else {
             removeFlags(FlagsState.NoClip);
+        }
     }
 
     // disallowedHitBlock
@@ -273,13 +283,15 @@ public class EntitySlashEffect extends Projectile implements IShootable {
 
         if (tickCount == 2) {
 
-            if (!getMute())
+            if (!getMute()) {
                 this.playSound(this.getSlashSound(), 0.80F, 0.625F + 0.1f * this.random.nextFloat());
-            else
+            } else {
                 this.playSound(SoundEvents.PLAYER_ATTACK_SWEEP, 0.5F, 0.4F / (this.random.nextFloat() * 0.4F + 0.8F));
+            }
 
-            if (getIsCritical())
+            if (getIsCritical()) {
                 this.playSound(getHitEntitySound(), 0.2F, 0.4F + 0.25f * this.random.nextFloat());
+            }
         }
 
         if (tickCount % 2 == 0 || tickCount < 5) {
@@ -313,7 +325,7 @@ public class EntitySlashEffect extends Projectile implements IShootable {
                 Vec3 vec3 = start.add(normal3d.scale(this.getBaseSize() * 2.5));
                 this.level().addParticle(ParticleTypes.CRIT, vec3.x(), vec3.y(), vec3.z(), dir.x() + normal.x(),
                         dir.y() + normal.y(), dir.z() + normal.z());
-                float randScale = random.nextFloat() * 1.0f + 0.5f;
+                float randScale = random.nextFloat() + 0.5f;
                 vec3 = vec3.add(dir.x() * randScale, dir.y() * randScale, dir.z() * randScale);
                 this.level().addParticle(ParticleTypes.CRIT, vec3.x(), vec3.y(), vec3.z(), dir.x() + normal.x(),
                         dir.y() + normal.y(), dir.z() + normal.z());
@@ -330,8 +342,7 @@ public class EntitySlashEffect extends Projectile implements IShootable {
 
                 // this::onHitEntity ro KnockBackHandler::setCancel
                 List<Entity> hits;
-                if (!getIndirect() && getShooter() instanceof LivingEntity) {
-                    LivingEntity shooter = (LivingEntity) getShooter();
+                if (!getIndirect() && getShooter() instanceof LivingEntity shooter) {
                     float ratio = (float) damage * (getIsCritical() ? 1.1f : 1.0f);
                     hits = AttackManager.areaAttack(shooter, this.action.action, ratio, forceHit, false, true,
                             alreadyHits);
@@ -339,8 +350,9 @@ public class EntitySlashEffect extends Projectile implements IShootable {
                     hits = AttackManager.areaAttack(this, this.action.action, 4.0, forceHit, false, alreadyHits);
                 }
 
-                if (!this.doCycleHit())
+                if (!this.doCycleHit()) {
                     alreadyHits.addAll(hits);
+                }
             }
         }
 
@@ -354,8 +366,9 @@ public class EntitySlashEffect extends Projectile implements IShootable {
 
     protected void tryDespawn() {
         if (!this.level().isClientSide()) {
-            if (getLifetime() < this.tickCount)
+            if (getLifetime() < this.tickCount) {
                 this.remove(RemovalReason.DISCARDED);
+            }
         }
     }
 
@@ -425,8 +438,9 @@ public class EntitySlashEffect extends Projectile implements IShootable {
     public List<MobEffectInstance> getPotionEffects() {
         List<MobEffectInstance> effects = PotionUtils.getAllEffects(this.getPersistentData());
 
-        if (effects.isEmpty())
+        if (effects.isEmpty()) {
             effects.add(new MobEffectInstance(MobEffects.POISON, 1, 1));
+        }
 
         return effects;
     }
@@ -443,9 +457,7 @@ public class EntitySlashEffect extends Projectile implements IShootable {
     @Nullable
     public EntityHitResult getRayTrace(Vec3 p_213866_1_, Vec3 p_213866_2_) {
         return ProjectileUtil.getEntityHitResult(this.level(), this, p_213866_1_, p_213866_2_,
-                this.getBoundingBox().expandTowards(this.getDeltaMovement()).inflate(1.0D), (entity) -> {
-                    return !entity.isSpectator() && entity.isAlive() && entity.isPickable()
-                            && (entity != this.getShooter());
-                });
+                this.getBoundingBox().expandTowards(this.getDeltaMovement()).inflate(1.0D), (entity) -> !entity.isSpectator() && entity.isAlive() && entity.isPickable()
+                        && (entity != this.getShooter()));
     }
 }

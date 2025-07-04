@@ -2,6 +2,7 @@ package mods.flammpfeil.slashblade.util;
 
 import mods.flammpfeil.slashblade.capability.concentrationrank.ConcentrationRankCapabilityProvider;
 import mods.flammpfeil.slashblade.capability.concentrationrank.IConcentrationRank;
+import mods.flammpfeil.slashblade.capability.slashblade.ISlashBladeState;
 import mods.flammpfeil.slashblade.item.ItemSlashBlade;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket;
@@ -29,17 +30,23 @@ public class PlayerAttackHelper {
     // 该方法伤害公式=(面板攻击力 + 横扫之刃附魔加成 + 评分等级加成 + 杀手类附魔加成) * 连招伤害系数 * 拔刀伤害系数 * 拔刀剑伤害调整比例 * 暴击倍率
     public static void attack(Player attacker, Entity target, float comboRatio) {
         // 触发Forge事件，以兼容其他模组
-        if (!net.minecraftforge.common.ForgeHooks.onPlayerAttackTarget(attacker, target)) return;
+        if (!net.minecraftforge.common.ForgeHooks.onPlayerAttackTarget(attacker, target)) {
+            return;
+        }
         // 判断攻击目标是否可以被攻击
-        if (!target.isAttackable() || target.skipAttackInteraction(attacker)) return;
+        if (!target.isAttackable() || target.skipAttackInteraction(attacker)) {
+            return;
+        }
 
         float baseDamage = (float) attacker.getAttributeValue(Attributes.ATTACK_DAMAGE);
         baseDamage += getSweepingBonus(attacker);
         baseDamage += getRankBonus(attacker);
         baseDamage += getEnchantmentBonus(attacker, target);
-        baseDamage *= comboRatio * getSlashBladeDamageScale(attacker) * SLASHBLADE_DAMAGE_MULTIPLIER.get();
+        baseDamage *= (float) (comboRatio * getSlashBladeDamageScale(attacker) * SLASHBLADE_DAMAGE_MULTIPLIER.get());
 
-        if (baseDamage <= 0.0F) return;
+        if (baseDamage <= 0.0F) {
+            return;
+        }
 
         float knockback = calculateKnockback(attacker);
         boolean isCritical = isCriticalHit(attacker, target);
@@ -78,7 +85,7 @@ public class PlayerAttackHelper {
                 .orElse(IConcentrationRank.ConcentrationRanks.NONE);
         float rankDamageBonus = rankBonus.level / 2.0f;
         if (IConcentrationRank.ConcentrationRanks.S.level <= rankBonus.level) {
-            int refine = attacker.getMainHandItem().getCapability(ItemSlashBlade.BLADESTATE).map(rp -> rp.getRefine()).orElse(0);
+            int refine = attacker.getMainHandItem().getCapability(ItemSlashBlade.BLADESTATE).map(ISlashBladeState::getRefine).orElse(0);
             int level = attacker.experienceLevel;
             rankDamageBonus = (float) Math.max(rankDamageBonus, Math.min(level, refine) * REFINE_DAMAGE_MULTIPLIER.get());
         }
@@ -88,7 +95,7 @@ public class PlayerAttackHelper {
     // 杀手类附魔加成(杀死类附魔攻击对应的生物加成2.5 * 附魔等级)
     public static float getEnchantmentBonus(Player attacker, Entity target) {
         if (target instanceof LivingEntity) {
-            return EnchantmentHelper.getDamageBonus(attacker.getMainHandItem(), ((LivingEntity)target).getMobType());
+            return EnchantmentHelper.getDamageBonus(attacker.getMainHandItem(), ((LivingEntity) target).getMobType());
         } else {
             return EnchantmentHelper.getDamageBonus(attacker.getMainHandItem(), MobType.UNDEFINED);
         }

@@ -1,13 +1,13 @@
 package mods.flammpfeil.slashblade.registry;
 
-import java.util.function.Supplier;
-
 import mods.flammpfeil.slashblade.SlashBlade;
 import mods.flammpfeil.slashblade.slasharts.SlashArts;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegistryBuilder;
 import net.minecraftforge.registries.RegistryObject;
+
+import java.util.function.Supplier;
 
 public class SlashArtsRegistry {
     public static final DeferredRegister<SlashArts> SLASH_ARTS = DeferredRegister.create(SlashArts.REGISTRY_KEY,
@@ -39,9 +39,9 @@ public class SlashArtsRegistry {
 
     public static final RegistryObject<SlashArts> WAVE_EDGE = SLASH_ARTS.register("wave_edge",
             () -> new SlashArts((e) -> ComboStateRegistry.WAVE_EDGE_VERTICAL.getId()));
-    
+
     public static final RegistryObject<SlashArts> PIERCING = SLASH_ARTS.register("piercing",
             () -> new SlashArts((e) -> ComboStateRegistry.PIERCING.getId())
-            .setComboStateJust((e) -> ComboStateRegistry.PIERCING_JUST.getId())
-            );
+                    .setComboStateJust((e) -> ComboStateRegistry.PIERCING_JUST.getId())
+    );
 }

@@ -26,10 +26,9 @@ public class BladeMotionEventBroadcaster {
 
     @SubscribeEvent
     public void onBladeMotion(BladeMotionEvent event) {
-        if (!(event.getEntity() instanceof ServerPlayer))
+        if (!(event.getEntity() instanceof ServerPlayer sp)) {
             return;
-
-        ServerPlayer sp = (ServerPlayer) event.getEntity();
+        }
 
         MotionBroadcastMessage msg = new MotionBroadcastMessage();
         msg.playerId = sp.getUUID();

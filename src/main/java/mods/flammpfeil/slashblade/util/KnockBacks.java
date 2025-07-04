@@ -7,7 +7,8 @@ import java.util.function.Consumer;
 
 public enum KnockBacks {
     cancel((e) -> KnockBackHandler.setFactor(e, 0, 0, 0)), toss((e) -> KnockBackHandler.setVertical(e, 0.75f)),
-    meteor((e) -> KnockBackHandler.setVertical(e, -5.5f)), smash((e) -> KnockBackHandler.setSmash(e, 1.5f)),;
+    meteor((e) -> KnockBackHandler.setVertical(e, -5.5f)), smash((e) -> KnockBackHandler.setSmash(e, 1.5f)),
+    ;
 
     public final Consumer<LivingEntity> action;
 

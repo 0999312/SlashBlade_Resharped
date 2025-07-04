@@ -11,7 +11,7 @@ import java.util.EnumSet;
 public class InputCommandEvent extends Event {
 
     public InputCommandEvent(ServerPlayer player, IInputState state, EnumSet<InputCommand> old,
-            EnumSet<InputCommand> current) {
+                             EnumSet<InputCommand> current) {
         this.player = player;
         this.state = state;
         this.old = old;
@@ -40,7 +40,7 @@ public class InputCommandEvent extends Event {
     EnumSet<InputCommand> current;
 
     public static InputCommandEvent onInputChange(ServerPlayer player, IInputState state, EnumSet<InputCommand> old,
-            EnumSet<InputCommand> current) {
+                                                  EnumSet<InputCommand> current) {
         InputCommandEvent event = new InputCommandEvent(player, state, old, current);
         MinecraftForge.EVENT_BUS.post(event);
         return event;

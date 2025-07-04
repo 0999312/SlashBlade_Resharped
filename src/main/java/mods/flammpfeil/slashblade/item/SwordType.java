@@ -1,16 +1,15 @@
 package mods.flammpfeil.slashblade.item;
 
+import com.mojang.serialization.Codec;
+import mods.flammpfeil.slashblade.capability.slashblade.ISlashBladeState;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.util.LazyOptional;
 
 import java.util.EnumSet;
 
-import com.mojang.serialization.Codec;
-
-import mods.flammpfeil.slashblade.capability.slashblade.ISlashBladeState;
-
 public enum SwordType {
-    NONE, EDGEFRAGMENT, BROKEN, ENCHANTED, BEWITCHED, FIERCEREDGE, NOSCABBARD, SEALED,;
+    NONE, EDGEFRAGMENT, BROKEN, ENCHANTED, BEWITCHED, FIERCEREDGE, NOSCABBARD, SEALED,
+    ;
 
     public static final Codec<SwordType> CODEC = Codec.STRING.xmap(string -> SwordType.valueOf(string.toUpperCase()),
             instance -> instance.name().toLowerCase());
@@ -22,18 +21,22 @@ public enum SwordType {
 
         if (state.isPresent()) {
             itemStackIn.getCapability(ItemSlashBlade.BLADESTATE).ifPresent(s -> {
-                if (s.isBroken() || itemStackIn.getOrCreateTagElement("bladeState").getBoolean("isBroken"))
+                if (s.isBroken() || itemStackIn.getOrCreateTagElement("bladeState").getBoolean("isBroken")) {
                     types.add(BROKEN);
+                }
 
-                if (s.isSealed() || itemStackIn.getOrCreateTagElement("bladeState").getBoolean("isSealed"))
+                if (s.isSealed() || itemStackIn.getOrCreateTagElement("bladeState").getBoolean("isSealed")) {
                     types.add(SEALED);
+                }
 
                 if (!s.isSealed() && itemStackIn.isEnchanted()
-                        && (itemStackIn.hasCustomHoverName() || s.isDefaultBewitched()))
+                        && (itemStackIn.hasCustomHoverName() || s.isDefaultBewitched())) {
                     types.add(BEWITCHED);
+                }
 
-                if (s.getKillCount() >= 1000)
+                if (s.getKillCount() >= 1000) {
                     types.add(FIERCEREDGE);
+                }
 
             });
         } else {
@@ -41,8 +44,9 @@ public enum SwordType {
             types.add(EDGEFRAGMENT);
         }
 
-        if (itemStackIn.isEnchanted())
+        if (itemStackIn.isEnchanted()) {
             types.add(ENCHANTED);
+        }
 
         if (itemStackIn.getItem() instanceof ItemSlashBladeDetune) {
             types.remove(SwordType.ENCHANTED);

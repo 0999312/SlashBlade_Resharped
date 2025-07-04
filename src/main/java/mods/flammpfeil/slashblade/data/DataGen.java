@@ -1,8 +1,5 @@
 package mods.flammpfeil.slashblade.data;
 
-import java.util.Set;
-import java.util.concurrent.CompletableFuture;
-
 import mods.flammpfeil.slashblade.SlashBlade;
 import mods.flammpfeil.slashblade.data.builtin.SlashBladeBuiltInRegistry;
 import mods.flammpfeil.slashblade.data.builtin.SlashBladeEntityDropBuiltInRegistry;
@@ -18,6 +15,10 @@ import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.data.event.GatherDataEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
 public class DataGen {
@@ -38,7 +39,7 @@ public class DataGen {
                 new DatapackBuiltinEntriesProvider(packOutput, lookupProvider, bladeBuilder, Set.of(SlashBlade.MODID)) {
 
                     @Override
-                    public String getName() {
+                    public @NotNull String getName() {
                         return "SlashBlade Definition Registry";
                     }
 
@@ -47,7 +48,7 @@ public class DataGen {
                 bladeDropBuilder, Set.of(SlashBlade.MODID)) {
 
             @Override
-            public String getName() {
+            public @NotNull String getName() {
                 return "SlashBlade Entity Drop Entry Registry";
             }
 

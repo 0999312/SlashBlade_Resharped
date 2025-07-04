@@ -1,20 +1,21 @@
 package mods.flammpfeil.slashblade.client.renderer.entity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Axis;
 import mods.flammpfeil.slashblade.client.renderer.model.BladeModelManager;
 import mods.flammpfeil.slashblade.client.renderer.model.obj.WavefrontObject;
+import mods.flammpfeil.slashblade.client.renderer.util.BladeRenderState;
 import mods.flammpfeil.slashblade.client.renderer.util.MSAutoCloser;
 import mods.flammpfeil.slashblade.entity.BladeItemEntity;
-import mods.flammpfeil.slashblade.client.renderer.util.BladeRenderState;
 import mods.flammpfeil.slashblade.item.ItemSlashBlade;
 import mods.flammpfeil.slashblade.item.SwordType;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.ItemEntityRenderer;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.resources.ResourceLocation;
-import com.mojang.math.Axis;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.EnumSet;
 
@@ -34,8 +35,8 @@ public class BladeItemEntityRenderer extends ItemEntityRenderer {
     }
 
     @Override
-    public void render(ItemEntity itemIn, float entityYaw, float partialTicks, PoseStack matrixStackIn,
-            MultiBufferSource bufferIn, int packedLightIn) {
+    public void render(ItemEntity itemIn, float entityYaw, float partialTicks, @NotNull PoseStack matrixStackIn,
+                       @NotNull MultiBufferSource bufferIn, int packedLightIn) {
         this.shadowRadius = 0;
 
         if (!itemIn.getItem().isEmpty()) {
@@ -47,7 +48,7 @@ public class BladeItemEntityRenderer extends ItemEntityRenderer {
     }
 
     private void renderBlade(ItemEntity itemIn, float entityYaw, float partialTicks, PoseStack matrixStackIn,
-            MultiBufferSource bufferIn, int packedLightIn) {
+                             MultiBufferSource bufferIn, int packedLightIn) {
         if (itemIn instanceof BladeItemEntity bladeItem) {
             try (MSAutoCloser msac = MSAutoCloser.pushMatrix(matrixStackIn)) {
                 matrixStackIn.mulPose(Axis.YP.rotationDegrees(entityYaw));
@@ -147,18 +148,18 @@ public class BladeItemEntityRenderer extends ItemEntityRenderer {
     /*
      * @Override public void doRenderShadowAndFire(Entity entityIn, double x, double
      * y, double z, float yaw, float partialTicks) {
-     * 
+     *
      * matrixStackIn.enableBlend(); matrixStackIn.blendFuncSeparate(
      * matrixStackIn.SourceFactor.SRC_COLOR, matrixStackIn.DestFactor.ONE ,
      * matrixStackIn.SourceFactor.ONE, matrixStackIn.DestFactor.ZERO);
-     * 
+     *
      * matrixStackIn.pushMatrix(); matrixStackIn.translatef((float)x, (float)y,
      * (float)z); matrixStackIn.scaled(1.4,1.8, 1.4);
      * matrixStackIn.translatef((float)-x, (float)-y, (float)-z);
-     * 
+     *
      * //core super.doRenderShadowAndFire(entityIn, x, y, z, yaw, partialTicks);
-     * 
-     * 
+     *
+     *
      * //dark fire matrixStackIn.blendFuncSeparate(
      * matrixStackIn.SourceFactor.SRC_ALPHA, matrixStackIn.DestFactor.ONE ,
      * matrixStackIn.SourceFactor.ONE, matrixStackIn.DestFactor.ZERO);
@@ -167,8 +168,8 @@ public class BladeItemEntityRenderer extends ItemEntityRenderer {
      * (float)-y, (float)-z); super.doRenderShadowAndFire(entityIn, x, y, z, yaw,
      * partialTicks); matrixStackIn.blendEquation(GL14.GL_FUNC_REVERSE_SUBTRACT);
      * super.doRenderShadowAndFire(entityIn, x, y, z, yaw, partialTicks);
-     * 
-     * 
+     *
+     *
      * matrixStackIn.popMatrix(); matrixStackIn.blendEquation(GL14.GL_FUNC_ADD);
      * matrixStackIn.blendFuncSeparate(GL11.GL_SRC_ALPHA,
      * GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ZERO);

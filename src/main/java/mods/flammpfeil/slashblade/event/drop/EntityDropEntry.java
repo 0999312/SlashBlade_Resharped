@@ -2,7 +2,6 @@ package mods.flammpfeil.slashblade.event.drop;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-
 import mods.flammpfeil.slashblade.SlashBlade;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
@@ -40,7 +39,7 @@ public class EntityDropEntry {
     }
 
     public EntityDropEntry(ResourceLocation entityType, ResourceLocation bladeName, float dropRate, boolean request,
-            boolean pointFixed, Vec3 point) {
+                           boolean pointFixed, Vec3 point) {
         this.entityType = entityType;
         this.bladeName = bladeName;
         this.dropRate = dropRate;

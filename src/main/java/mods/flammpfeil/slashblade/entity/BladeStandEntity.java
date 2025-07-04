@@ -5,184 +5,190 @@ import mods.flammpfeil.slashblade.capability.slashblade.ISlashBladeState;
 import mods.flammpfeil.slashblade.data.tag.SlashBladeItemTags;
 import mods.flammpfeil.slashblade.event.SlashBladeEvent;
 import mods.flammpfeil.slashblade.item.ItemSlashBlade;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Pose;
-import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.decoration.ItemFrame;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.entity.IEntityAdditionalSpawnData;
 import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.network.PlayMessages;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
-
-import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.level.ItemLike;
+import java.util.Objects;
 
 public class BladeStandEntity extends ItemFrame implements IEntityAdditionalSpawnData {
 
-	public Item currentType = null;
-	public ItemStack currentTypeStack = ItemStack.EMPTY;
+    public Item currentType = null;
+    public ItemStack currentTypeStack = ItemStack.EMPTY;
 
-	public BladeStandEntity(EntityType<? extends BladeStandEntity> p_i50224_1_, Level p_i50224_2_) {
-		super(p_i50224_1_, p_i50224_2_);
-	}
+    public BladeStandEntity(EntityType<? extends BladeStandEntity> p_i50224_1_, Level p_i50224_2_) {
+        super(p_i50224_1_, p_i50224_2_);
+    }
 
-	@Override
-	public Packet<ClientGamePacketListener> getAddEntityPacket() {
-		return NetworkHooks.getEntitySpawningPacket(this);
-	}
+    @Override
+    public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket() {
+        return NetworkHooks.getEntitySpawningPacket(this);
+    }
 
-	@Override
-	public void addAdditionalSaveData(CompoundTag compound) {
-		super.addAdditionalSaveData(compound);
-		String standTypeStr;
-		if (this.currentType != null) {
-			standTypeStr = ForgeRegistries.ITEMS.getKey(this.currentType).toString();
-		} else {
-			standTypeStr = "";
-		}
-		compound.putString("StandType", standTypeStr);
+    @Override
+    public void addAdditionalSaveData(@NotNull CompoundTag compound) {
+        super.addAdditionalSaveData(compound);
+        String standTypeStr;
+        if (this.currentType != null) {
+            standTypeStr = Objects.requireNonNull(ForgeRegistries.ITEMS.getKey(this.currentType)).toString();
+        } else {
+            standTypeStr = "";
+        }
+        compound.putString("StandType", standTypeStr);
 
-		compound.putByte("Pose", (byte) this.getPose().ordinal());
-	}
+        compound.putByte("Pose", (byte) this.getPose().ordinal());
+    }
 
-	@Override
-	public void readAdditionalSaveData(CompoundTag compound) {
-		super.readAdditionalSaveData(compound);
-		this.currentType = ForgeRegistries.ITEMS.getValue(new ResourceLocation(compound.getString("StandType")));
+    @Override
+    public void readAdditionalSaveData(@NotNull CompoundTag compound) {
+        super.readAdditionalSaveData(compound);
+        this.currentType = ForgeRegistries.ITEMS.getValue(new ResourceLocation(compound.getString("StandType")));
 
-		this.setPose(Pose.values()[compound.getByte("Pose") % Pose.values().length]);
-	}
+        this.setPose(Pose.values()[compound.getByte("Pose") % Pose.values().length]);
+    }
 
-	@Override
-	public void writeSpawnData(FriendlyByteBuf buffer) {
-		CompoundTag tag = new CompoundTag();
-		this.addAdditionalSaveData(tag);
-		buffer.writeNbt(tag);
-	}
+    @Override
+    public void writeSpawnData(FriendlyByteBuf buffer) {
+        CompoundTag tag = new CompoundTag();
+        this.addAdditionalSaveData(tag);
+        buffer.writeNbt(tag);
+    }
 
-	@Override
-	public void readSpawnData(FriendlyByteBuf additionalData) {
-		CompoundTag tag = additionalData.readNbt();
-		this.readAdditionalSaveData(tag);
-	}
+    @Override
+    public void readSpawnData(FriendlyByteBuf additionalData) {
+        CompoundTag tag = additionalData.readNbt();
+        this.readAdditionalSaveData(Objects.requireNonNull(tag));
+    }
 
-	public static BladeStandEntity createInstanceFromPos(Level worldIn, BlockPos placePos, Direction dir, Item type) {
-		BladeStandEntity e = new BladeStandEntity(SlashBlade.RegistryEvents.BladeStand, worldIn);
+    public static BladeStandEntity createInstanceFromPos(Level worldIn, BlockPos placePos, Direction dir, Item type) {
+        BladeStandEntity e = new BladeStandEntity(SlashBlade.RegistryEvents.BladeStand, worldIn);
 
-		e.pos = placePos;
-		e.setDirection(dir);
-		e.currentType = type;
+        e.pos = placePos;
+        e.setDirection(dir);
+        e.currentType = type;
 
-		return e;
-	}
+        return e;
+    }
 
-	public static BladeStandEntity createInstance(PlayMessages.SpawnEntity spawnEntity, Level world) {
-		return new BladeStandEntity(SlashBlade.RegistryEvents.BladeStand, world);
-	}
+    public static BladeStandEntity createInstance(PlayMessages.SpawnEntity spawnEntity, Level world) {
+        return new BladeStandEntity(SlashBlade.RegistryEvents.BladeStand, world);
+    }
 
-	@Nullable
-	@Override
-	public ItemEntity spawnAtLocation(ItemLike iip) {
-		if (iip == Items.ITEM_FRAME) {
-			if (this.currentType == null || this.currentType == Items.AIR)
-				return null;
+    @Nullable
+    @Override
+    public ItemEntity spawnAtLocation(@NotNull ItemLike iip) {
+        if (iip == Items.ITEM_FRAME) {
+            if (this.currentType == null || this.currentType == Items.AIR) {
+                return null;
+            }
 
-			iip = this.currentType;
-		}
-		return super.spawnAtLocation(iip);
-	}
+            iip = this.currentType;
+        }
+        return super.spawnAtLocation(iip);
+    }
 
-	@Override
-	public boolean hurt(DamageSource damageSource, float cat) {
-		ItemStack blade = this.getItem();
-		
-		if (blade.isEmpty())
-			return super.hurt(damageSource, cat);
-		
-		if(!blade.getCapability(ItemSlashBlade.BLADESTATE).isPresent())
-			return super.hurt(damageSource, cat);
-		
-		ISlashBladeState state = blade.getCapability(ItemSlashBlade.BLADESTATE).orElseThrow(NullPointerException::new);
+    @Override
+    public boolean hurt(@NotNull DamageSource damageSource, float cat) {
+        ItemStack blade = this.getItem();
 
-		if(MinecraftForge.EVENT_BUS.post(new SlashBladeEvent.BladeStandAttackEvent(blade, state, this, damageSource)))
-			return false;
+        if (blade.isEmpty()) {
+            return super.hurt(damageSource, cat);
+        }
 
-		if (damageSource.getEntity() instanceof Player player){
-			ItemStack stack = player.getItemInHand(InteractionHand.MAIN_HAND);
-			if (stack.is(SlashBladeItemTags.PROUD_SOULS)){
-				return false;
-			}
-		}
+        if (!blade.getCapability(ItemSlashBlade.BLADESTATE).isPresent()) {
+            return super.hurt(damageSource, cat);
+        }
 
-		return super.hurt(damageSource, cat);
-	}
+        ISlashBladeState state = blade.getCapability(ItemSlashBlade.BLADESTATE).orElseThrow(NullPointerException::new);
 
-	@Override
-	public InteractionResult interact(Player player, InteractionHand hand) {
-		InteractionResult result = InteractionResult.PASS;
-		if (!this.level().isClientSide() && hand == InteractionHand.MAIN_HAND) {
-			ItemStack itemstack = player.getItemInHand(hand);
-			if (player.isShiftKeyDown() && !this.getItem().isEmpty()) {
-				Pose current = this.getPose();
-				int newIndex = (current.ordinal() + 1) % Pose.values().length;
-				this.setPose(Pose.values()[newIndex]);
-				result = InteractionResult.SUCCESS;
-			} else if ((!itemstack.isEmpty() && itemstack.getCapability(ItemSlashBlade.BLADESTATE).isPresent())
-					|| (itemstack.isEmpty() && !this.getItem().isEmpty())) {
+        if (MinecraftForge.EVENT_BUS.post(new SlashBladeEvent.BladeStandAttackEvent(blade, state, this, damageSource))) {
+            return false;
+        }
 
-				if (this.getItem().isEmpty()) {
-					if (!this.isRemoved()) {
-						this.setItem(itemstack);
-						if (!player.getAbilities().instabuild) {
-							itemstack.shrink(1);
-						}
-						this.playSound(SoundEvents.ITEM_FRAME_ADD_ITEM, 1.0F, 1.0F);
-						result = InteractionResult.SUCCESS;
-					}
-				} else {
-					ItemStack displayed = this.getItem().copy();
+        if (damageSource.getEntity() instanceof Player player) {
+            ItemStack stack = player.getItemInHand(InteractionHand.MAIN_HAND);
+            if (stack.is(SlashBladeItemTags.PROUD_SOULS)) {
+                return false;
+            }
+        }
 
-					this.setItem(itemstack);
-					player.setItemInHand(hand, displayed);
+        return super.hurt(damageSource, cat);
+    }
 
-					this.playSound(SoundEvents.ITEM_FRAME_REMOVE_ITEM, 1.0F, 1.0F);
-					result = InteractionResult.SUCCESS;
+    @Override
+    public @NotNull InteractionResult interact(@NotNull Player player, @NotNull InteractionHand hand) {
+        InteractionResult result = InteractionResult.PASS;
+        if (!this.level().isClientSide() && hand == InteractionHand.MAIN_HAND) {
+            ItemStack itemstack = player.getItemInHand(hand);
+            if (player.isShiftKeyDown() && !this.getItem().isEmpty()) {
+                Pose current = this.getPose();
+                int newIndex = (current.ordinal() + 1) % Pose.values().length;
+                this.setPose(Pose.values()[newIndex]);
+                result = InteractionResult.SUCCESS;
+            } else if ((!itemstack.isEmpty() && itemstack.getCapability(ItemSlashBlade.BLADESTATE).isPresent())
+                    || (itemstack.isEmpty() && !this.getItem().isEmpty())) {
 
-				}
+                if (this.getItem().isEmpty()) {
+                    if (!this.isRemoved()) {
+                        this.setItem(itemstack);
+                        if (!player.getAbilities().instabuild) {
+                            itemstack.shrink(1);
+                        }
+                        this.playSound(SoundEvents.ITEM_FRAME_ADD_ITEM, 1.0F, 1.0F);
+                        result = InteractionResult.SUCCESS;
+                    }
+                } else {
+                    ItemStack displayed = this.getItem().copy();
 
-			} else {
-				this.playSound(SoundEvents.ITEM_FRAME_ROTATE_ITEM, 1.0F, 1.0F);
-				this.setRotation(this.getRotation() + 1);
-				result = InteractionResult.SUCCESS;
-			}
-		}
-		return result;
-	}
+                    this.setItem(itemstack);
+                    player.setItemInHand(hand, displayed);
 
-	protected ItemStack getFrameItemStack() {
-		return new ItemStack(currentType);
-	}
+                    this.playSound(SoundEvents.ITEM_FRAME_REMOVE_ITEM, 1.0F, 1.0F);
+                    result = InteractionResult.SUCCESS;
 
-	@Override
-	public boolean survives() {
-		return true;
-	}
+                }
+
+            } else {
+                this.playSound(SoundEvents.ITEM_FRAME_ROTATE_ITEM, 1.0F, 1.0F);
+                this.setRotation(this.getRotation() + 1);
+                result = InteractionResult.SUCCESS;
+            }
+        }
+        return result;
+    }
+
+    @Override
+    protected @NotNull ItemStack getFrameItemStack() {
+        return new ItemStack(currentType);
+    }
+
+    @Override
+    public boolean survives() {
+        return true;
+    }
 }

@@ -1,12 +1,10 @@
 package mods.flammpfeil.slashblade.client;
 
-import org.lwjgl.glfw.GLFW;
-
 import com.mojang.blaze3d.platform.InputConstants;
-
 import net.minecraft.client.KeyMapping;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.client.settings.KeyModifier;
+import org.lwjgl.glfw.GLFW;
 
 public class SlashBladeKeyMappings {
     public static final KeyMapping KEY_SPECIAL_MOVE = new KeyMapping("key.slashblade.special_move",

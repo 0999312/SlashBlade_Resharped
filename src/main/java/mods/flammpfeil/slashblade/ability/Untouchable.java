@@ -40,15 +40,17 @@ public class Untouchable {
         Optional<Boolean> isUntouchable = entity.getCapability(CapabilityMobEffect.MOB_EFFECT)
                 .map(ef -> ef.isUntouchable(entity.getCommandSenderWorld().getGameTime()));
 
-        return isUntouchable.orElseGet(() -> false);
+        return isUntouchable.orElse(false);
     }
 
     private void doWitchTime(Entity entity) {
-        if (entity == null)
+        if (entity == null) {
             return;
+        }
 
-        if (!(entity instanceof LivingEntity))
+        if (!(entity instanceof LivingEntity)) {
             return;
+        }
 
         StunManager.setStun((LivingEntity) entity);
     }
@@ -90,11 +92,12 @@ public class Untouchable {
                     List<MobEffect> filterd = entity.getActiveEffectsMap().keySet().stream()
                             .filter(p -> !(ef.getEffectSet().contains(p) || p.isBeneficial())).toList();
 
-                    filterd.forEach(p -> entity.removeEffect(p));
+                    filterd.forEach(entity::removeEffect);
 
                     float storedHealth = ef.getStoredHealth();
-                    if (ef.getStoredHealth() < storedHealth)
+                    if (ef.getStoredHealth() < storedHealth) {
                         entity.setHealth(ef.getStoredHealth());
+                    }
                 }
             });
         }
@@ -104,8 +107,9 @@ public class Untouchable {
     public void onLivingTicks(LivingEvent.LivingTickEvent event) {
         LivingEntity entity = event.getEntity();
 
-        if (entity.level().isClientSide())
+        if (entity.level().isClientSide()) {
             return;
+        }
 
         entity.getCapability(CapabilityMobEffect.MOB_EFFECT).ifPresent(ef -> {
             if (ef.hasUntouchableWorked()) {
@@ -113,11 +117,12 @@ public class Untouchable {
                 List<MobEffect> filterd = entity.getActiveEffectsMap().keySet().stream()
                         .filter(p -> !(ef.getEffectSet().contains(p) || p.isBeneficial())).toList();
 
-                filterd.forEach(p -> entity.removeEffect(p));
+                filterd.forEach(entity::removeEffect);
 
                 float storedHealth = ef.getStoredHealth();
-                if (ef.getStoredHealth() < storedHealth)
+                if (ef.getStoredHealth() < storedHealth) {
                     entity.setHealth(ef.getStoredHealth());
+                }
             }
         });
     }
@@ -126,8 +131,9 @@ public class Untouchable {
 
     @SubscribeEvent
     public void onPlayerJump(LivingEvent.LivingJumpEvent event) {
-        if (!event.getEntity().getMainHandItem().getCapability(ItemSlashBlade.BLADESTATE).isPresent())
+        if (!event.getEntity().getMainHandItem().getCapability(ItemSlashBlade.BLADESTATE).isPresent()) {
             return;
+        }
 
         Untouchable.setUntouchable(event.getEntity(), JUMP_TICKS);
     }

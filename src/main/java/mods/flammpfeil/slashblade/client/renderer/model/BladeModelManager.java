@@ -13,7 +13,9 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
 import java.util.concurrent.Executors;
 
 /**
@@ -31,7 +33,7 @@ public class BladeModelManager {
     }
 
     public static Registry<SlashBladeDefinition> getClientSlashBladeRegistry() {
-        return Minecraft.getInstance().getConnection().registryAccess()
+        return Objects.requireNonNull(Minecraft.getInstance().getConnection()).registryAccess()
                 .registryOrThrow(SlashBladeDefinition.REGISTRY_KEY);
     }
 
@@ -43,9 +45,9 @@ public class BladeModelManager {
         defaultModel = new WavefrontObject(DefaultResources.resourceDefaultModel);
 
         cache = CacheBuilder.newBuilder()
-                .build(CacheLoader.asyncReloading(new CacheLoader<ResourceLocation, WavefrontObject>() {
+                .build(CacheLoader.asyncReloading(new CacheLoader<>() {
                     @Override
-                    public WavefrontObject load(ResourceLocation key) throws Exception {
+                    public @NotNull WavefrontObject load(@NotNull ResourceLocation key) throws Exception {
                         try {
                             return new WavefrontObject(key);
                         } catch (Exception e) {

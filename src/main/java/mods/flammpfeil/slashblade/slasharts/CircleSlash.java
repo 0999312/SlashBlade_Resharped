@@ -2,6 +2,7 @@ package mods.flammpfeil.slashblade.slasharts;
 
 import mods.flammpfeil.slashblade.SlashBlade;
 import mods.flammpfeil.slashblade.capability.concentrationrank.ConcentrationRankCapabilityProvider;
+import mods.flammpfeil.slashblade.capability.slashblade.ISlashBladeState;
 import mods.flammpfeil.slashblade.entity.EntitySlashEffect;
 import mods.flammpfeil.slashblade.item.ItemSlashBlade;
 import mods.flammpfeil.slashblade.util.KnockBacks;
@@ -13,8 +14,9 @@ import net.minecraft.world.phys.Vec3;
 
 public class CircleSlash {
     public static void doCircleSlashAttack(LivingEntity living, float yRot) {
-        if (living.level().isClientSide())
+        if (living.level().isClientSide()) {
             return;
+        }
 
         Vec3 pos = living.position().add(0.0D, (double) living.getEyeHeight() * 0.75D, 0.0D)
                 .add(living.getLookAngle().scale(0.3f));
@@ -38,7 +40,7 @@ public class CircleSlash {
         jc.setXRot(0);
 
         int colorCode = living.getMainHandItem().getCapability(ItemSlashBlade.BLADESTATE)
-                .map(state -> state.getColorCode()).orElseGet(() -> 0xFFFFFF);
+                .map(ISlashBladeState::getColorCode).orElse(0xFFFFFF);
         jc.setColor(colorCode);
 
         jc.setMute(false);
@@ -48,9 +50,8 @@ public class CircleSlash {
 
         jc.setKnockBack(KnockBacks.cancel);
 
-        if (living != null)
-            living.getCapability(ConcentrationRankCapabilityProvider.RANK_POINT)
-                    .ifPresent(rank -> jc.setRank(rank.getRankLevel(living.level().getGameTime())));
+        living.getCapability(ConcentrationRankCapabilityProvider.RANK_POINT)
+                .ifPresent(rank -> jc.setRank(rank.getRankLevel(living.level().getGameTime())));
 
         living.level().addFreshEntity(jc);
     }

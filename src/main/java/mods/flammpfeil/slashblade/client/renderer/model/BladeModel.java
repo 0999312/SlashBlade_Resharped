@@ -9,6 +9,8 @@ import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.List;
 
 /**
@@ -25,14 +27,14 @@ public class BladeModel implements BakedModel {
     public static LivingEntity user = null;
 
     @Override
-    public ItemOverrides getOverrides() {
+    public @NotNull ItemOverrides getOverrides() {
         return this.original.getOverrides();
     }
 
     @SuppressWarnings("deprecation")
     @Override
-    public List<BakedQuad> getQuads(@org.jetbrains.annotations.Nullable BlockState p_235039_,
-            @org.jetbrains.annotations.Nullable Direction p_235040_, RandomSource p_235041_) {
+    public @NotNull List<BakedQuad> getQuads(@org.jetbrains.annotations.Nullable BlockState p_235039_,
+                                             @org.jetbrains.annotations.Nullable Direction p_235040_, @NotNull RandomSource p_235041_) {
         return original.getQuads(p_235039_, p_235040_, p_235041_);
     }
 
@@ -58,7 +60,7 @@ public class BladeModel implements BakedModel {
 
     @SuppressWarnings("deprecation")
     @Override
-    public TextureAtlasSprite getParticleIcon() {
+    public @NotNull TextureAtlasSprite getParticleIcon() {
         return original.getParticleIcon();
         // return
         // Minecraft.getInstance().getItemRenderer().getItemModelMesher().getParticleIcon(SlashBlade.proudSoul);
@@ -67,10 +69,10 @@ public class BladeModel implements BakedModel {
     /*
      * ItemCameraTransforms tf = new
      * ItemCameraTransforms(ItemCameraTransforms.DEFAULT){
-     * 
+     *
      * @Override public ItemTransformVec3f getTransform(TransformType srctype) {
      * type = srctype; return super.getTransform(srctype); } } ;
-     * 
+     *
      * @Override public ItemCameraTransforms getItemCameraTransforms() { return tf;
      * }
      */

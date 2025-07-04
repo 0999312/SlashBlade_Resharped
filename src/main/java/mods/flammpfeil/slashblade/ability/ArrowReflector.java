@@ -14,39 +14,42 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
+import java.util.Objects;
 
 public class ArrowReflector {
 
     static public boolean isMatch(Entity arrow, Entity attacker) {
-        if (arrow == null)
+        if (arrow == null) {
             return false;
-        if (!(arrow instanceof Projectile))
-            return false;
-
-        return true;
+        }
+        return arrow instanceof Projectile;
     }
 
     static public void doReflect(Entity arrow, Entity attacker) {
-        if (!isMatch(arrow, attacker))
+        if (!isMatch(arrow, attacker)) {
             return;
+        }
 
         arrow.hurtMarked = true;
         if (attacker != null) {
             Vec3 dir = attacker.getLookAngle();
 
             do {
-                if (attacker instanceof LivingEntity)
+                if (attacker instanceof LivingEntity) {
                     break;
+                }
 
                 ItemStack stack = ((LivingEntity) attacker).getMainHandItem();
 
-                if (stack.isEmpty())
+                if (stack.isEmpty()) {
                     break;
-                if (!(stack.getItem() instanceof ItemSlashBlade))
+                }
+                if (!(stack.getItem() instanceof ItemSlashBlade)) {
                     break;
+                }
 
                 Entity target = stack.getCapability(ItemSlashBlade.BLADESTATE)
-                        .map(s -> s.getTargetEntity(attacker.level())).orElse(null);
+                        .map(s -> Objects.requireNonNull(s.getTargetEntity(attacker.level()))).orElse(null);
                 if (target != null) {
                     dir = arrow.position().subtract(target.getEyePosition(1.0f)).normalize();
                 } else {
@@ -58,8 +61,9 @@ public class ArrowReflector {
 
             ((Projectile) arrow).shoot(dir.x, dir.y, dir.z, 3.5f, 0.2f);
 
-            if (arrow instanceof AbstractArrow)
+            if (arrow instanceof AbstractArrow) {
                 ((AbstractArrow) arrow).setCritArrow(true);
+            }
 
         }
     }
@@ -68,16 +72,19 @@ public class ArrowReflector {
 
         ItemStack stack = attacker.getMainHandItem();
 
-        if (stack.isEmpty())
+        if (stack.isEmpty()) {
             return;
-        if (!(stack.getItem() instanceof ItemSlashBlade))
+        }
+        if (!(stack.getItem() instanceof ItemSlashBlade)) {
             return;
+        }
 
         stack.getCapability(ItemSlashBlade.BLADESTATE).ifPresent(s -> {
             int ticks = attacker.getTicksUsingItem();
 
-            if (ticks == 0)
+            if (ticks == 0) {
                 return;
+            }
 
             ResourceLocation old = s.getComboSeq();
             ResourceLocation current = s.resolvCurrentComboState(attacker);
@@ -86,10 +93,10 @@ public class ArrowReflector {
                     : ComboStateRegistry.NONE.get();
             if (old != current) {
                 ComboState oldCS = ComboStateRegistry.REGISTRY.get().getValue(current);
-                ticks -= TimeValueHelper.getTicksFromMSec(oldCS.getTimeoutMS());
+                ticks -= (int) TimeValueHelper.getTicksFromMSec(Objects.requireNonNull(oldCS).getTimeoutMS());
             }
 
-            double period = TimeValueHelper.getTicksFromFrames(currentCS.getEndFrame() - currentCS.getStartFrame())
+            double period = TimeValueHelper.getTicksFromFrames(Objects.requireNonNull(currentCS).getEndFrame() - currentCS.getStartFrame())
                     * (1.0f / currentCS.getSpeed());
 
             if (ticks < period) {

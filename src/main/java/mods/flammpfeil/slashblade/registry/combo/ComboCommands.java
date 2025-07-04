@@ -1,15 +1,12 @@
 package mods.flammpfeil.slashblade.registry.combo;
 
-import java.util.Comparator;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.Map;
-
 import mods.flammpfeil.slashblade.capability.inputstate.CapabilityInputState;
 import mods.flammpfeil.slashblade.registry.ComboStateRegistry;
 import mods.flammpfeil.slashblade.util.InputCommand;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
+
+import java.util.*;
 
 public class ComboCommands {
     public static final EnumSet<InputCommand> COMBO_B1_ALT = EnumSet.of(InputCommand.BACK, InputCommand.R_DOWN);
@@ -20,15 +17,15 @@ public class ComboCommands {
     }
 
     public static ResourceLocation initStandByCommand(LivingEntity a,
-            Map<EnumSet<InputCommand>, ResourceLocation> map) {
+                                                      Map<EnumSet<InputCommand>, ResourceLocation> map) {
         EnumSet<InputCommand> commands = a.getCapability(CapabilityInputState.INPUT_STATE)
                 .map((state) -> state.getCommands(a)).orElseGet(() -> EnumSet.noneOf(InputCommand.class));
 
         return map.entrySet().stream().filter((entry) -> commands.containsAll(entry.getKey()))
                 // .findFirst()
                 .min(Comparator.comparingInt(
-                        (entry) -> ComboStateRegistry.REGISTRY.get().getValue(entry.getValue()).getPriority()))
-                .map((entry) -> entry.getValue()).orElseGet(ComboStateRegistry.NONE::getId);
+                        (entry) -> Objects.requireNonNull(ComboStateRegistry.REGISTRY.get().getValue(entry.getValue())).getPriority()))
+                .map(Map.Entry::getValue).orElseGet(ComboStateRegistry.NONE::getId);
     }
 
     public static void initDefaultStandByCommands() {

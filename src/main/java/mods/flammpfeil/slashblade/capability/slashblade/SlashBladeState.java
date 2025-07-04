@@ -27,21 +27,18 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.util.LazyOptional;
-
-import javax.annotation.Nonnull;
-
+import org.jetbrains.annotations.NotNull;
 import org.joml.Math;
 
+import javax.annotation.Nonnull;
 import java.awt.*;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
 /**
  * Reference implementation of {@link ISlashBladeState}. Use/extend this or
  * implement your own.
- *
+ * <p>
  * Derived from the Redstone Flux power system designed by King Lemming and
  * originally utilized in Thermal Expansion and related mods. Created with
  * consent and permission of King Lemming and Team CoFH. Released with
@@ -100,12 +97,13 @@ public class SlashBladeState implements ISlashBladeState {
     protected int proudSoul = 0;
 
     protected boolean isEmpty = true;
-    
+
     public SlashBladeState(ItemStack blade) {
-    	if(!blade.isEmpty()) {
-    		if(blade.getOrCreateTag().contains("bladeState"))
-    			this.deserializeNBT(blade.getOrCreateTag().getCompound("bladeState"));
-    	}
+        if (!blade.isEmpty()) {
+            if (blade.getOrCreateTag().contains("bladeState")) {
+                this.deserializeNBT(blade.getOrCreateTag().getCompound("bladeState"));
+            }
+        }
     }
 
     @Override
@@ -154,7 +152,7 @@ public class SlashBladeState implements ISlashBladeState {
     @Override
     @Nonnull
     public ResourceLocation getComboSeq() {
-        return comboSeq != null ? comboSeq : ComboStateRegistry.NONE.getId();
+        return comboSeq != null ? comboSeq : Objects.requireNonNull(ComboStateRegistry.NONE.getId());
     }
 
     @Override
@@ -235,7 +233,7 @@ public class SlashBladeState implements ISlashBladeState {
     }
 
     @Override
-    public String getTranslationKey() {
+    public @NotNull String getTranslationKey() {
         return translationKey;
     }
 
@@ -256,7 +254,7 @@ public class SlashBladeState implements ISlashBladeState {
     }
 
     @Override
-    public Color getEffectColor() {
+    public @NotNull Color getEffectColor() {
         return effectColor.orElseGet(() -> new Color(0x3333FF));
     }
 
@@ -276,8 +274,8 @@ public class SlashBladeState implements ISlashBladeState {
     }
 
     @Override
-    public Vec3 getAdjust() {
-        return adjust.orElseGet(() -> Vec3.ZERO);
+    public @NotNull Vec3 getAdjust() {
+        return adjust.orElse(Vec3.ZERO);
     }
 
     @Override
@@ -286,7 +284,7 @@ public class SlashBladeState implements ISlashBladeState {
     }
 
     @Override
-    public Optional<ResourceLocation> getTexture() {
+    public @NotNull Optional<ResourceLocation> getTexture() {
         return texture;
     }
 
@@ -296,7 +294,7 @@ public class SlashBladeState implements ISlashBladeState {
     }
 
     @Override
-    public Optional<ResourceLocation> getModel() {
+    public @NotNull Optional<ResourceLocation> getModel() {
         return model;
     }
 
@@ -317,8 +315,9 @@ public class SlashBladeState implements ISlashBladeState {
 
     @Override
     public ResourceLocation getComboRoot() {
-    	if(this.comboRootName == null || !ComboStateRegistry.REGISTRY.get().containsKey(this.comboRootName))
-    		return ComboStateRegistry.STANDBY.getId();
+        if (this.comboRootName == null || !ComboStateRegistry.REGISTRY.get().containsKey(this.comboRootName)) {
+            return ComboStateRegistry.STANDBY.getId();
+        }
         return this.comboRootName;
     }
 
@@ -332,7 +331,7 @@ public class SlashBladeState implements ISlashBladeState {
     private LazyOptional<ResourceLocation> instantiateRootComboHolder() {
         return LazyOptional.of(() -> {
             if (!ComboStateRegistry.REGISTRY.get().containsKey(this.getComboRoot())) {
-                return ComboStateRegistry.STANDBY.getId();
+                return Objects.requireNonNull(ComboStateRegistry.STANDBY.getId());
             } else {
                 return this.getComboRoot();
             }
@@ -368,56 +367,57 @@ public class SlashBladeState implements ISlashBladeState {
     public void setProudSoulCount(int psCount) {
         this.proudSoul = Math.max(0, psCount);
     }
-    
+
     protected List<ResourceLocation> specialEffects = new ArrayList<>();
 
-	@Override
-	public List<ResourceLocation> getSpecialEffects() {
-		return this.specialEffects;
-	}
+    @Override
+    public List<ResourceLocation> getSpecialEffects() {
+        return this.specialEffects;
+    }
 
-	@Override
-	public void setSpecialEffects(ListTag list) {
-		List<ResourceLocation> result = new ArrayList<>();
-		list.forEach(tag->{
-			ResourceLocation se = ResourceLocation.tryParse(tag.getAsString());
-			if(SpecialEffectsRegistry.REGISTRY.get().containsKey(se))
-				result.add(se);
-			
-		});
-		this.specialEffects = result;
-	}
+    @Override
+    public void setSpecialEffects(ListTag list) {
+        List<ResourceLocation> result = new ArrayList<>();
+        list.forEach(tag -> {
+            ResourceLocation se = ResourceLocation.tryParse(tag.getAsString());
+            if (SpecialEffectsRegistry.REGISTRY.get().containsKey(se)) {
+                result.add(se);
+            }
 
-	@Override
-	public boolean addSpecialEffect(ResourceLocation se) {
-		if(SpecialEffectsRegistry.REGISTRY.get().containsKey(se)) {
-			return this.specialEffects.add(se);
-		}
-		return false;
-	}
+        });
+        this.specialEffects = result;
+    }
 
-	@Override
-	public boolean removeSpecialEffect(ResourceLocation se) {
-		return this.specialEffects.remove(se);
-	}
+    @Override
+    public boolean addSpecialEffect(ResourceLocation se) {
+        if (SpecialEffectsRegistry.REGISTRY.get().containsKey(se)) {
+            return this.specialEffects.add(se);
+        }
+        return false;
+    }
 
-	@Override
-	public boolean hasSpecialEffect(ResourceLocation se) {
-		if(SpecialEffectsRegistry.REGISTRY.get().containsKey(se)) {
-			return this.specialEffects.contains(se);
-		}
-		this.specialEffects.remove(se);
-		return true;
-	}
+    @Override
+    public boolean removeSpecialEffect(ResourceLocation se) {
+        return this.specialEffects.remove(se);
+    }
 
-	@Override
-	public boolean isEmpty() {
-		return this.isEmpty;
-	}
+    @Override
+    public boolean hasSpecialEffect(ResourceLocation se) {
+        if (SpecialEffectsRegistry.REGISTRY.get().containsKey(se)) {
+            return this.specialEffects.contains(se);
+        }
+        this.specialEffects.remove(se);
+        return true;
+    }
 
-	@Override
-	public void setNonEmpty() {
-		this.isEmpty = false;
-	}
-	
+    @Override
+    public boolean isEmpty() {
+        return this.isEmpty;
+    }
+
+    @Override
+    public void setNonEmpty() {
+        this.isEmpty = false;
+    }
+
 }

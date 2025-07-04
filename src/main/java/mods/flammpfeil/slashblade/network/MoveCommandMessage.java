@@ -5,13 +5,14 @@ import mods.flammpfeil.slashblade.event.InputCommandEvent;
 import mods.flammpfeil.slashblade.item.ItemSlashBlade;
 import mods.flammpfeil.slashblade.util.EnumSetConverter;
 import mods.flammpfeil.slashblade.util.InputCommand;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.EnumSet;
+import java.util.Objects;
 import java.util.function.Supplier;
 
 public class MoveCommandMessage {
@@ -35,11 +36,13 @@ public class MoveCommandMessage {
             // Work that needs to be threadsafe (most work)
             ServerPlayer sender = ctx.get().getSender(); // the client that sent this packet
             // do stuff
-            ItemStack stack = sender.getItemInHand(InteractionHand.MAIN_HAND);
-            if (stack.isEmpty())
+            ItemStack stack = Objects.requireNonNull(sender).getItemInHand(InteractionHand.MAIN_HAND);
+            if (stack.isEmpty()) {
                 return;
-            if (!(stack.getCapability(ItemSlashBlade.BLADESTATE).isPresent()))
+            }
+            if (!(stack.getCapability(ItemSlashBlade.BLADESTATE).isPresent())) {
                 return;
+            }
 
             sender.getCapability(CapabilityInputState.INPUT_STATE).ifPresent((state) -> {
                 EnumSet<InputCommand> old = state.getCommands().clone();
@@ -51,12 +54,13 @@ public class MoveCommandMessage {
 
                 long currentTime = sender.level().getGameTime();
                 current.forEach(c -> {
-                    if (!old.contains(c))
+                    if (!old.contains(c)) {
                         state.getLastPressTimes().put(c, currentTime);
+                    }
                 });
 
                 InputCommandEvent.onInputChange(sender, state, old, current);
-                
+
             });
         });
         ctx.get().setPacketHandled(true);

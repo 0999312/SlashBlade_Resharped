@@ -4,18 +4,17 @@ import com.google.common.base.Suppliers;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-
-import java.awt.*;
-import java.util.function.BiFunction;
-import java.util.function.Supplier;
-
-import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
+
+import java.awt.*;
+import java.util.function.BiFunction;
+import java.util.function.Supplier;
 
 public class Face {
     public static boolean isSmoothShade = true;
@@ -98,16 +97,14 @@ public class Face {
         float averageV = 0F;
 
         if ((textureCoordinates != null) && (textureCoordinates.length > 0)) {
-            for (int i = 0; i < textureCoordinates.length; ++i) {
-                averageU += textureCoordinates[i].u * uvOperator.x() + uvOperator.z();
-                averageV += textureCoordinates[i].v * uvOperator.y() + uvOperator.w();
+            for (TextureCoordinate textureCoordinate : textureCoordinates) {
+                averageU += textureCoordinate.u * uvOperator.x() + uvOperator.z();
+                averageV += textureCoordinate.v * uvOperator.y() + uvOperator.w();
             }
 
             averageU = averageU / textureCoordinates.length;
             averageV = averageV / textureCoordinates.length;
         }
-
-        VertexConsumer wr = tessellator;
 
         Matrix4f transform;
         if (matrix != null) {
@@ -118,7 +115,7 @@ public class Face {
         }
 
         for (int i = 0; i < vertices.length; ++i) {
-            putVertex(wr, i, transform, textureOffset, averageU, averageV);
+            putVertex(tessellator, i, transform, textureOffset, averageU, averageV);
         }
     }
 

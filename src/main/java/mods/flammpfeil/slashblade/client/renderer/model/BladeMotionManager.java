@@ -8,6 +8,7 @@ import jp.nyatla.nymmd.MmdVmdMotionMc;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.util.concurrent.Executors;
@@ -34,16 +35,14 @@ public class BladeMotionManager {
     private BladeMotionManager() {
         try {
             defaultMotion = new MmdVmdMotionMc(ExMotionLocation);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (MmdException e) {
+        } catch (IOException | MmdException e) {
             e.printStackTrace();
         }
 
         cache = CacheBuilder.newBuilder()
-                .build(CacheLoader.asyncReloading(new CacheLoader<ResourceLocation, MmdVmdMotionMc>() {
+                .build(CacheLoader.asyncReloading(new CacheLoader<>() {
                     @Override
-                    public MmdVmdMotionMc load(ResourceLocation key) throws Exception {
+                    public @NotNull MmdVmdMotionMc load(@NotNull ResourceLocation key) throws Exception {
                         try {
                             return new MmdVmdMotionMc(key);
                         } catch (Exception e) {
@@ -61,9 +60,7 @@ public class BladeMotionManager {
 
         try {
             defaultMotion = new MmdVmdMotionMc(ExMotionLocation);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (MmdException e) {
+        } catch (IOException | MmdException e) {
             e.printStackTrace();
         }
     }

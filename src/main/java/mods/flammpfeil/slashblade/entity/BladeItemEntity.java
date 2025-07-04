@@ -20,8 +20,9 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.network.PlayMessages;
 import net.minecraftforge.network.NetworkHooks;
+import net.minecraftforge.network.PlayMessages;
+import org.jetbrains.annotations.NotNull;
 
 public class BladeItemEntity extends ItemEntity {
     private static final EntityDataAccessor<String> DATA_MODEL = SynchedEntityData.defineId(BladeItemEntity.class,
@@ -62,7 +63,7 @@ public class BladeItemEntity extends ItemEntity {
         CompoundTag compoundnbt = this.saveWithoutId(new CompoundTag());
         compoundnbt.remove("Dimension");
         compoundnbt.putShort("Health", (short) 100);
-        if (compoundnbt.getShort("PickupDelay") != (short) 32767){
+        if (compoundnbt.getShort("PickupDelay") != (short) 32767) {
             compoundnbt.putShort("Age", Short.MIN_VALUE);
         }
         this.load(compoundnbt);
@@ -72,7 +73,8 @@ public class BladeItemEntity extends ItemEntity {
         return new BladeItemEntity(SlashBlade.RegistryEvents.BladeItem, worldIn);
     }
 
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
+    @Override
+    public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 
@@ -90,10 +92,10 @@ public class BladeItemEntity extends ItemEntity {
         if (this.level().isClientSide()) {
             if (random.nextInt(5) == 0 && getAirSupply() < 0) {
                 Direction direction = Direction.UP;
-                double d0 = (double) this.getX() - (double) (random.nextFloat() * 0.1F);
-                double d1 = (double) this.getY() - (double) (random.nextFloat() * 0.1F);
-                double d2 = (double) this.getZ() - (double) (random.nextFloat() * 0.1F);
-                double d3 = (double) (0.4F - (random.nextFloat() + random.nextFloat()) * 0.4F);
+                double d0 = this.getX() - (double) (random.nextFloat() * 0.1F);
+                double d1 = this.getY() - (double) (random.nextFloat() * 0.1F);
+                double d2 = this.getZ() - (double) (random.nextFloat() * 0.1F);
+                double d3 = 0.4F - (random.nextFloat() + random.nextFloat()) * 0.4F;
                 this.level().addParticle(ParticleTypes.PORTAL, d0 + (double) direction.getStepX() * d3,
                         d1 + 2 + (double) direction.getStepY() * d3, d2 + (double) direction.getStepZ() * d3,
                         random.nextGaussian() * 0.005D, -2, random.nextGaussian() * 0.005D);
@@ -101,10 +103,10 @@ public class BladeItemEntity extends ItemEntity {
 
             if (!this.onGround() && !this.isInWater() && random.nextInt(3) == 0) {
                 Direction direction = Direction.UP;
-                double d0 = (double) this.getX() - (double) (random.nextFloat() * 0.1F);
-                double d1 = (double) this.getY() - (double) (random.nextFloat() * 0.1F);
-                double d2 = (double) this.getZ() - (double) (random.nextFloat() * 0.1F);
-                double d3 = (double) (0.4F - (random.nextFloat() + random.nextFloat()) * 0.4F);
+                double d0 = this.getX() - (double) (random.nextFloat() * 0.1F);
+                double d1 = this.getY() - (double) (random.nextFloat() * 0.1F);
+                double d2 = this.getZ() - (double) (random.nextFloat() * 0.1F);
+                double d3 = 0.4F - (random.nextFloat() + random.nextFloat()) * 0.4F;
                 this.level().addParticle(ParticleTypes.END_ROD, d0 + (double) direction.getStepX() * d3,
                         d1 + (double) direction.getStepY() * d3, d2 + (double) direction.getStepZ() * d3,
                         random.nextGaussian() * 0.005D, random.nextGaussian() * 0.005D, random.nextGaussian() * 0.005D);
@@ -118,7 +120,7 @@ public class BladeItemEntity extends ItemEntity {
     }
 
     @Override
-    public boolean causeFallDamage(float distance, float damageMultiplier, DamageSource ds) {
+    public boolean causeFallDamage(float distance, float damageMultiplier, @NotNull DamageSource ds) {
         super.causeFallDamage(distance, damageMultiplier, ds);
 
         int i = Mth.ceil(distance);
@@ -145,8 +147,9 @@ public class BladeItemEntity extends ItemEntity {
     @SuppressWarnings("deprecation")
     @Override
     public float getLightLevelDependentMagicValue() {
-        if (getAirSupply() < 0)
+        if (getAirSupply() < 0) {
             return 15728880;
+        }
         return super.getLightLevelDependentMagicValue();
     }
 }

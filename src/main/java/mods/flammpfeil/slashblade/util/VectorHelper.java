@@ -14,7 +14,7 @@ public class VectorHelper {
         float f3 = Mth.sin(f1);
         float f4 = Mth.cos(f);
         float f5 = Mth.sin(f);
-        return new Vec3((double) (f3 * f4), (double) (-f5), (double) (f2 * f4));
+        return new Vec3(f3 * f4, -f5, f2 * f4);
     }
 
     static public Vec3i f2i(Vec3 src) {

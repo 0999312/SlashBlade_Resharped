@@ -2,42 +2,43 @@ package mods.flammpfeil.slashblade.entity;
 
 import mods.flammpfeil.slashblade.SlashBlade;
 import mods.flammpfeil.slashblade.util.*;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.syncher.EntityDataAccessor;
-import net.minecraft.network.syncher.EntityDataSerializers;
-import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.world.effect.MobEffect;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.item.alchemy.PotionUtils;
-import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.Level;
-import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.network.NetworkHooks;
+import net.minecraftforge.network.PlayMessages;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.EnumSet;
 import java.util.List;
-import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.phys.EntityHitResult;
-import net.minecraftforge.network.PlayMessages;
-import net.minecraftforge.network.NetworkHooks;
 
 public class EntityJudgementCut extends Projectile implements IShootable {
     private static final EntityDataAccessor<Integer> COLOR = SynchedEntityData
-            .<Integer>defineId(EntityJudgementCut.class, EntityDataSerializers.INT);
+            .defineId(EntityJudgementCut.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> FLAGS = SynchedEntityData
-            .<Integer>defineId(EntityJudgementCut.class, EntityDataSerializers.INT);
-    private static final EntityDataAccessor<Float> RANK = SynchedEntityData.<Float>defineId(EntityJudgementCut.class,
+            .defineId(EntityJudgementCut.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Float> RANK = SynchedEntityData.defineId(EntityJudgementCut.class,
             EntityDataSerializers.FLOAT);
 
     private int lifetime = 10;
@@ -59,7 +60,7 @@ public class EntityJudgementCut extends Projectile implements IShootable {
         this.cycleHit = cycleHit;
     }
 
-    private SoundEvent livingEntitySound = SoundEvents.WITHER_HURT;
+    private final SoundEvent livingEntitySound = SoundEvents.WITHER_HURT;
 
     protected SoundEvent getHitEntitySound() {
         return this.livingEntitySound;
@@ -86,7 +87,7 @@ public class EntityJudgementCut extends Projectile implements IShootable {
     }
 
     @Override
-    protected void addAdditionalSaveData(CompoundTag compound) {
+    protected void addAdditionalSaveData(@NotNull CompoundTag compound) {
         super.addAdditionalSaveData(compound);
 
         NBTHelper.getNBTCoupler(compound).put("Color", this.getColor()).put("Rank", this.getRank())
@@ -95,7 +96,7 @@ public class EntityJudgementCut extends Projectile implements IShootable {
     }
 
     @Override
-    protected void readAdditionalSaveData(CompoundTag compound) {
+    protected void readAdditionalSaveData(@NotNull CompoundTag compound) {
         super.readAdditionalSaveData(compound);
 
         NBTHelper.getNBTCoupler(compound).get("Color", this::setColor).get("Rank", this::setRank)
@@ -104,7 +105,7 @@ public class EntityJudgementCut extends Projectile implements IShootable {
     }
 
     @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
+    public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 
@@ -128,7 +129,7 @@ public class EntityJudgementCut extends Projectile implements IShootable {
     @Override
     @OnlyIn(Dist.CLIENT)
     public void lerpTo(double x, double y, double z, float yaw, float pitch, int posRotationIncrements,
-            boolean teleport) {
+                       boolean teleport) {
         this.setPos(x, y, z);
         this.setRot(yaw, pitch);
     }
@@ -158,7 +159,7 @@ public class EntityJudgementCut extends Projectile implements IShootable {
 
     private void refreshFlags() {
         if (this.level().isClientSide()) {
-            int newValue = this.entityData.get(FLAGS).intValue();
+            int newValue = this.entityData.get(FLAGS);
             if (intFlags != newValue) {
                 intFlags = newValue;
                 flags = EnumSetConverter.convertToEnumSet(FlagsState.class, intFlags);
@@ -173,10 +174,11 @@ public class EntityJudgementCut extends Projectile implements IShootable {
     }
 
     public void setIsCritical(boolean value) {
-        if (value)
+        if (value) {
             setFlags(FlagsState.Critical);
-        else
+        } else {
             removeFlags(FlagsState.Critical);
+        }
     }
 
     public boolean getIsCritical() {
@@ -186,10 +188,11 @@ public class EntityJudgementCut extends Projectile implements IShootable {
 
     public void setNoClip(boolean value) {
         this.noPhysics = value;
-        if (value)
+        if (value) {
             setFlags(FlagsState.NoClip);
-        else
+        } else {
             removeFlags(FlagsState.NoClip);
+        }
     }
 
     // disallowedHitBlock
@@ -215,7 +218,7 @@ public class EntityJudgementCut extends Projectile implements IShootable {
             // cyclehit
             if (this.tickCount % 2 == 0) {
                 KnockBacks knockBackType = getIsCritical() ? KnockBacks.toss : KnockBacks.cancel;
-                AttackManager.areaAttack(this, knockBackType.action, 4.0, true, false,0.16f,null);
+                AttackManager.areaAttack(this, knockBackType.action, 4.0, true, false, 0.16f, null);
             }
 
             final int count = 3;
@@ -261,44 +264,44 @@ public class EntityJudgementCut extends Projectile implements IShootable {
      * targetEntity = p_213868_1_.getEntity(); float f =
      * (float)this.getMotion().length(); int i = MathHelper.ceil(Math.max((double)f
      * * this.damage, 0.0D));
-     * 
+     *
      * if (this.getIsCritical()) { i += this.rand.nextInt(i / 2 + 2); }
-     * 
+     *
      * Entity shooter = this.getShooter(); DamageSource damagesource; if (shooter ==
      * null) { damagesource = CustomDamageSource.causeSummonedSwordDamage(this,
      * this); } else { damagesource =
      * CustomDamageSource.causeSummonedSwordDamage(this, shooter); if (shooter
      * instanceof LivingEntity) {
      * ((LivingEntity)shooter).setLastAttackedEntity(targetEntity); } }
-     * 
+     *
      * int fireTime = targetEntity.getRemainingFireTicks(); if (this.isBurning() &&
      * !(targetEntity instanceof EndermanEntity)) { targetEntity.setFire(5); }
-     * 
+     *
      * if (targetEntity.attackEntityFrom(damagesource, (float)i)) { if (targetEntity
      * instanceof LivingEntity) { LivingEntity targetLivingEntity =
      * (LivingEntity)targetEntity;
-     * 
+     *
      * if (!this.world.isRemote && shooter instanceof LivingEntity) {
      * EnchantmentHelper.applyThornEnchantments(targetLivingEntity, shooter);
      * EnchantmentHelper.applyArthropodEnchantments((LivingEntity)shooter,
      * targetLivingEntity); }
-     * 
+     *
      * //this.arrowHit(targetLivingEntity);
-     * 
+     *
      * affectEntity(targetLivingEntity, getPotionEffects(), 1.0f);
-     * 
+     *
      * if (shooter != null && targetLivingEntity != shooter && targetLivingEntity
      * instanceof PlayerEntity && shooter instanceof ServerPlayerEntity) {
      * ((ServerPlayerEntity)
      * shooter).playNotifySound(this.getHitEntityPlayerSound(),
      * SoundCategory.PLAYERS, 0.18F, 0.45F); } }
-     * 
+     *
      * this.playSound(this.getHitEntitySound(), 1.0F, 1.2F / (this.rand.nextFloat()
      * * 0.2F + 0.9F)); } else { targetEntity.func_223308_g(fireTime);
      * this.setMotion(this.getMotion().scale(-0.1D)); this.rotationYaw += 180.0F;
      * this.prevRotationYaw += 180.0F; if (!this.world.isRemote &&
      * this.getMotion().lengthSquared() < 1.0E-7D) { this.burst(); } }
-     * 
+     *
      * }
      */
 
@@ -340,8 +343,9 @@ public class EntityJudgementCut extends Projectile implements IShootable {
     public List<MobEffectInstance> getPotionEffects() {
         List<MobEffectInstance> effects = PotionUtils.getAllEffects(this.getPersistentData());
 
-        if (effects.isEmpty())
+        if (effects.isEmpty()) {
             effects.add(new MobEffectInstance(MobEffects.POISON, 1, 1));
+        }
 
         return effects;
     }
@@ -351,9 +355,10 @@ public class EntityJudgementCut extends Projectile implements IShootable {
         // (this.rand.nextFloat() * 0.2F + 0.9F));
 
         if (!this.level().isClientSide()) {
-            if (this.level() instanceof ServerLevel)
+            if (this.level() instanceof ServerLevel) {
                 ((ServerLevel) this.level()).sendParticles(ParticleTypes.CRIT, this.getX(), this.getY(), this.getZ(),
                         16, 0.5, 0.5, 0.5, 0.25f);
+            }
 
             this.burst(getPotionEffects(), null);
         }
@@ -407,9 +412,7 @@ public class EntityJudgementCut extends Projectile implements IShootable {
     @Nullable
     public EntityHitResult getRayTrace(Vec3 p_213866_1_, Vec3 p_213866_2_) {
         return ProjectileUtil.getEntityHitResult(this.level(), this, p_213866_1_, p_213866_2_,
-                this.getBoundingBox().expandTowards(this.getDeltaMovement()).inflate(1.0D), (p_213871_1_) -> {
-                    return !p_213871_1_.isSpectator() && p_213871_1_.isAlive() && p_213871_1_.isPickable()
-                            && (p_213871_1_ != this.getShooter());
-                });
+                this.getBoundingBox().expandTowards(this.getDeltaMovement()).inflate(1.0D), (p_213871_1_) -> !p_213871_1_.isSpectator() && p_213871_1_.isAlive() && p_213871_1_.isPickable()
+                        && (p_213871_1_ != this.getShooter()));
     }
 }

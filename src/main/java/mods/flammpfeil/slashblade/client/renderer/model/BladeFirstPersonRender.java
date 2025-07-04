@@ -1,19 +1,21 @@
 package mods.flammpfeil.slashblade.client.renderer.model;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Axis;
 import mods.flammpfeil.slashblade.client.renderer.layers.LayerMainBlade;
 import mods.flammpfeil.slashblade.client.renderer.util.MSAutoCloser;
 import mods.flammpfeil.slashblade.item.ItemSlashBlade;
+import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
-import net.minecraft.client.CameraType;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.InteractionHand;
-import com.mojang.math.Axis;
+
+import java.util.Objects;
 
 /**
  * Created by Furia on 2016/02/07.
@@ -21,13 +23,14 @@ import com.mojang.math.Axis;
 public class BladeFirstPersonRender {
     private LayerMainBlade<LocalPlayer, ?> layer = null;
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-	private BladeFirstPersonRender() {
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private BladeFirstPersonRender() {
         Minecraft mc = Minecraft.getInstance();
 
-        EntityRenderer<?> renderer = mc.getEntityRenderDispatcher().getRenderer(mc.player);
-        if (renderer instanceof RenderLayerParent)
+        EntityRenderer<?> renderer = mc.getEntityRenderDispatcher().getRenderer(Objects.requireNonNull(mc.player));
+        if (renderer instanceof RenderLayerParent) {
             layer = new LayerMainBlade((RenderLayerParent) renderer);
+        }
     }
 
     private static final class SingletonHolder {
@@ -39,22 +42,25 @@ public class BladeFirstPersonRender {
     }
 
     public void render(PoseStack matrixStack, MultiBufferSource bufferIn, int combinedLightIn) {
-        if (layer == null)
+        if (layer == null) {
             return;
+        }
 
         Minecraft mc = Minecraft.getInstance();
         boolean flag = mc.getCameraEntity() instanceof LivingEntity
                 && ((LivingEntity) mc.getCameraEntity()).isSleeping();
         if (!(mc.options.getCameraType() == CameraType.FIRST_PERSON && !flag && !mc.options.hideGui
-                && !mc.gameMode.isAlwaysFlying())) {
+                && !Objects.requireNonNull(mc.gameMode).isAlwaysFlying())) {
             return;
         }
         LocalPlayer player = mc.player;
-        ItemStack stack = player.getItemInHand(InteractionHand.MAIN_HAND);
-        if (stack.isEmpty())
+        ItemStack stack = Objects.requireNonNull(player).getItemInHand(InteractionHand.MAIN_HAND);
+        if (stack.isEmpty()) {
             return;
-        if (!(stack.getCapability(ItemSlashBlade.BLADESTATE).isPresent()))
+        }
+        if (!(stack.getCapability(ItemSlashBlade.BLADESTATE).isPresent())) {
             return;
+        }
 
         try (MSAutoCloser msac = MSAutoCloser.pushMatrix(matrixStack)) {
             PoseStack.Pose me = matrixStack.last();

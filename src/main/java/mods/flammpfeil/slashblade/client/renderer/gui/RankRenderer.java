@@ -42,14 +42,17 @@ public class RankRenderer {
     public void renderTick(RenderGuiOverlayEvent.Post event) {
 
         Minecraft mc = Minecraft.getInstance();
-        if (mc.player == null)
+        if (mc.player == null) {
             return;
+        }
         // if(!mc.isGameFocused()) return;
-        if (!Minecraft.renderNames())
+        if (!Minecraft.renderNames()) {
             return;
+        }
         if (mc.screen != null) {
-            if (!(mc.screen instanceof ChatScreen))
+            if (!(mc.screen instanceof ChatScreen)) {
                 return;
+            }
         }
 
         LocalPlayer player = mc.player;
@@ -71,8 +74,9 @@ public class RankRenderer {
              * cr.getLastUpdate();
              */
 
-            if (rank == IConcentrationRank.ConcentrationRanks.NONE)
+            if (rank == IConcentrationRank.ConcentrationRanks.NONE) {
                 return;
+            }
 
             // todo : korenani loadGUIRenderMatrix
             // mc.getMainWindow().loadGUIRenderMatrix(Minecraft.IS_RUNNING_ON_MAC);
@@ -82,7 +86,7 @@ public class RankRenderer {
 
             PoseStack poseStack = new PoseStack();
             // position
-            poseStack.translate(k * 2 / 3, l / 5, 0);
+            poseStack.translate((float) (k * 2) / 3, (float) l / 5, 0);
 
             // RenderSystem.enableTexture();
             RenderSystem.disableDepthTest();
@@ -95,8 +99,9 @@ public class RankRenderer {
             long textTimeout = cr.getLastRankRise() + 20;
             long visibleTimeout = cr.getLastUpdate() + 120;
 
-            if (now < textTimeout)
+            if (now < textTimeout) {
                 showTextRank = true;
+            }
 
             if (now < visibleTimeout) {
                 int rankOffset = 32 * (rank.level - 1);
@@ -109,9 +114,9 @@ public class RankRenderer {
 
                 // GL11.glScalef(3,3,3);
                 // iconFrame
-                drawTexturedQuad(poseStack, 0, 0, 0 + textOffset + 64, rankOffset, 64, 32, -95f);
+                drawTexturedQuad(poseStack, 0, 0, textOffset + 64, rankOffset, 64, 32, -95f);
                 // icon
-                drawTexturedQuad(poseStack, 0, progressIconInv + 7, 0 + textOffset, rankOffset + progressIconInv + 7,
+                drawTexturedQuad(poseStack, 0, progressIconInv + 7, textOffset, rankOffset + progressIconInv + 7,
                         64, progressIcon, -90f);
 
                 // gauge frame
@@ -125,7 +130,7 @@ public class RankRenderer {
     }
 
     public static void drawTexturedQuad(PoseStack poseStack, int x, int y, int u, int v, int width, int height,
-            float zLevel) {
+                                        float zLevel) {
         float var7 = 0.00390625F; // 1/256 texturesize
         float var8 = 0.00390625F;
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
@@ -136,10 +141,10 @@ public class RankRenderer {
 
         Matrix4f m = poseStack.last().pose();
 
-        wr.vertex(m, x + 0, y + height, zLevel).uv((u + 0.0f) * var7, (v + height) * var8).endVertex();
+        wr.vertex(m, x, y + height, zLevel).uv((u + 0.0f) * var7, (v + height) * var8).endVertex();
         wr.vertex(m, x + width, y + height, zLevel).uv((u + width) * var7, (v + height) * var8).endVertex();
-        wr.vertex(m, x + width, y + 0, zLevel).uv((u + width) * var7, (v + 0) * var8).endVertex();
-        wr.vertex(m, x + 0, y + 0, zLevel).uv((u + 0) * var7, (v + 0) * var8).endVertex();
+        wr.vertex(m, x + width, y, zLevel).uv((u + width) * var7, (v) * var8).endVertex();
+        wr.vertex(m, x, y, zLevel).uv((u) * var7, (v) * var8).endVertex();
 
         // tessellator.end();
         BufferUploader.drawWithShader(wr.end());

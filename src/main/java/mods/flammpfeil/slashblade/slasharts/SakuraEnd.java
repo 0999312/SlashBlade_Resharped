@@ -2,6 +2,7 @@ package mods.flammpfeil.slashblade.slasharts;
 
 import mods.flammpfeil.slashblade.SlashBlade;
 import mods.flammpfeil.slashblade.capability.concentrationrank.ConcentrationRankCapabilityProvider;
+import mods.flammpfeil.slashblade.capability.slashblade.ISlashBladeState;
 import mods.flammpfeil.slashblade.entity.EntitySlashEffect;
 import mods.flammpfeil.slashblade.item.ItemSlashBlade;
 import mods.flammpfeil.slashblade.util.KnockBacks;
@@ -11,24 +12,25 @@ import net.minecraft.world.phys.Vec3;
 
 public class SakuraEnd {
     public static EntitySlashEffect doSlash(LivingEntity playerIn, float roll, Vec3 centerOffset, boolean mute,
-            boolean critical, double damage) {
+                                            boolean critical, double damage) {
         return doSlash(playerIn, roll, centerOffset, mute, critical, damage, KnockBacks.cancel);
     }
 
     public static EntitySlashEffect doSlash(LivingEntity playerIn, float roll, Vec3 centerOffset, boolean mute,
-            boolean critical, double damage, KnockBacks knockback) {
+                                            boolean critical, double damage, KnockBacks knockback) {
 
         int colorCode = playerIn.getMainHandItem().getCapability(ItemSlashBlade.BLADESTATE)
-                .map(state -> state.getColorCode()).orElseGet(() -> 0xFFFFFF);
+                .map(ISlashBladeState::getColorCode).orElse(0xFFFFFF);
 
         return doSlash(playerIn, roll, colorCode, centerOffset, mute, critical, damage, knockback);
     }
 
     public static EntitySlashEffect doSlash(LivingEntity playerIn, float roll, int colorCode, Vec3 centerOffset,
-            boolean mute, boolean critical, double damage, KnockBacks knockback) {
+                                            boolean mute, boolean critical, double damage, KnockBacks knockback) {
 
-        if (playerIn.level().isClientSide())
+        if (playerIn.level().isClientSide()) {
             return null;
+        }
 
         Vec3 pos = playerIn.position().add(0.0D, (double) playerIn.getEyeHeight() * 0.75D, 0.0D)
                 .add(playerIn.getLookAngle().scale(0.3f));
@@ -54,9 +56,8 @@ public class SakuraEnd {
 
         jc.setKnockBack(knockback);
 
-        if (playerIn != null)
-            playerIn.getCapability(ConcentrationRankCapabilityProvider.RANK_POINT)
-                    .ifPresent(rank -> jc.setRank(rank.getRankLevel(playerIn.level().getGameTime())));
+        playerIn.getCapability(ConcentrationRankCapabilityProvider.RANK_POINT)
+                .ifPresent(rank -> jc.setRank(rank.getRankLevel(playerIn.level().getGameTime())));
 
         playerIn.level().addFreshEntity(jc);
 

@@ -13,7 +13,9 @@ import twilightforest.inventory.UncraftingMenu;
 public class UncraftingMenuMixin {
     @Inject(method = "matches", at = @At("RETURN"), cancellable = true, remap = false)
     private static void onMatches(ItemStack input, ItemStack output, CallbackInfoReturnable<Boolean> cir) {
-        if (!cir.getReturnValue()) return;
+        if (!cir.getReturnValue()) {
+            return;
+        }
 
         // 提前排除非拔刀剑类的情况
         if (!(input.getItem() instanceof ItemSlashBlade) || !(output.getItem() instanceof ItemSlashBlade)) {
@@ -39,7 +41,6 @@ public class UncraftingMenuMixin {
         // 判断附魔是否一致
         if (!EnchantmentsHelper.hasEnchantmentsMatch(input, output)) {
             cir.setReturnValue(false);
-            return;
         }
 
         // 所有条件满足时不做更改保持原true返回值

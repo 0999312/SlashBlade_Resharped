@@ -1,8 +1,9 @@
 package mods.flammpfeil.slashblade.item;
 
+import mods.flammpfeil.slashblade.data.tag.SlashBladeItemTags;
 import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.crafting.Ingredient;
-import mods.flammpfeil.slashblade.data.tag.SlashBladeItemTags;
+import org.jetbrains.annotations.NotNull;
 
 public class ItemTierSlashBlade implements Tier {
 
@@ -40,7 +41,7 @@ public class ItemTierSlashBlade implements Tier {
     }
 
     @Override
-    public Ingredient getRepairIngredient() {
+    public @NotNull Ingredient getRepairIngredient() {
         return Ingredient.of(SlashBladeItemTags.PROUD_SOULS);
     }
 }

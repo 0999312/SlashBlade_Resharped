@@ -1,15 +1,11 @@
 package mods.flammpfeil.slashblade.recipe;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.google.common.collect.Lists;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-
 import mods.flammpfeil.slashblade.SlashBlade;
 import mods.flammpfeil.slashblade.capability.slashblade.SlashBladeState;
 import mods.flammpfeil.slashblade.item.ItemSlashBlade;
@@ -21,18 +17,23 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.registries.ForgeRegistries;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+
 public class RequestDefinition {
 
     public static final Codec<RequestDefinition> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            ResourceLocation.CODEC.optionalFieldOf("name", SlashBlade.prefix("none"))
-                    .forGetter(RequestDefinition::getName),
-            Codec.INT.optionalFieldOf("proud_soul", 0).forGetter(RequestDefinition::getProudSoulCount),
-            Codec.INT.optionalFieldOf("kill", 0).forGetter(RequestDefinition::getKillCount),
-            Codec.INT.optionalFieldOf("refine", 0).forGetter(RequestDefinition::getRefineCount),
-            EnchantmentDefinition.CODEC.listOf().optionalFieldOf("enchantments", Lists.newArrayList())
-                    .forGetter(RequestDefinition::getEnchantments),
-            SwordType.CODEC.listOf().optionalFieldOf("sword_type", Lists.newArrayList())
-                    .forGetter(RequestDefinition::getDefaultType))
+                    ResourceLocation.CODEC.optionalFieldOf("name", SlashBlade.prefix("none"))
+                            .forGetter(RequestDefinition::getName),
+                    Codec.INT.optionalFieldOf("proud_soul", 0).forGetter(RequestDefinition::getProudSoulCount),
+                    Codec.INT.optionalFieldOf("kill", 0).forGetter(RequestDefinition::getKillCount),
+                    Codec.INT.optionalFieldOf("refine", 0).forGetter(RequestDefinition::getRefineCount),
+                    EnchantmentDefinition.CODEC.listOf().optionalFieldOf("enchantments", Lists.newArrayList())
+                            .forGetter(RequestDefinition::getEnchantments),
+                    SwordType.CODEC.listOf().optionalFieldOf("sword_type", Lists.newArrayList())
+                            .forGetter(RequestDefinition::getDefaultType))
             .apply(instance, RequestDefinition::new));
 
     private final ResourceLocation name;
@@ -43,7 +44,7 @@ public class RequestDefinition {
     private final List<SwordType> defaultType;
 
     public RequestDefinition(ResourceLocation name, int proud, int kill, int refine,
-            List<EnchantmentDefinition> enchantments, List<SwordType> defaultType) {
+                             List<EnchantmentDefinition> enchantments, List<SwordType> defaultType) {
         this.name = name;
         this.proudSoulCount = proud;
         this.killCount = kill;
@@ -77,15 +78,11 @@ public class RequestDefinition {
     }
 
     public static RequestDefinition fromJSON(JsonObject json) {
-        return CODEC.parse(JsonOps.INSTANCE, json).resultOrPartial(msg -> {
-            SlashBlade.LOGGER.error("Failed to parse : {}", msg);
-        }).orElseGet(Builder.newInstance()::build);
+        return CODEC.parse(JsonOps.INSTANCE, json).resultOrPartial(msg -> SlashBlade.LOGGER.error("Failed to parse : {}", msg)).orElseGet(Builder.newInstance()::build);
     }
 
     public JsonElement toJson() {
-        return CODEC.encodeStart(JsonOps.INSTANCE, this).resultOrPartial(msg -> {
-            SlashBlade.LOGGER.error("Failed to encode : {}", msg);
-        }).orElseThrow();
+        return CODEC.encodeStart(JsonOps.INSTANCE, this).resultOrPartial(msg -> SlashBlade.LOGGER.error("Failed to encode : {}", msg)).orElseThrow();
     }
 
     public void toNetwork(FriendlyByteBuf buffer) {
@@ -98,9 +95,7 @@ public class RequestDefinition {
             buf.writeByte(request.getEnchantmentLevel());
         });
 
-        buffer.writeCollection(this.getDefaultType(), (buf, request) -> {
-            buf.writeUtf(request.name().toLowerCase());
-        });
+        buffer.writeCollection(this.getDefaultType(), (buf, request) -> buf.writeUtf(request.name().toLowerCase()));
     }
 
     public static RequestDefinition fromNetwork(FriendlyByteBuf buffer) {
@@ -108,9 +103,7 @@ public class RequestDefinition {
         int proud = buffer.readInt();
         int kill = buffer.readInt();
         int refine = buffer.readInt();
-        var enchantments = buffer.readList((buf) -> {
-            return new EnchantmentDefinition(buf.readResourceLocation(), buf.readByte());
-        });
+        var enchantments = buffer.readList((buf) -> new EnchantmentDefinition(buf.readResourceLocation(), buf.readByte()));
         var types = buffer.readList((buf) -> SwordType.valueOf(buf.readUtf().toUpperCase()));
         return new RequestDefinition(name, proud, kill, refine, enchantments, types);
     }
@@ -118,38 +111,41 @@ public class RequestDefinition {
     public void initItemStack(ItemStack blade) {
         var state = blade.getCapability(ItemSlashBlade.BLADESTATE).orElse(new SlashBladeState(blade));
         state.setNonEmpty();
-        if (!this.name.equals(SlashBlade.prefix("none")))
+        if (!this.name.equals(SlashBlade.prefix("none"))) {
             state.setTranslationKey(getTranslationKey());
+        }
         state.setProudSoulCount(getProudSoulCount());
         state.setKillCount(getKillCount());
         state.setRefine(getRefineCount());
-        
+
         this.getEnchantments()
                 .forEach(enchantment -> blade.enchant(
-                        ForgeRegistries.ENCHANTMENTS.getValue(enchantment.getEnchantmentID()),
+                        Objects.requireNonNull(ForgeRegistries.ENCHANTMENTS.getValue(enchantment.getEnchantmentID())),
                         enchantment.getEnchantmentLevel()));
         this.defaultType.forEach(type -> {
             switch (type) {
-            case BEWITCHED -> state.setDefaultBewitched(true);
-            case BROKEN -> {
-                blade.setDamageValue(blade.getMaxDamage() - 1);
-                state.setBroken(true);
-            }
-            case SEALED -> state.setSealed(true);
-            default -> {}
+                case BEWITCHED -> state.setDefaultBewitched(true);
+                case BROKEN -> {
+                    blade.setDamageValue(blade.getMaxDamage() - 1);
+                    state.setBroken(true);
+                }
+                case SEALED -> state.setSealed(true);
+                default -> {
+                }
             }
         });
-        
+
         blade.getOrCreateTag().put("bladeState", state.serializeNBT());
     }
-    
-    
+
 
     public boolean test(ItemStack blade) {
-        if (blade == null || blade.isEmpty())
+        if (blade == null || blade.isEmpty()) {
             return false;
-        if (!blade.getCapability(ItemSlashBlade.BLADESTATE).isPresent())
+        }
+        if (!blade.getCapability(ItemSlashBlade.BLADESTATE).isPresent()) {
             return false;
+        }
         var state = blade.getCapability(ItemSlashBlade.BLADESTATE).orElseThrow(NullPointerException::new);
         boolean nameCheck;
         if (this.name.equals(SlashBlade.prefix("none"))) {
@@ -182,8 +178,8 @@ public class RequestDefinition {
         private int proudCount;
         private int killCount;
         private int refineCount;
-        private List<EnchantmentDefinition> enchantments;
-        private List<SwordType> defaultType;
+        private final List<EnchantmentDefinition> enchantments;
+        private final List<SwordType> defaultType;
 
         private Builder() {
             this.name = SlashBlade.prefix("none");
@@ -219,14 +215,12 @@ public class RequestDefinition {
         }
 
         public Builder addEnchantment(EnchantmentDefinition... enchantments) {
-            for (var enchantment : enchantments)
-                this.enchantments.add(enchantment);
+            this.enchantments.addAll(Arrays.asList(enchantments));
             return this;
         }
 
         public Builder addSwordType(SwordType... types) {
-            for (var type : types)
-                this.defaultType.add(type);
+            this.defaultType.addAll(Arrays.asList(types));
             return this;
         }
 

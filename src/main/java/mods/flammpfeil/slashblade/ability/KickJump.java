@@ -59,19 +59,24 @@ public class KickJump {
         ServerPlayer sender = event.getEntity();
         Level worldIn = sender.level();
 
-        if (sender.onGround())
+        if (sender.onGround()) {
             return;
-        if (old.contains(InputCommand.JUMP))
+        }
+        if (old.contains(InputCommand.JUMP)) {
             return;
-        if (!current.contains(InputCommand.JUMP))
+        }
+        if (!current.contains(InputCommand.JUMP)) {
             return;
+        }
 
-        if (0 != sender.getPersistentData().getInt(KEY_KICKJUMP))
+        if (0 != sender.getPersistentData().getInt(KEY_KICKJUMP)) {
             return;
+        }
 
         Iterable<VoxelShape> list = worldIn.getBlockCollisions(sender, sender.getBoundingBox().inflate(0.5, 0, 1));
-        if (!list.iterator().hasNext())
+        if (!list.iterator().hasNext()) {
             return;
+        }
 
         // 保存当前疾跑状态
         boolean wasSprinting = sender.isSprinting();
@@ -102,14 +107,12 @@ public class KickJump {
         AdvancementHelper.grantCriterion(sender, ADVANCEMENT_KICK_JUMP);
         sender.playNotifySound(SoundEvents.PLAYER_SMALL_FALL, SoundSource.PLAYERS, 0.5f, 1.2f);
 
-        sender.getMainHandItem().getCapability(ItemSlashBlade.BLADESTATE).ifPresent(s -> {
-            s.updateComboSeq(sender, ComboStateRegistry.NONE.getId());
-        });
+        sender.getMainHandItem().getCapability(ItemSlashBlade.BLADESTATE).ifPresent(s -> s.updateComboSeq(sender, ComboStateRegistry.NONE.getId()));
 
         if (worldIn instanceof ServerLevel) {
             ((ServerLevel) worldIn).sendParticles(
                     new BlockParticleOption(ParticleTypes.BLOCK, Blocks.GLASS.defaultBlockState()), sender.getX(),
-                    sender.getY(), sender.getZ(), 20, 0.0D, 0.0D, 0.0D, (double) 0.15F);
+                    sender.getY(), sender.getZ(), 20, 0.0D, 0.0D, 0.0D, 0.15F);
         }
     }
 

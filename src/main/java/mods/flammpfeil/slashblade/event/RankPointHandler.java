@@ -27,25 +27,27 @@ public class RankPointHandler {
 
     /**
      * Not reached if canceled.
-     * 
+     *
      * @param event
      */
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onLivingDeathEvent(LivingHurtEvent event) {
 
         LivingEntity victim = event.getEntity();
-        if (victim != null)
+        if (victim != null) {
             victim.getCapability(CapabilityConcentrationRank.RANK_POINT)
                     .ifPresent(cr -> cr.addRankPoint(victim, -cr.getUnitCapacity()));
+        }
 
         Entity trueSource = event.getSource().getEntity();
-        if (!(trueSource instanceof LivingEntity))
+        if (!(trueSource instanceof LivingEntity sourceEntity)) {
             return;
-        
-    	LivingEntity sourceEntity = (LivingEntity) trueSource;
-		if (!sourceEntity.getMainHandItem().getCapability(ItemSlashBlade.BLADESTATE).isPresent())
+        }
+
+        if (!sourceEntity.getMainHandItem().getCapability(ItemSlashBlade.BLADESTATE).isPresent()) {
             return;
-        
+        }
+
         trueSource.getCapability(CapabilityConcentrationRank.RANK_POINT)
                 .ifPresent(cr -> cr.addRankPoint(event.getSource()));
     }

@@ -1,5 +1,7 @@
 package mods.flammpfeil.slashblade.ability;
 
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -7,17 +9,17 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.item.PrimedTnt;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.level.GameRules;
-import net.minecraft.server.level.ServerLevel;
 
 public class TNTExtinguisher {
     public static void doExtinguishing(Entity target, LivingEntity attacker) {
-        if (!(target instanceof PrimedTnt))
+        if (!(target instanceof PrimedTnt)) {
             return;
+        }
 
-        if (attacker.level().isClientSide())
+        if (attacker.level().isClientSide()) {
             return;
+        }
 
         target.remove(Entity.RemovalReason.KILLED);
 

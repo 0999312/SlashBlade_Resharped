@@ -1,9 +1,5 @@
 package mods.flammpfeil.slashblade.item;
 
-import java.util.List;
-
-import org.jetbrains.annotations.Nullable;
-
 import mods.flammpfeil.slashblade.capability.slashblade.SimpleBladeStateCapabilityProvider;
 import mods.flammpfeil.slashblade.init.DefaultResources;
 import net.minecraft.nbt.CompoundTag;
@@ -14,6 +10,9 @@ import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 public class ItemSlashBladeDetune extends ItemSlashBlade {
     private ResourceLocation model;
@@ -63,9 +62,10 @@ public class ItemSlashBladeDetune extends ItemSlashBlade {
 
     @Override
     public @Nullable ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
-    	if(!stack.isEmpty() && stack.getItem() instanceof ItemSlashBladeDetune)
-    		return new SimpleBladeStateCapabilityProvider(stack, model, texture, baseAttack, this.getTier().getUses());
-    	return null;
+        if (!stack.isEmpty() && stack.getItem() instanceof ItemSlashBladeDetune) {
+            return new SimpleBladeStateCapabilityProvider(stack, model, texture, baseAttack, this.getTier().getUses());
+        }
+        return null;
     }
 
     @Override

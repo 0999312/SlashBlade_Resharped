@@ -1,8 +1,5 @@
 package mods.flammpfeil.slashblade.client;
 
-import org.apache.logging.log4j.util.LoaderUtil;
-import org.jetbrains.annotations.Nullable;
-
 import mods.flammpfeil.slashblade.client.renderer.LockonCircleRender;
 import mods.flammpfeil.slashblade.client.renderer.gui.RankRenderer;
 import mods.flammpfeil.slashblade.client.renderer.layers.LayerMainBlade;
@@ -14,7 +11,6 @@ import mods.flammpfeil.slashblade.event.client.AdvancementsRecipeRenderer;
 import mods.flammpfeil.slashblade.event.client.SneakingMotionCanceller;
 import mods.flammpfeil.slashblade.event.client.UserPoseOverrider;
 import mods.flammpfeil.slashblade.init.SBItems;
-import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.item.ClampedItemPropertyFunction;
@@ -22,10 +18,8 @@ import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.EntityRenderersEvent;
@@ -36,6 +30,9 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.apache.logging.log4j.util.LoaderUtil;
+
+import java.util.Objects;
 
 @Mod.EventBusSubscriber(value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
 @OnlyIn(Dist.CLIENT)
@@ -55,58 +52,38 @@ public class ClientHandler {
         }
         LockonCircleRender.getInstance().register();
         AdvancementsRecipeRenderer.getInstance().register();
-        
+
 
         RankRenderer.getInstance().register();
 
         ItemProperties.register(SBItems.slashblade, new ResourceLocation("slashblade:user"),
-                new ClampedItemPropertyFunction() {
-                    @Override
-                    public float unclampedCall(ItemStack p_174564_, @Nullable ClientLevel p_174565_,
-                            @Nullable LivingEntity p_174566_, int p_174567_) {
-                        BladeModel.user = p_174566_;
-                        return 0;
-                    }
+                (ClampedItemPropertyFunction) (p_174564_, p_174565_, p_174566_, p_174567_) -> {
+                    BladeModel.user = p_174566_;
+                    return 0;
                 });
 
         ItemProperties.register(SBItems.slashblade_bamboo, new ResourceLocation("slashblade:user"),
-                new ClampedItemPropertyFunction() {
-                    @Override
-                    public float unclampedCall(ItemStack p_174564_, @Nullable ClientLevel p_174565_,
-                            @Nullable LivingEntity p_174566_, int p_174567_) {
-                        BladeModel.user = p_174566_;
-                        return 0;
-                    }
+                (ClampedItemPropertyFunction) (p_174564_, p_174565_, p_174566_, p_174567_) -> {
+                    BladeModel.user = p_174566_;
+                    return 0;
                 });
 
         ItemProperties.register(SBItems.slashblade_silverbamboo, new ResourceLocation("slashblade:user"),
-                new ClampedItemPropertyFunction() {
-                    @Override
-                    public float unclampedCall(ItemStack p_174564_, @Nullable ClientLevel p_174565_,
-                            @Nullable LivingEntity p_174566_, int p_174567_) {
-                        BladeModel.user = p_174566_;
-                        return 0;
-                    }
+                (ClampedItemPropertyFunction) (p_174564_, p_174565_, p_174566_, p_174567_) -> {
+                    BladeModel.user = p_174566_;
+                    return 0;
                 });
 
         ItemProperties.register(SBItems.slashblade_white, new ResourceLocation("slashblade:user"),
-                new ClampedItemPropertyFunction() {
-                    @Override
-                    public float unclampedCall(ItemStack p_174564_, @Nullable ClientLevel p_174565_,
-                            @Nullable LivingEntity p_174566_, int p_174567_) {
-                        BladeModel.user = p_174566_;
-                        return 0;
-                    }
+                (ClampedItemPropertyFunction) (p_174564_, p_174565_, p_174566_, p_174567_) -> {
+                    BladeModel.user = p_174566_;
+                    return 0;
                 });
 
         ItemProperties.register(SBItems.slashblade_wood, new ResourceLocation("slashblade:user"),
-                new ClampedItemPropertyFunction() {
-                    @Override
-                    public float unclampedCall(ItemStack p_174564_, @Nullable ClientLevel p_174565_,
-                            @Nullable LivingEntity p_174566_, int p_174567_) {
-                        BladeModel.user = p_174566_;
-                        return 0;
-                    }
+                (ClampedItemPropertyFunction) (p_174564_, p_174565_, p_174566_, p_174567_) -> {
+                    BladeModel.user = p_174566_;
+                    return 0;
                 });
 
     }
@@ -127,7 +104,7 @@ public class ClientHandler {
     }
 
     public static void bakeBlade(Item blade, final ModelEvent.ModifyBakingResult event) {
-        ModelResourceLocation loc = new ModelResourceLocation(ForgeRegistries.ITEMS.getKey(blade), "inventory");
+        ModelResourceLocation loc = new ModelResourceLocation(Objects.requireNonNull(ForgeRegistries.ITEMS.getKey(blade)), "inventory");
         BladeModel model = new BladeModel(event.getModels().get(loc), event.getModelBakery());
         event.getModels().put(loc, model);
     }
@@ -150,7 +127,7 @@ public class ClientHandler {
         addEntityLayer(event, EntityType.ZOMBIFIED_PIGLIN);
     }
 
-    @SuppressWarnings({ "unchecked" })
+    @SuppressWarnings({"unchecked"})
     public static void addPlayerLayer(EntityRenderersEvent.AddLayers evt, String skin) {
         EntityRenderer<? extends Player> renderer = evt.getSkin(skin);
 
@@ -159,7 +136,7 @@ public class ClientHandler {
         }
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings({"unchecked", "rawtypes"})
     private static void addEntityLayer(EntityRenderersEvent.AddLayers evt, EntityType type) {
         EntityRenderer<?> renderer = evt.getRenderer(type);
 

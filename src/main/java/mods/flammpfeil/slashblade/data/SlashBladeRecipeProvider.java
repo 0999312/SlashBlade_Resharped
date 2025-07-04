@@ -1,7 +1,5 @@
 package mods.flammpfeil.slashblade.data;
 
-import java.util.function.Consumer;
-
 import mods.flammpfeil.slashblade.SlashBlade;
 import mods.flammpfeil.slashblade.data.builtin.SlashBladeBuiltInRegistry;
 import mods.flammpfeil.slashblade.data.tag.SlashBladeItemTags;
@@ -26,6 +24,9 @@ import net.minecraft.world.level.ItemLike;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.crafting.conditions.IConditionBuilder;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.function.Consumer;
 
 public class SlashBladeRecipeProvider extends RecipeProvider implements IConditionBuilder {
 
@@ -34,7 +35,7 @@ public class SlashBladeRecipeProvider extends RecipeProvider implements IConditi
     }
 
     @Override
-    protected void buildRecipes(Consumer<FinishedRecipe> consumer) {
+    protected void buildRecipes(@NotNull Consumer<FinishedRecipe> consumer) {
         ShapedRecipeBuilder.shaped(RecipeCategory.COMBAT, SBItems.slashblade_wood).pattern("  L").pattern(" L ")
                 .pattern("B  ").define('B', Items.WOODEN_SWORD).define('L', ItemTags.LOGS)
                 .unlockedBy(getHasName(Items.WOODEN_SWORD), has(Items.WOODEN_SWORD)).save(consumer);
@@ -52,8 +53,8 @@ public class SlashBladeRecipeProvider extends RecipeProvider implements IConditi
                 .unlockedBy(getHasName(SBItems.slashblade_wood), has(SBItems.slashblade_wood)).save(consumer);
 
         SlashBladeShapedRecipeBuilder.shaped(SlashBladeBuiltInRegistry.YAMATO.location())
-        .pattern("PPP")
-        .pattern("PBP")
+                .pattern("PPP")
+                .pattern("PBP")
                 .pattern("PPP")
                 .define('B',
                         SlashBladeIngredient.of(RequestDefinition.Builder.newInstance()
@@ -101,7 +102,7 @@ public class SlashBladeRecipeProvider extends RecipeProvider implements IConditi
                 .define('C',
                         SlashBladeIngredient.of(
                                 RequestDefinition.Builder.newInstance().name(SlashBladeBuiltInRegistry.RUBY.location())
-                                
+
                                         .addEnchantment(new EnchantmentDefinition(
                                                 getEnchantmentID(Enchantments.MOB_LOOTING), 1))
                                         .build()))
@@ -193,8 +194,8 @@ public class SlashBladeRecipeProvider extends RecipeProvider implements IConditi
 
     private void rodaiRecipe(ResourceLocation rodai, ItemLike sword, Consumer<FinishedRecipe> consumer) {
         SlashBladeShapedRecipeBuilder.shaped(rodai).pattern("  P").pattern(" B ").pattern("WS ").define('B',
-                SlashBladeIngredient.of(SBItems.slashblade_silverbamboo,
-                        RequestDefinition.Builder.newInstance().killCount(100).addSwordType(SwordType.BROKEN).build()))
+                        SlashBladeIngredient.of(SBItems.slashblade_silverbamboo,
+                                RequestDefinition.Builder.newInstance().killCount(100).addSwordType(SwordType.BROKEN).build()))
                 .define('W', Ingredient.of(sword)).define('S', Ingredient.of(Tags.Items.STRING))
                 .define('P', Ingredient.of(SBItems.proudsoul_crystal))
                 .unlockedBy(getHasName(SBItems.slashblade_silverbamboo), has(SBItems.slashblade_silverbamboo))
@@ -203,8 +204,8 @@ public class SlashBladeRecipeProvider extends RecipeProvider implements IConditi
 
     private void rodaiAdvRecipe(ResourceLocation rodai, ItemLike sword, Consumer<FinishedRecipe> consumer) {
         SlashBladeShapedRecipeBuilder.shaped(rodai).pattern("  P").pattern(" B ").pattern("WS ").define('B',
-                SlashBladeIngredient.of(SBItems.slashblade_silverbamboo,
-                        RequestDefinition.Builder.newInstance().killCount(100).addSwordType(SwordType.BROKEN).build()))
+                        SlashBladeIngredient.of(SBItems.slashblade_silverbamboo,
+                                RequestDefinition.Builder.newInstance().killCount(100).addSwordType(SwordType.BROKEN).build()))
                 .define('W', Ingredient.of(sword)).define('S', Ingredient.of(Tags.Items.STRING))
                 .define('P', Ingredient.of(SBItems.proudsoul_trapezohedron))
                 .unlockedBy(getHasName(SBItems.slashblade_silverbamboo), has(SBItems.slashblade_silverbamboo))

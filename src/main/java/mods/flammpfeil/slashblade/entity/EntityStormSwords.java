@@ -58,24 +58,27 @@ public class EntityStormSwords extends EntityAbstractSummonedSword {
             if (target != null) {
                 dir = target.position().subtract(this.position()).multiply(1, 0, 1).normalize();
             }
-            ((EntityStormSwords) this).shoot(dir.x, dir.y, dir.z, 3.0f, 1.0f);
+            this.shoot(dir.x, dir.y, dir.z, 3.0f, 1.0f);
             return;
         }
 
         // this.startRiding()
         this.setDeltaMovement(Vec3.ZERO);
-        if (canUpdate())
+        if (canUpdate()) {
             this.baseTick();
+        }
 
         faceEntityStandby();
         // this.getVehicle().positionRider(this);
 
         // todo: add lifetime
-        if (20 <= this.tickCount)
+        if (20 <= this.tickCount) {
             doFire();
+        }
 
-        if (!level().isClientSide())
+        if (!level().isClientSide()) {
             hitCheck();
+        }
     }
 
     private void hitCheck() {
@@ -90,7 +93,7 @@ public class EntityStormSwords extends EntityAbstractSummonedSword {
         }
 
         if (raytraceresult != null && raytraceresult.getType() == HitResult.Type.ENTITY) {
-            Entity entity = ((EntityHitResult) raytraceresult).getEntity();
+            Entity entity = raytraceresult.getEntity();
             Entity entity1 = this.getShooter();
             if (entity instanceof Player && entity1 instanceof Player
                     && !((Player) entity1).canHarmPlayer((Player) entity)) {
@@ -111,8 +114,9 @@ public class EntityStormSwords extends EntityAbstractSummonedSword {
 
         long cycle = 5 + this.tickCount;
         long tickOffset = 0;
-        if (this.level().isClientSide())
+        if (this.level().isClientSide()) {
             tickOffset = 1;
+        }
 
         // int ticks = (int)((this.level().getGameTime() + tickOffset) % cycle);
         int ticks = (int) ((this.tickCount + tickOffset) % cycle);

@@ -10,8 +10,13 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.*;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.PlayMessages;
+
+import java.util.Objects;
 
 public class EntitySpiralSwords extends EntityAbstractSummonedSword {
     private static final EntityDataAccessor<Boolean> IT_FIRED = SynchedEntityData.defineId(EntitySpiralSwords.class,
@@ -47,7 +52,7 @@ public class EntitySpiralSwords extends EntityAbstractSummonedSword {
         if (!itFired()) {
             if (level().isClientSide()) {
                 if (getVehicle() == null) {
-                    startRiding(this.getOwner(), true);
+                    startRiding(Objects.requireNonNull(this.getOwner()), true);
                 }
             }
         }
@@ -68,24 +73,27 @@ public class EntitySpiralSwords extends EntityAbstractSummonedSword {
             if (target != null) {
                 dir = this.position().subtract(target.position()).multiply(1, 0, 1).normalize();
             }
-            ((EntitySpiralSwords) this).shoot(dir.x, dir.y, dir.z, 3.0f, 1.0f);
+            this.shoot(dir.x, dir.y, dir.z, 3.0f, 1.0f);
             return;
         }
 
         // this.startRiding()
         this.setDeltaMovement(Vec3.ZERO);
-        if (canUpdate())
+        if (canUpdate()) {
             this.baseTick();
+        }
 
         faceEntityStandby();
         // this.getVehicle().positionRider(this);
 
         // todo: add lifetime
-        if (200 < this.tickCount)
+        if (200 < this.tickCount) {
             burst();
+        }
 
-        if (!level().isClientSide())
+        if (!level().isClientSide()) {
             hitCheck();
+        }
     }
 
     private void hitCheck() {
@@ -100,7 +108,7 @@ public class EntitySpiralSwords extends EntityAbstractSummonedSword {
         }
 
         if (raytraceresult != null && raytraceresult.getType() == HitResult.Type.ENTITY) {
-            Entity entity = ((EntityHitResult) raytraceresult).getEntity();
+            Entity entity = raytraceresult.getEntity();
             Entity entity1 = this.getShooter();
             if (entity instanceof Player && entity1 instanceof Player
                     && !((Player) entity1).canHarmPlayer((Player) entity)) {
@@ -121,8 +129,9 @@ public class EntitySpiralSwords extends EntityAbstractSummonedSword {
 
         long cycle = 30;
         long tickOffset = 0;
-        if (this.level().isClientSide())
+        if (this.level().isClientSide()) {
             tickOffset = 1;
+        }
         int ticks = (int) ((this.level().getGameTime() + tickOffset) % cycle);
         /*
          * if ((getInterval() - waitTime) < ticks) { ticks = getInterval() - waitTime; }

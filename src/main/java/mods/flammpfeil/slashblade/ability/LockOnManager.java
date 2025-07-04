@@ -9,12 +9,12 @@ import mods.flammpfeil.slashblade.util.TargetSelector;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.EntityHitResult;
-import net.minecraft.util.Mth;
 import net.minecraft.world.phys.HitResult;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -50,16 +50,19 @@ public class LockOnManager {
         ServerPlayer player = event.getEntity();
         // set target
         ItemStack stack = event.getEntity().getMainHandItem();
-        if (stack.isEmpty())
+        if (stack.isEmpty()) {
             return;
-        if (!(stack.getItem() instanceof ItemSlashBlade))
+        }
+        if (!(stack.getItem() instanceof ItemSlashBlade)) {
             return;
+        }
 
         Entity targetEntity;
-        
-        if (event.getOld().contains(InputCommand.SNEAK) == event.getCurrent().contains(InputCommand.SNEAK))
+
+        if (event.getOld().contains(InputCommand.SNEAK) == event.getCurrent().contains(InputCommand.SNEAK)) {
             return;
-        
+        }
+
         if ((event.getOld().contains(InputCommand.SNEAK) && !event.getCurrent().contains(InputCommand.SNEAK))) {
             // remove target
             targetEntity = null;
@@ -78,13 +81,14 @@ public class LockOnManager {
 
                 boolean isMatch = false;
 
-                if (target instanceof LivingEntity)
+                if (target instanceof LivingEntity) {
                     isMatch = TargetSelector.lockon.test(player, (LivingEntity) target);
+                }
 
                 return isMatch;
             }).map(r -> ((EntityHitResult) r).getEntity());
 
-            if (!foundEntity.isPresent()) {
+            if (foundEntity.isEmpty()) {
                 List<LivingEntity> entities = player.level().getNearbyEntities(LivingEntity.class,
                         TargetSelector.lockon, player, player.getBoundingBox().inflate(12.0D, 6.0D, 12.0D));
 
@@ -97,73 +101,76 @@ public class LockOnManager {
 
         }
 
-        stack.getCapability(ItemSlashBlade.BLADESTATE).ifPresent(s -> {
-            s.setTargetEntityId(targetEntity);
-        });
+        stack.getCapability(ItemSlashBlade.BLADESTATE).ifPresent(s -> s.setTargetEntityId(targetEntity));
 
     }
 
     @OnlyIn(Dist.CLIENT)
     @SubscribeEvent
     public void onEntityUpdate(TickEvent.RenderTickEvent event) {
-        if (event.phase != TickEvent.Phase.START)
+        if (event.phase != TickEvent.Phase.START) {
             return;
+        }
 
         final Minecraft mcinstance = Minecraft.getInstance();
-		if (mcinstance.player == null)
+        if (mcinstance.player == null) {
             return;
+        }
 
         LocalPlayer player = mcinstance.player;
 
         ItemStack stack = player.getMainHandItem();
-        if (stack.isEmpty())
+        if (stack.isEmpty()) {
             return;
+        }
 
         stack.getCapability(ItemSlashBlade.BLADESTATE).ifPresent(s -> {
 
             Entity target = s.getTargetEntity(player.level());
 
-            if (target == null)
+            if (target == null) {
                 return;
-            if (!target.isAlive())
+            }
+            if (!target.isAlive()) {
                 return;
+            }
 
-            LivingEntity entity = player;
-
-            if (!entity.level().isClientSide())
+            if (!player.level().isClientSide()) {
                 return;
-            if (!entity.getCapability(CapabilityInputState.INPUT_STATE)
-                    .filter(input -> input.getCommands().contains(InputCommand.SNEAK)).isPresent())
+            }
+            if (player.getCapability(CapabilityInputState.INPUT_STATE)
+                    .filter(input -> input.getCommands().contains(InputCommand.SNEAK)).isEmpty()) {
                 return;
+            }
 
             float partialTicks = mcinstance.getFrameTime();
 
-            float oldYawHead = entity.yHeadRot;
-            float oldYawOffset = entity.yBodyRot;
-            float oldPitch = entity.getXRot();
-            float oldYaw = entity.getYRot();
+            float oldYawHead = player.yHeadRot;
+            float oldYawOffset = player.yBodyRot;
+            float oldPitch = player.getXRot();
+            float oldYaw = player.getYRot();
 
-            float prevYawHead = entity.yHeadRotO;
-            float prevYawOffset = entity.yBodyRotO;
-            float prevYaw = entity.yRotO;
-            float prevPitch = entity.xRotO;
+            float prevYawHead = player.yHeadRotO;
+            float prevYawOffset = player.yBodyRotO;
+            float prevYaw = player.yRotO;
+            float prevPitch = player.xRotO;
 
-            entity.lookAt(EntityAnchorArgument.Anchor.EYES, target.position().add(0, target.getEyeHeight() / 2.0, 0));
+            player.lookAt(EntityAnchorArgument.Anchor.EYES, target.position().add(0, target.getEyeHeight() / 2.0, 0));
 
             float step = 0.125f * partialTicks;
 
-            step *= Math.min(1.0f, Math.abs(Mth.wrapDegrees(oldYaw - entity.yHeadRot) * 0.5));
+            step *= (float) Math.min(1.0f, Math.abs(Mth.wrapDegrees(oldYaw - player.yHeadRot) * 0.5));
 
-            entity.setXRot(Mth.rotLerp(step, oldPitch, entity.getXRot()));
-            entity.setYRot(Mth.rotLerp(step, oldYaw, entity.getYRot()));
-            entity.setYHeadRot(Mth.rotLerp(step, oldYawHead, entity.getYHeadRot()));
+            player.setXRot(Mth.rotLerp(step, oldPitch, player.getXRot()));
+            player.setYRot(Mth.rotLerp(step, oldYaw, player.getYRot()));
+            player.setYHeadRot(Mth.rotLerp(step, oldYawHead, player.getYHeadRot()));
 
-            entity.yBodyRot = oldYawOffset;
+            player.yBodyRot = oldYawOffset;
 
-            entity.yBodyRotO = prevYawOffset;
-            entity.yHeadRotO = prevYawHead;
-            entity.yRotO = prevYaw;
-            entity.xRotO = prevPitch;
+            player.yBodyRotO = prevYawOffset;
+            player.yHeadRotO = prevYawHead;
+            player.yRotO = prevYaw;
+            player.xRotO = prevPitch;
         });
     }
 

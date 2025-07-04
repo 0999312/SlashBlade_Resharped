@@ -1,31 +1,31 @@
-/* 
+/*
  * PROJECT: NyMmd
  * --------------------------------------------------------------------------------
  * The MMD for Java is Java version MMD Motion player class library.
  * NyMmd is modules which removed the ARToolKit origin codes from ARTK_MMD,
- * and was ported to Java. 
+ * and was ported to Java.
  *
  * This is based on the ARTK_MMD v0.1 by PY.
  * http://ppyy.if.land.to/artk_mmd.html
  * py1024<at>gmail.com
  * http://www.nicovideo.jp/watch/sm7398691
  *
- * 
+ *
  * The MIT License
  * Copyright (C)2008-2012 nyatla
  * nyatla39<at>gmail.com
  * http://nyatla.jp
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -33,7 +33,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * 
+ *
  */
 package jp.nyatla.nymmd;
 
@@ -72,10 +72,11 @@ public abstract class MmdMotionPlayer {
 
     public PmdBone getBoneByName(String name) {
         int idx = getBoneIndexByName(name);
-        if (idx < 0)
+        if (idx < 0) {
             return null;
-        else
+        } else {
             return this._ref_pmd_model.getBoneArray()[idx];
+        }
 
         /*
          * for(PmdBone bone : this._ref_pmd_model.getBoneArray()){
@@ -158,7 +159,7 @@ public abstract class MmdMotionPlayer {
 
     /**
      * VMDの再生時間長を返します。
-     * 
+     *
      * @return ms単位の再生時間
      */
     public float getTimeLength() {
@@ -167,7 +168,7 @@ public abstract class MmdMotionPlayer {
 
     /**
      * 指定した時刻のモーションに更新します。
-     * 
+     *
      * @param i_position_in_msec モーションの先頭からの時刻をms単位で指定します。
      * @throws MmdException
      */
@@ -267,7 +268,7 @@ public abstract class MmdMotionPlayer {
 
     /**
      * look me
-     * 
+     *
      * @param pvec3LookTarget
      */
     private void updateNeckBone() {
@@ -312,7 +313,7 @@ public abstract class MmdMotionPlayer {
 
     /**
      * 指定フレームのデータで表情を変形する
-     * 
+     *
      * @param i_frame
      * @throws MmdException
      */

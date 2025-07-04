@@ -21,9 +21,7 @@ import org.joml.Quaterniond;
 import org.joml.Vector3d;
 import org.joml.Vector3f;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.lang.Math;
 import java.util.List;
 import java.util.Map;
 
@@ -31,11 +29,7 @@ public class VmdAnimation implements IAnimation {
     static final LazyOptional<MmdPmdModelMc> alex = LazyOptional.of(() -> {
         try {
             return new MmdPmdModelMc(new ResourceLocation(SlashBlade.MODID, "model/pa/alex.pmd"));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (MmdException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+        } catch (IOException | MmdException e) {
             e.printStackTrace();
         }
         return null;
@@ -121,9 +115,6 @@ public class VmdAnimation implements IAnimation {
 
             double endTicks = span;
             this.loop = false;
-            if (this.loop && endTicks < this.currentTick) {
-                this.currentTick = 0;
-            }
 
             if (endTicks <= currentTick) {
                 this.stop();
@@ -147,7 +138,7 @@ public class VmdAnimation implements IAnimation {
 
     @Override
     public @NotNull Vec3f get3DTransform(@NotNull String modelName, @NotNull TransformType type, float tickDelta,
-            @NotNull Vec3f value0) {
+                                         @NotNull Vec3f value0) {
         this.setupAnim(tickDelta);
 
         double motionScale = 1.0 / 16.0;
@@ -161,8 +152,9 @@ public class VmdAnimation implements IAnimation {
             blend.mul(0);
         }
 
-        if (!motionPlayer.isPresent())
+        if (!motionPlayer.isPresent()) {
             return value0;
+        }
         MmdMotionPlayerGL2 mmp = motionPlayer.orElse(null);
 
         String boneName = modelName;
@@ -174,34 +166,34 @@ public class VmdAnimation implements IAnimation {
 
         if (bone != null) {
             switch (type) {
-            case POSITION: {
-                MmdVector3 org = bone.m_vec3Position;
-                Vector3f tmp = new Vector3f(org.x, org.y, org.z);
-                if (modelName.equals("body")) {
-                    tmp = tmp.mul(bodyScale);
-                } else {
-                    tmp = tmp.mul(1, -1, 1);
+                case POSITION: {
+                    MmdVector3 org = bone.m_vec3Position;
+                    Vector3f tmp = new Vector3f(org.x, org.y, org.z);
+                    if ("body".equals(modelName)) {
+                        tmp = tmp.mul(bodyScale);
+                    } else {
+                        tmp = tmp.mul(1, -1, 1);
+                    }
+
+                    tmp.mul(finalizeScale).add(blend);
+                    return new Vec3f(tmp.x, tmp.y, tmp.z);
                 }
+                case ROTATION: {
+                    Quaterniond qt = new Quaterniond(bone.m_vec4Rotate.x, bone.m_vec4Rotate.y, bone.m_vec4Rotate.z,
+                            bone.m_vec4Rotate.w);
+                    Vector3d tmp = QuaternionToEulerZYX(qt);
 
-                tmp.mul(finalizeScale).add(blend);
-                return new Vec3f(tmp.x, tmp.y, tmp.z);
-            }
-            case ROTATION: {
-                Quaterniond qt = new Quaterniond(bone.m_vec4Rotate.x, bone.m_vec4Rotate.y, bone.m_vec4Rotate.z,
-                        bone.m_vec4Rotate.w);
-                Vector3d tmp = QuaternionToEulerZYX(qt);
+                    if ("body".equals(modelName)) {
+                        tmp = tmp.mul(1, -1, -1);
+                    } else {
+                        tmp = tmp.mul(-1, 1, -1);
+                    }
 
-                if (modelName.equals("body")) {
-                    tmp = tmp.mul(1, -1, -1);
-                } else {
-                    tmp = tmp.mul(-1, 1, -1);
+                    tmp.add(blend);
+                    return new Vec3f((float) tmp.x, (float) tmp.y, (float) tmp.z);
                 }
-
-                tmp.add(blend);
-                return new Vec3f((float) tmp.x, (float) tmp.y, (float) tmp.z);
-            }
-            default:
-                break;
+                default:
+                    break;
             }
         }
         /**/
@@ -209,25 +201,25 @@ public class VmdAnimation implements IAnimation {
         /*
          * int idx = mmp.getBoneIndexByName(boneName); if (0 <= idx) { float[] buf = new
          * float[16]; mmp._skinning_mat[idx].getValue(buf);
-         * 
+         *
          * Matrix4f mat = VectorHelper.matrix4fFromArray(buf); mat = (new
          * Matrix4f()).scale(1, -1, 1).mul(mat).scale(1,-1,1).scale((float)scale);
          * //mat.transpose();
-         * 
+         *
          * switch (type){ case POSITION -> { Vector3f tmp = new Vector3f();
          * mat.getTranslation(tmp); MmdVector3 vec = bone._pmd_bone_position;
-         * 
+         *
          * return new Vec3f(tmp.x,tmp.y,tmp.z).add(value0); } case ROTATION -> {
-         * 
+         *
          * Quaternionf qt = new
          * Quaternionf(bone.m_vec4Rotate.x,bone.m_vec4Rotate.y,bone.m_vec4Rotate.z,bone.
          * m_vec4Rotate.w); Vector3f tmp = new Vector3f(); qt.getEulerAnglesXYZ(tmp);
-         * 
+         *
          * return new Vec3f(tmp.x,tmp.y,tmp.z);
-         * 
+         *
          * //Vector3f tmp = new Vector3f(); //mat = mat; //mat.getEulerAnglesZYX(tmp);
          * //return new Vec3f(tmp.x,tmp.y,tmp.z);
-         * 
+         *
          * } } } /
          **/
 
@@ -289,8 +281,9 @@ public class VmdAnimation implements IAnimation {
 
     @Override
     public void setupAnim(float tickDelta) {
-        if (!motionPlayer.isPresent())
+        if (!motionPlayer.isPresent()) {
             return;
+        }
 
         MmdMotionPlayerGL2 mmp = motionPlayer.orElse(null);
 

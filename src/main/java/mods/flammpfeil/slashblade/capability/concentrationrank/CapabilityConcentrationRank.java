@@ -1,6 +1,9 @@
 package mods.flammpfeil.slashblade.capability.concentrationrank;
 
-import net.minecraftforge.common.capabilities.*;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.CapabilityManager;
+import net.minecraftforge.common.capabilities.CapabilityToken;
+import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 
 public class CapabilityConcentrationRank {
 

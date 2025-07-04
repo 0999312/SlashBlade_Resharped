@@ -1,9 +1,12 @@
 package mods.flammpfeil.slashblade.capability.mobeffect;
 
 import mods.flammpfeil.slashblade.util.NBTHelper;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.core.Direction;
-import net.minecraftforge.common.capabilities.*;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.CapabilityManager;
+import net.minecraftforge.common.capabilities.CapabilityToken;
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.common.util.LazyOptional;
 
@@ -15,7 +18,7 @@ public class MobEffectCapabilityProvider implements ICapabilityProvider, INBTSer
     public static final Capability<IMobEffectState> MOB_EFFECT = CapabilityManager.get(new CapabilityToken<>() {
     });
 
-    protected LazyOptional<IMobEffectState> state = LazyOptional.of(() -> new MobEffectState());
+    protected LazyOptional<IMobEffectState> state = LazyOptional.of(MobEffectState::new);
 
     @Nonnull
     @Override

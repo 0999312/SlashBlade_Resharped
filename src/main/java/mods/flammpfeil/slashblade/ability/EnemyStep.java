@@ -56,17 +56,21 @@ public class EnemyStep {
         ServerPlayer sender = event.getEntity();
         Level worldIn = sender.level();
 
-        if (sender.onGround())
+        if (sender.onGround()) {
             return;
-        if (old.contains(InputCommand.JUMP))
+        }
+        if (old.contains(InputCommand.JUMP)) {
             return;
-        if (!current.contains(InputCommand.JUMP))
+        }
+        if (!current.contains(InputCommand.JUMP)) {
             return;
+        }
 
         List<LivingEntity> list = worldIn.getNearbyEntities(LivingEntity.class, tc, sender,
                 sender.getBoundingBox().inflate(1));
-        if (list.isEmpty())
+        if (list.isEmpty()) {
             return;
+        }
 
         Untouchable.setUntouchable(sender, Untouchable.JUMP_TICKS);
 
@@ -79,14 +83,12 @@ public class EnemyStep {
         AdvancementHelper.grantCriterion(sender, ADVANCEMENT_ENEMY_STEP);
         sender.playNotifySound(SoundEvents.PLAYER_SMALL_FALL, SoundSource.PLAYERS, 0.5f, 1.2f);
 
-        sender.getMainHandItem().getCapability(ItemSlashBlade.BLADESTATE).ifPresent(s -> {
-            s.updateComboSeq(sender, ComboStateRegistry.NONE.getId());
-        });
+        sender.getMainHandItem().getCapability(ItemSlashBlade.BLADESTATE).ifPresent(s -> s.updateComboSeq(sender, ComboStateRegistry.NONE.getId()));
 
         if (worldIn instanceof ServerLevel) {
             ((ServerLevel) worldIn).sendParticles(
                     new BlockParticleOption(ParticleTypes.BLOCK, Blocks.ORANGE_STAINED_GLASS.defaultBlockState()),
-                    sender.getX(), sender.getY(), sender.getZ(), 20, 0.0D, 0.0D, 0.0D, (double) 0.15F);
+                    sender.getX(), sender.getY(), sender.getZ(), 20, 0.0D, 0.0D, 0.0D, 0.15F);
         }
     }
 

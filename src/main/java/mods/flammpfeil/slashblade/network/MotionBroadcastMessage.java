@@ -14,6 +14,7 @@ import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkEvent;
 
+import java.util.Objects;
 import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
@@ -47,25 +48,27 @@ public class MotionBroadcastMessage {
         BiConsumer<UUID, String> handler = DistExecutor.callWhenOn(Dist.CLIENT,
                 () -> () -> MotionBroadcastMessage::setPoint);
 
-        if (handler != null)
-            ctx.get().enqueueWork(() -> {
-                handler.accept(msg.playerId, msg.combo);
-            });
+        if (handler != null) {
+            ctx.get().enqueueWork(() -> handler.accept(msg.playerId, msg.combo));
+        }
 
     }
 
     @OnlyIn(Dist.CLIENT)
     static public void setPoint(UUID playerId, String combo) {
-        Player target = Minecraft.getInstance().level.getPlayerByUUID(playerId);
+        Player target = Objects.requireNonNull(Minecraft.getInstance().level).getPlayerByUUID(playerId);
 
-        if (target == null)
+        if (target == null) {
             return;
-        if (!(target instanceof AbstractClientPlayer))
+        }
+        if (!(target instanceof AbstractClientPlayer)) {
             return;
+        }
 
         ResourceLocation state = ResourceLocation.tryParse(combo);
-        if (state == null || !ComboStateRegistry.REGISTRY.get().containsKey(state))
+        if (state == null || !ComboStateRegistry.REGISTRY.get().containsKey(state)) {
             return;
+        }
 
         MinecraftForge.EVENT_BUS.post(new BladeMotionEvent(target, state));
     }

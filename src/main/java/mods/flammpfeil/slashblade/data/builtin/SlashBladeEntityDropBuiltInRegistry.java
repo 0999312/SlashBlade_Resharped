@@ -38,7 +38,6 @@ public class SlashBladeEntityDropBuiltInRegistry {
     }
 
     private static ResourceKey<EntityDropEntry> register(String id) {
-        ResourceKey<EntityDropEntry> loc = ResourceKey.create(EntityDropEntry.REGISTRY_KEY, SlashBlade.prefix(id));
-        return loc;
+        return ResourceKey.create(EntityDropEntry.REGISTRY_KEY, SlashBlade.prefix(id));
     }
 }

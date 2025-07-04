@@ -1,6 +1,7 @@
 package mods.flammpfeil.slashblade.client.renderer.entity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Axis;
 import mods.flammpfeil.slashblade.SlashBlade;
 import mods.flammpfeil.slashblade.capability.concentrationrank.IConcentrationRank.ConcentrationRanks;
 import mods.flammpfeil.slashblade.client.renderer.model.BladeModelManager;
@@ -12,12 +13,12 @@ import mods.flammpfeil.slashblade.entity.EntitySlashEffect;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import com.mojang.math.Axis;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
@@ -31,7 +32,7 @@ public class SlashEffectRenderer<T extends EntitySlashEffect> extends EntityRend
 
     @Nullable
     @Override
-    public ResourceLocation getTextureLocation(T entity) {
+    public ResourceLocation getTextureLocation(@NotNull T entity) {
         return textureLocation;
     }
 
@@ -41,7 +42,7 @@ public class SlashEffectRenderer<T extends EntitySlashEffect> extends EntityRend
 
     @Override
     public void render(T entity, float entityYaw, float partialTicks, PoseStack matrixStackIn,
-            MultiBufferSource bufferIn, int packedLightIn) {
+                       @NotNull MultiBufferSource bufferIn, int packedLightIn) {
 
         try (MSAutoCloser msac = MSAutoCloser.pushMatrix(matrixStackIn)) {
 
@@ -92,7 +93,7 @@ public class SlashEffectRenderer<T extends EntitySlashEffect> extends EntityRend
             int alpha = ((0xFF & (int) (0xFF * baseAlpha)) << 24);
 
             // black alpha insidee
-            if (ConcentrationRanks.S.level <= rank.level)
+            if (ConcentrationRanks.S.level <= rank.level) {
                 try (MSAutoCloser msacb = MSAutoCloser.pushMatrix(matrixStackIn)) {
                     float windscale = entity.getBaseSize() * Mth.lerp(progress, 0.035f, 0.03f);
                     matrixStackIn.scale(windscale, yscale, windscale);
@@ -102,9 +103,10 @@ public class SlashEffectRenderer<T extends EntitySlashEffect> extends EntityRend
                     BladeRenderState.renderOverridedColorWrite(ItemStack.EMPTY, model, "base", rl, matrixStackIn,
                             bufferIn, packedLightIn);
                 }
+            }
 
             // color alpha base
-            if (ConcentrationRanks.D.level <= rank.level)
+            if (ConcentrationRanks.D.level <= rank.level) {
                 try (MSAutoCloser msacb = MSAutoCloser.pushMatrix(matrixStackIn)) {
                     matrixStackIn.scale(scale, yscale, scale);
                     Face.setAlphaOverride(Face.alphaOverrideYZZ);
@@ -113,9 +115,10 @@ public class SlashEffectRenderer<T extends EntitySlashEffect> extends EntityRend
                     BladeRenderState.renderOverridedColorWrite(ItemStack.EMPTY, model, "base", rl, matrixStackIn,
                             bufferIn, packedLightIn);
                 }
+            }
 
             // white add outside
-            if (ConcentrationRanks.B.level <= rank.level)
+            if (ConcentrationRanks.B.level <= rank.level) {
                 try (MSAutoCloser msacb = MSAutoCloser.pushMatrix(matrixStackIn)) {
                     float windscale = entity.getBaseSize() * Mth.lerp(progress, 0.03f, 0.0375f);
                     matrixStackIn.scale(windscale, yscale, windscale);
@@ -125,6 +128,7 @@ public class SlashEffectRenderer<T extends EntitySlashEffect> extends EntityRend
                     BladeRenderState.renderOverridedLuminous(ItemStack.EMPTY, model, "base", rl, matrixStackIn,
                             bufferIn, packedLightIn);
                 }
+            }
 
             // color add base
             try (MSAutoCloser msacb = MSAutoCloser.pushMatrix(matrixStackIn)) {

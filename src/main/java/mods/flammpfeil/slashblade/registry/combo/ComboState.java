@@ -1,57 +1,63 @@
 package mods.flammpfeil.slashblade.registry.combo;
 
-import com.google.common.collect.*;
-
+import com.google.common.collect.Maps;
 import mods.flammpfeil.slashblade.SlashBlade;
 import mods.flammpfeil.slashblade.ability.ArrowReflector;
+import mods.flammpfeil.slashblade.capability.slashblade.ISlashBladeState;
 import mods.flammpfeil.slashblade.init.DefaultResources;
 import mods.flammpfeil.slashblade.item.ItemSlashBlade;
 import mods.flammpfeil.slashblade.registry.ComboStateRegistry;
 import mods.flammpfeil.slashblade.slasharts.SlashArts;
-import mods.flammpfeil.slashblade.util.*;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.minecraft.world.item.enchantment.Enchantments;
-import net.minecraft.world.entity.LivingEntity;
+import mods.flammpfeil.slashblade.util.AdvancementHelper;
+import mods.flammpfeil.slashblade.util.TimeValueHelper;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.Enchantments;
+
 import javax.annotation.Nonnull;
-import java.util.*;
-import java.util.function.*;
+import java.util.Map;
+import java.util.Objects;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class ComboState {
     public static final ResourceKey<Registry<ComboState>> REGISTRY_KEY = ResourceKey
             .createRegistryKey(new ResourceLocation(SlashBlade.MODID, "combo_state"));
 
-    private ResourceLocation motionLoc;
+    private final ResourceLocation motionLoc;
 
     // frame
-    private int start;
+    private final int start;
     // frame
-    private int end;
+    private final int end;
 
-    private float speed;
-    private boolean loop;
+    private final float speed;
+    private final boolean loop;
 
     // Next input acceptance period *ms
     public int timeout;
 
-    private Function<LivingEntity, ResourceLocation> next;
-    private Function<LivingEntity, ResourceLocation> nextOfTimeout;
+    private final Function<LivingEntity, ResourceLocation> next;
+    private final Function<LivingEntity, ResourceLocation> nextOfTimeout;
 
-    private Consumer<LivingEntity> holdAction;
+    private final Consumer<LivingEntity> holdAction;
 
-    private Consumer<LivingEntity> tickAction;
+    private final Consumer<LivingEntity> tickAction;
 
-    private BiConsumer<LivingEntity, LivingEntity> hitEffect;
+    private final BiConsumer<LivingEntity, LivingEntity> hitEffect;
 
-    private Consumer<LivingEntity> clickAction;
+    private final Consumer<LivingEntity> clickAction;
 
-    private BiFunction<LivingEntity, Integer, SlashArts.ArtsType> releaseAction;
+    private final BiFunction<LivingEntity, Integer, SlashArts.ArtsType> releaseAction;
 
-    private boolean isAerial;
+    private final boolean isAerial;
 
-    private int priority;
+    private final int priority;
 
     public ResourceLocation getMotionLoc() {
         return motionLoc;
@@ -140,7 +146,7 @@ public class ComboState {
 
     @Nonnull
     public ComboState checkTimeOut(LivingEntity living, float msec) {
-        return this.getTimeoutMS() < msec ? ComboStateRegistry.REGISTRY.get().getValue(this.nextOfTimeout.apply(living))
+        return this.getTimeoutMS() < msec ? Objects.requireNonNull(ComboStateRegistry.REGISTRY.get().getValue(this.nextOfTimeout.apply(living)))
                 : this;
     }
 
@@ -158,8 +164,9 @@ public class ComboState {
             AdvancementHelper.grantedIf(Enchantments.SOUL_SPEED, user);
             AdvancementHelper.grantCriterion(user, AdvancementHelper.ADVANCEMENT_QUICK_CHARGE);
             return SlashArts.ArtsType.Jackpot;
-        } else
+        } else {
             return SlashArts.ArtsType.Fail;
+        }
     }
 
     public static class TimeoutNext implements Function<LivingEntity, ResourceLocation> {
@@ -185,7 +192,7 @@ public class ComboState {
                 return next.apply(livingEntity);
             } else {
                 return livingEntity.getMainHandItem().getCapability(ItemSlashBlade.BLADESTATE)
-                        .map((state) -> state.getComboSeq()).orElse(SlashBlade.prefix("none"));
+                        .map(ISlashBladeState::getComboSeq).orElse(SlashBlade.prefix("none"));
             }
         }
     }

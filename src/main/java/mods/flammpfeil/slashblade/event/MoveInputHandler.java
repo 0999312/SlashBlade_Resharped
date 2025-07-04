@@ -5,7 +5,8 @@ import mods.flammpfeil.slashblade.client.SlashBladeKeyMappings;
 import mods.flammpfeil.slashblade.item.ItemSlashBlade;
 import mods.flammpfeil.slashblade.network.MoveCommandMessage;
 import mods.flammpfeil.slashblade.network.NetworkManager;
-import mods.flammpfeil.slashblade.util.*;
+import mods.flammpfeil.slashblade.util.EnumSetConverter;
+import mods.flammpfeil.slashblade.util.InputCommand;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.level.Level;
@@ -34,52 +35,64 @@ public class MoveInputHandler {
     }
 
     @SuppressWarnings("resource")
-	@OnlyIn(Dist.CLIENT)
+    @OnlyIn(Dist.CLIENT)
     @SubscribeEvent()
     public static void onPlayerPostTick(ClientTickEvent event) {
 
-        if (event.phase != TickEvent.Phase.END)
+        if (event.phase != TickEvent.Phase.END) {
             return;
+        }
 
         LocalPlayer player = Minecraft.getInstance().player;
-        if(player == null)
-        	return;
-        
-        if (player.getMainHandItem().isEmpty() || !player.getMainHandItem().getCapability(ItemSlashBlade.BLADESTATE).isPresent())
+        if (player == null) {
             return;
+        }
+
+        if (player.getMainHandItem().isEmpty() || !player.getMainHandItem().getCapability(ItemSlashBlade.BLADESTATE).isPresent()) {
+            return;
+        }
 
         EnumSet<InputCommand> commands = EnumSet.noneOf(InputCommand.class);
 
-        if (player.input.up)
+        if (player.input.up) {
             commands.add(InputCommand.FORWARD);
-        if (player.input.down)
+        }
+        if (player.input.down) {
             commands.add(InputCommand.BACK);
-        if (player.input.left)
+        }
+        if (player.input.left) {
             commands.add(InputCommand.LEFT);
-        if (player.input.right)
+        }
+        if (player.input.right) {
             commands.add(InputCommand.RIGHT);
+        }
 
-        if (player.input.shiftKeyDown)
+        if (player.input.shiftKeyDown) {
             commands.add(InputCommand.SNEAK);
-        
+        }
+
         if (player.input.jumping) {
             commands.add(InputCommand.JUMP);
         }
-        
+
         final Minecraft minecraftInstance = Minecraft.getInstance();
 
-        if (SlashBladeKeyMappings.KEY_SPECIAL_MOVE.isDown())
+        if (SlashBladeKeyMappings.KEY_SPECIAL_MOVE.isDown()) {
             commands.add(InputCommand.SPRINT);
+        }
 
-        if (minecraftInstance.options.keyUse.isDown())
+        if (minecraftInstance.options.keyUse.isDown()) {
             commands.add(InputCommand.R_DOWN);
-        if (minecraftInstance.options.keyAttack.isDown())
+        }
+        if (minecraftInstance.options.keyAttack.isDown()) {
             commands.add(InputCommand.L_DOWN);
+        }
 
-        if (SlashBladeKeyMappings.KEY_SUMMON_BLADE.isDown())
+        if (SlashBladeKeyMappings.KEY_SUMMON_BLADE.isDown()) {
             commands.add(InputCommand.M_DOWN);
+        }
 
-        EnumSet<InputCommand> old = player.getCapability(INPUT_STATE).map((state) -> state.getCommands())
+        EnumSet<InputCommand> old = player.getCapability(INPUT_STATE).map(IInputState::getCommands)
                 .orElseGet(() -> EnumSet.noneOf(InputCommand.class));
 
         Level worldIn = player.getCommandSenderWorld();
@@ -90,8 +103,9 @@ public class MoveInputHandler {
         if (doSend) {
             player.getCapability(INPUT_STATE).ifPresent((state) -> {
                 commands.forEach(c -> {
-                    if (!old.contains(c))
+                    if (!old.contains(c)) {
                         state.getLastPressTimes().put(c, currentTime);
+                    }
                 });
 
                 state.getCommands().clear();

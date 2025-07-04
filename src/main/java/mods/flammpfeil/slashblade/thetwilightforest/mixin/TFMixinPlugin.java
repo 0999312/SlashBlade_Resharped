@@ -11,7 +11,8 @@ import java.util.Set;
 public class TFMixinPlugin implements IMixinConfigPlugin {
 
     @Override
-    public void onLoad(String mixinPackage) {}
+    public void onLoad(String mixinPackage) {
+    }
 
     @Override
     public String getRefMapperConfig() {
@@ -25,7 +26,8 @@ public class TFMixinPlugin implements IMixinConfigPlugin {
     }
 
     @Override
-    public void acceptTargets(Set<String> set, Set<String> set1) {}
+    public void acceptTargets(Set<String> set, Set<String> set1) {
+    }
 
     @Override
     public List<String> getMixins() {

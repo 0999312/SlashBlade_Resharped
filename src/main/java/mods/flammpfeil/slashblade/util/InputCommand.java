@@ -10,6 +10,6 @@ public enum InputCommand {
             InputCommand.LEFT, InputCommand.RIGHT);
 
     public static boolean anyMatch(EnumSet<InputCommand> a, EnumSet<InputCommand> b) {
-        return a.stream().anyMatch(cc -> b.contains(cc));
+        return a.stream().anyMatch(b::contains);
     }
 }

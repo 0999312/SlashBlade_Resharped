@@ -2,33 +2,33 @@ package mods.flammpfeil.slashblade.ability;
 
 import mods.flammpfeil.slashblade.SlashBlade;
 import mods.flammpfeil.slashblade.capability.mobeffect.CapabilityMobEffect;
-import mods.flammpfeil.slashblade.entity.EntityAbstractSummonedSword;
+import mods.flammpfeil.slashblade.entity.EntityAirTrickSummonedSword;
 import mods.flammpfeil.slashblade.event.InputCommandEvent;
 import mods.flammpfeil.slashblade.item.ItemSlashBlade;
 import mods.flammpfeil.slashblade.util.AdvancementHelper;
 import mods.flammpfeil.slashblade.util.InputCommand;
 import mods.flammpfeil.slashblade.util.NBTHelper;
 import mods.flammpfeil.slashblade.util.VectorHelper;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.level.TicketType;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.EntityHitResult;
-import net.minecraft.util.Mth;
-import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.Level;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.TicketType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Set;
@@ -74,12 +74,14 @@ public class SlayerStyleArts {
         EnumSet<InputCommand> current = event.getCurrent();
         ServerPlayer sender = event.getEntity();
         Level worldIn = sender.level();
-        
-		ItemStack stack = sender.getMainHandItem();
-		if (stack.isEmpty())
-			return;
-		if (!(stack.getItem() instanceof ItemSlashBlade))
-			return;
+
+        ItemStack stack = sender.getMainHandItem();
+        if (stack.isEmpty()) {
+            return;
+        }
+        if (!(stack.getItem() instanceof ItemSlashBlade)) {
+            return;
+        }
 
         if (!old.contains(InputCommand.SPRINT)) {
 
@@ -129,27 +131,7 @@ public class SlayerStyleArts {
                                 SlayerStyleArts.doTeleport(sender, hitEntity);
                             }
                         } else {
-                            EntityAbstractSummonedSword ss = new EntityAbstractSummonedSword(
-                                    SlashBlade.RegistryEvents.SummonedSword, worldIn) {
-                                @Override
-                                protected void onHitEntity(EntityHitResult entityHitResult) {
-                                    super.onHitEntity(entityHitResult);
-
-                                    LivingEntity target = sender.getLastHurtMob();
-                                    if (target != null && this.getHitEntity() == target) {
-                                        SlayerStyleArts.doTeleport(sender, target);
-                                    }
-                                }
-
-                                @Override
-                                public void tick() {
-                                    if (this.getPersistentData().getBoolean("doForceHit")) {
-                                        this.doForceHitEntity(target);
-                                        this.getPersistentData().remove("doForceHit");
-                                    }
-                                    super.tick();
-                                }
-                            };
+                            EntityAirTrickSummonedSword ss = new EntityAirTrickSummonedSword(SlashBlade.RegistryEvents.AirTrickSummonedSword, sender.level());
 
                             Vec3 lastPos = sender.getEyePosition(1.0f);
                             ss.xOld = lastPos.x;
@@ -212,9 +194,9 @@ public class SlayerStyleArts {
             }
 
             if (!isHandled && sender.onGround() && current.contains(InputCommand.SPRINT)
-                    && current.stream().anyMatch(cc -> move.contains(cc))) {
+                    && current.stream().anyMatch(move::contains)) {
                 // quick avoid ground
-            	Level level = sender.level();
+                Level level = sender.level();
                 int count = sender.getCapability(CapabilityMobEffect.MOB_EFFECT)
                         .map(ef -> ef.doAvoid(level.getGameTime())).orElse(0);
 
@@ -266,7 +248,7 @@ public class SlayerStyleArts {
 
     }
 
-    private static void doTeleport(Entity entityIn, LivingEntity target) {
+    public static void doTeleport(Entity entityIn, LivingEntity target) {
         entityIn.getPersistentData().putInt("sb.airtrick.counter", 3);
         entityIn.getPersistentData().putInt("sb.airtrick.target", target.getId());
 
@@ -277,9 +259,10 @@ public class SlayerStyleArts {
         }
     }
 
-    private static void executeTeleport(Entity entityIn, LivingEntity target) {
-        if (!(entityIn.level() instanceof ServerLevel))
+    public static void executeTeleport(Entity entityIn, LivingEntity target) {
+        if (!(entityIn.level() instanceof ServerLevel worldIn)) {
             return;
+        }
 
         if (entityIn instanceof Player player) {
             player.playNotifySound(SoundEvents.ENDERMAN_TELEPORT, SoundSource.PLAYERS, 0.75F, 1.25F);
@@ -289,8 +272,6 @@ public class SlayerStyleArts {
 
             Untouchable.setUntouchable(player, TRICKACTION_UNTOUCHABLE_TIME);
         }
-
-        ServerLevel worldIn = (ServerLevel) entityIn.level();
 
         Vec3 tereportPos = target.position().add(0, target.getBbHeight() / 2.0, 0)
                 .add(entityIn.getLookAngle().scale(-2.0));
@@ -304,20 +285,19 @@ public class SlayerStyleArts {
         Set<RelativeMovement> relativeList = Collections.emptySet();
         BlockPos blockpos = new BlockPos((int) x, (int) y, (int) z);
         if (!Level.isInSpawnableBounds(blockpos)) {
-            return;
         } else {
             if (entityIn instanceof ServerPlayer serverPlayer) {
                 ChunkPos chunkpos = new ChunkPos(blockpos);
                 worldIn.getChunkSource().addRegionTicket(TicketType.POST_TELEPORT, chunkpos, 1, entityIn.getId());
                 entityIn.stopRiding();
                 if (serverPlayer.isSleeping()) {
-                	serverPlayer.stopSleepInBed(true, true);
+                    serverPlayer.stopSleepInBed(true, true);
                 }
 
                 if (worldIn == entityIn.level()) {
-                	serverPlayer.connection.teleport(x, y, z, yaw, pitch, relativeList);
+                    serverPlayer.connection.teleport(x, y, z, yaw, pitch, relativeList);
                 } else {
-                	serverPlayer.teleportTo(worldIn, x, y, z, yaw, pitch);
+                    serverPlayer.teleportTo(worldIn, x, y, z, yaw, pitch);
                 }
 
                 entityIn.setYHeadRot(yaw);
@@ -325,10 +305,7 @@ public class SlayerStyleArts {
                 float f1 = Mth.wrapDegrees(yaw);
                 float f = Mth.wrapDegrees(pitch);
                 f = Mth.clamp(f, -90.0F, 90.0F);
-                if (worldIn == entityIn.level()) {
-                    entityIn.moveTo(x, y, z, f1, f);
-                    entityIn.setYHeadRot(f1);
-                } else {
+                if (worldIn != entityIn.level()) {
                     entityIn.unRide();
                     Entity entity = entityIn;
                     entityIn = entityIn.getType().create(worldIn);
@@ -337,10 +314,10 @@ public class SlayerStyleArts {
                     }
 
                     entityIn.restoreFrom(entity);
-                    entityIn.moveTo(x, y, z, f1, f);
-                    entityIn.setYHeadRot(f1);
                     // worldIn.addFromAnotherDimension(entityIn);
                 }
+                entityIn.moveTo(x, y, z, f1, f);
+                entityIn.setYHeadRot(f1);
             }
 
             if (!(entityIn instanceof LivingEntity) || !((LivingEntity) entityIn).isFallFlying()) {
@@ -355,12 +332,12 @@ public class SlayerStyleArts {
         }
     }
 
-    protected Vec3 maybeBackOffFromEdge(Vec3 vec, LivingEntity mover) {
+    public Vec3 maybeBackOffFromEdge(Vec3 vec, LivingEntity mover) {
         double d0 = vec.x;
         double d1 = vec.z;
 
         while (d0 != 0.0D && mover.level().noCollision(mover,
-                mover.getBoundingBox().move(d0, (double) (-mover.maxUpStep()), 0.0D))) {
+                mover.getBoundingBox().move(d0, -mover.maxUpStep(), 0.0D))) {
             if (d0 < 0.05D && d0 >= -0.05D) {
                 d0 = 0.0D;
             } else if (d0 > 0.0D) {
@@ -371,7 +348,7 @@ public class SlayerStyleArts {
         }
 
         while (d1 != 0.0D && mover.level().noCollision(mover,
-                mover.getBoundingBox().move(0.0D, (double) (-mover.maxUpStep()), d1))) {
+                mover.getBoundingBox().move(0.0D, -mover.maxUpStep(), d1))) {
             if (d1 < 0.05D && d1 >= -0.05D) {
                 d1 = 0.0D;
             } else if (d1 > 0.0D) {
@@ -382,7 +359,7 @@ public class SlayerStyleArts {
         }
 
         while (d0 != 0.0D && d1 != 0.0D && mover.level().noCollision(mover,
-                mover.getBoundingBox().move(d0, (double) (-mover.maxUpStep()), d1))) {
+                mover.getBoundingBox().move(d0, -mover.maxUpStep(), d1))) {
             if (d0 < 0.05D && d0 >= -0.05D) {
                 d0 = 0.0D;
             } else if (d0 > 0.0D) {
@@ -409,117 +386,117 @@ public class SlayerStyleArts {
     static final float stepUpDefault = 0.6f;
 
     @SuppressWarnings("deprecation")
-	@SubscribeEvent
+    @SubscribeEvent
     public void onTick(TickEvent.PlayerTickEvent event) {
         switch (event.phase) {
-        case START -> {
-            float stepUp = event.player.maxUpStep();
+            case START -> {
+                float stepUp = event.player.maxUpStep();
 
-            LivingEntity player = event.player;
-            Vec3 deltaMovement;
-            
-            Vec3 input = new Vec3((double) player.xxa, (double) player.yya, (double) player.zza);
-            double scale = 1.0;
-            float yRot = player.getYRot();
-            double d0 = input.lengthSqr();
-            if (d0 < 1.0E-7D) {
-                deltaMovement = Vec3.ZERO;
-            } else {
-                Vec3 vec3 = (d0 > 1.0D ? input.normalize() : input).scale((double) scale);
-                float f = Mth.sin(yRot * ((float) Math.PI / 180F));
-                float f1 = Mth.cos(yRot * ((float) Math.PI / 180F));
-                deltaMovement = new Vec3(vec3.x * (double) f1 - vec3.z * (double) f, vec3.y,
-                        vec3.z * (double) f1 + vec3.x * (double) f);
-            }
-            
+                LivingEntity player = event.player;
+                Vec3 deltaMovement;
 
-            boolean doStepupBoost = true;
+                Vec3 input = new Vec3(player.xxa, player.yya, player.zza);
+                double scale = 1.0;
+                float yRot = player.getYRot();
+                double d0 = input.lengthSqr();
+                if (d0 < 1.0E-7D) {
+                    deltaMovement = Vec3.ZERO;
+                } else {
+                    Vec3 vec3 = (d0 > 1.0D ? input.normalize() : input).scale(scale);
+                    float f = Mth.sin(yRot * ((float) Math.PI / 180F));
+                    float f1 = Mth.cos(yRot * ((float) Math.PI / 180F));
+                    deltaMovement = new Vec3(vec3.x * (double) f1 - vec3.z * (double) f, vec3.y,
+                            vec3.z * (double) f1 + vec3.x * (double) f);
+                }
 
-            if (doStepupBoost) {
+
+                boolean doStepupBoost = true;
+
                 Vec3 offset = deltaMovement.normalize().scale(0.5f).add(0, 0.25, 0);
                 BlockPos offsetedPos = new BlockPos(VectorHelper.f2i(player.position().add(offset))).below();
                 BlockState blockState = player.level().getBlockState(offsetedPos);
                 if (blockState.liquid()) {
                     doStepupBoost = false;
                 }
-            }
 
-            if (doStepupBoost && (event.player.getMainHandItem().getItem() instanceof ItemSlashBlade)
-                    && stepUp < stepUpBoost) {
-                event.player.getPersistentData().putFloat("sb.store.stepup", stepUp);
-                event.player.setMaxUpStep(stepUpBoost);
-            }
+                if (doStepupBoost && (event.player.getMainHandItem().getItem() instanceof ItemSlashBlade)
+                        && stepUp < stepUpBoost) {
+                    event.player.getPersistentData().putFloat("sb.store.stepup", stepUp);
+                    event.player.setMaxUpStep(stepUpBoost);
+                }
 
-            // trick up cooldown
-            if (event.player.onGround() && 0 < event.player.getPersistentData().getInt("sb.avoid.trickup")) {
+                // trick up cooldown
+                if (event.player.onGround() && 0 < event.player.getPersistentData().getInt("sb.avoid.trickup")) {
 
-                int count = event.player.getPersistentData().getInt("sb.avoid.trickup");
-                count--;
+                    int count = event.player.getPersistentData().getInt("sb.avoid.trickup");
+                    count--;
 
-                if (count <= 0) {
-                    event.player.getPersistentData().remove("sb.avoid.trickup");
+                    if (count <= 0) {
+                        event.player.getPersistentData().remove("sb.avoid.trickup");
 
-                    if (event.player instanceof ServerPlayer) {
-                        ((ServerPlayer) event.player).hasChangedDimension();
+                        if (event.player instanceof ServerPlayer) {
+                            ((ServerPlayer) event.player).hasChangedDimension();
+                        }
+                    } else {
+                        event.player.getPersistentData().putInt("sb.avoid.trickup", count);
                     }
-                } else {
-                    event.player.getPersistentData().putInt("sb.avoid.trickup", count);
+                }
+
+                // handle avoid
+                if (event.player.getPersistentData().contains("sb.avoid.counter")) {
+                    int count = event.player.getPersistentData().getInt("sb.avoid.counter");
+                    count--;
+
+                    if (count <= 0) {
+                        if (event.player.getPersistentData().contains("sb.avoid.vec")) {
+                            Vec3 pos = NBTHelper.getVector3d(event.player.getPersistentData(), "sb.avoid.vec");
+                            event.player.moveTo(pos);
+                        }
+
+                        event.player.getPersistentData().remove("sb.avoid.counter");
+                        event.player.getPersistentData().remove("sb.avoid.vec");
+
+                        if (event.player instanceof ServerPlayer) {
+                            ((ServerPlayer) event.player).hasChangedDimension();
+                        }
+                    } else {
+                        event.player.getPersistentData().putInt("sb.avoid.counter", count);
+                    }
+                }
+
+                // handle AirTrick
+                if (event.player.getPersistentData().contains("sb.airtrick.counter")) {
+                    int count = event.player.getPersistentData().getInt("sb.airtrick.counter");
+                    count--;
+
+                    if (count <= 0) {
+                        if (event.player.getPersistentData().contains("sb.airtrick.target")) {
+                            int id = event.player.getPersistentData().getInt("sb.airtrick.target");
+
+                            Entity target = event.player.level().getEntity(id);
+                            if (target instanceof LivingEntity) {
+                                executeTeleport(event.player, ((LivingEntity) target));
+                            }
+                        }
+
+                        event.player.getPersistentData().remove("sb.airtrick.counter");
+                        event.player.getPersistentData().remove("sb.airtrick.target");
+                        if (event.player instanceof ServerPlayer) {
+                            ((ServerPlayer) event.player).hasChangedDimension();
+                        }
+                    } else {
+                        event.player.getPersistentData().putInt("sb.airtrick.counter", count);
+                    }
                 }
             }
+            case END -> {
+                float stepUp = event.player.getPersistentData().getFloat("sb.tmp.stepup");
+                stepUp = Math.max(stepUp, stepUpDefault);
 
-            // handle avoid
-            if (event.player.getPersistentData().contains("sb.avoid.counter")) {
-                int count = event.player.getPersistentData().getInt("sb.avoid.counter");
-                count--;
-
-                if (count <= 0) {
-                    if (event.player.getPersistentData().contains("sb.avoid.vec")) {
-                        Vec3 pos = NBTHelper.getVector3d(event.player.getPersistentData(), "sb.avoid.vec");
-                        event.player.moveTo(pos);
-                    }
-
-                    event.player.getPersistentData().remove("sb.avoid.counter");
-                    event.player.getPersistentData().remove("sb.avoid.vec");
-
-                    if (event.player instanceof ServerPlayer) {
-                        ((ServerPlayer) event.player).hasChangedDimension();
-                    }
-                } else {
-                    event.player.getPersistentData().putInt("sb.avoid.counter", count);
+                if (stepUp < event.player.maxUpStep()) {
+                    event.player.setMaxUpStep(stepUp);
                 }
             }
-
-            // handle AirTrick
-            if (event.player.getPersistentData().contains("sb.airtrick.counter")) {
-                int count = event.player.getPersistentData().getInt("sb.airtrick.counter");
-                count--;
-
-                if (count <= 0) {
-                    if (event.player.getPersistentData().contains("sb.airtrick.target")) {
-                        int id = event.player.getPersistentData().getInt("sb.airtrick.target");
-
-                        Entity target = event.player.level().getEntity(id);
-                        if (target != null && target instanceof LivingEntity)
-                            executeTeleport(event.player, ((LivingEntity) target));
-                    }
-
-                    event.player.getPersistentData().remove("sb.airtrick.counter");
-                    event.player.getPersistentData().remove("sb.airtrick.target");
-                    if (event.player instanceof ServerPlayer) {
-                        ((ServerPlayer) event.player).hasChangedDimension();
-                    }
-                } else {
-                    event.player.getPersistentData().putInt("sb.airtrick.counter", count);
-                }
-            }
-        }
-        case END -> {
-            float stepUp = event.player.getPersistentData().getFloat("sb.tmp.stepup");
-            stepUp = Math.max(stepUp, stepUpDefault);
-
-            if (stepUp < event.player.maxUpStep())
-                event.player.setMaxUpStep(stepUp);
-        }
         }
     }
 }

@@ -2,9 +2,12 @@ package mods.flammpfeil.slashblade.capability.inputstate;
 
 import mods.flammpfeil.slashblade.util.EnumSetConverter;
 import mods.flammpfeil.slashblade.util.InputCommand;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.core.Direction;
-import net.minecraftforge.common.capabilities.*;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.CapabilityManager;
+import net.minecraftforge.common.capabilities.CapabilityToken;
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.common.util.LazyOptional;
 
@@ -16,7 +19,7 @@ public class InputStateCapabilityProvider implements ICapabilityProvider, INBTSe
     public static final Capability<IInputState> INPUT_STATE = CapabilityManager.get(new CapabilityToken<>() {
     });
 
-    protected LazyOptional<IInputState> state = LazyOptional.of(() -> new InputState());
+    protected LazyOptional<IInputState> state = LazyOptional.of(InputState::new);
 
     @Nonnull
     @Override
@@ -30,17 +33,13 @@ public class InputStateCapabilityProvider implements ICapabilityProvider, INBTSe
     public CompoundTag serializeNBT() {
         CompoundTag baseTag = new CompoundTag();
 
-        state.ifPresent(instance -> {
-            baseTag.putInt(KEY, EnumSetConverter.convertToInt(instance.getCommands()));
-        });
+        state.ifPresent(instance -> baseTag.putInt(KEY, EnumSetConverter.convertToInt(instance.getCommands())));
 
         return baseTag;
     }
 
     @Override
     public void deserializeNBT(CompoundTag baseTag) {
-        state.ifPresent(instance -> {
-            instance.getCommands().addAll(EnumSetConverter.convertToEnumSet(InputCommand.class, baseTag.getInt(KEY)));
-        });
+        state.ifPresent(instance -> instance.getCommands().addAll(EnumSetConverter.convertToEnumSet(InputCommand.class, baseTag.getInt(KEY))));
     }
 }

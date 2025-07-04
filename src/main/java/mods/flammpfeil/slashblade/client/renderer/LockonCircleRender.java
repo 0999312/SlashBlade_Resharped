@@ -2,6 +2,7 @@ package mods.flammpfeil.slashblade.client.renderer;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import mods.flammpfeil.slashblade.capability.inputstate.CapabilityInputState;
+import mods.flammpfeil.slashblade.capability.slashblade.ISlashBladeState;
 import mods.flammpfeil.slashblade.client.renderer.model.BladeModelManager;
 import mods.flammpfeil.slashblade.client.renderer.model.obj.WavefrontObject;
 import mods.flammpfeil.slashblade.client.renderer.util.BladeRenderState;
@@ -10,15 +11,16 @@ import mods.flammpfeil.slashblade.util.InputCommand;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+
 import java.awt.*;
 import java.util.Optional;
 
@@ -45,25 +47,29 @@ public class LockonCircleRender {
     public void onRenderLiving(RenderLivingEvent<?, ?> event) {
         final Minecraft minecraftInstance = Minecraft.getInstance();
         Player player = minecraftInstance.player;
-        if (player == null)
+        if (player == null) {
             return;
-        if (!player.getCapability(CapabilityInputState.INPUT_STATE)
-                .filter(input -> input.getCommands().contains(InputCommand.SNEAK)).isPresent())
+        }
+        if (player.getCapability(CapabilityInputState.INPUT_STATE)
+                .filter(input -> input.getCommands().contains(InputCommand.SNEAK)).isEmpty()) {
             return;
+        }
 
         ItemStack stack = player.getMainHandItem();
         Level level = player.level();
         Optional<Color> effectColor = stack.getCapability(ItemSlashBlade.BLADESTATE)
-                .filter(s -> event.getEntity().equals(s.getTargetEntity(level))).map(s -> s.getEffectColor());
+                .filter(s -> event.getEntity().equals(s.getTargetEntity(level))).map(ISlashBladeState::getEffectColor);
 
-        if (effectColor.isEmpty())
+        if (effectColor.isEmpty()) {
             return;
+        }
 
         LivingEntityRenderer<?, ?> renderer = event.getRenderer();
         LivingEntity livingEntity = event.getEntity();
 
-        if (!livingEntity.isAlive())
+        if (!livingEntity.isAlive()) {
             return;
+        }
 
         float health = livingEntity.getHealth() / livingEntity.getMaxHealth();
 
@@ -75,7 +81,7 @@ public class LockonCircleRender {
         float partialTicks = event.getPartialTick();
 
         poseStack.pushPose();
-        poseStack.translate(0.0D, (double) f, 0.0D);
+        poseStack.translate(0.0D, f, 0.0D);
 
         Vec3 offset = renderer.entityRenderDispatcher.camera.getPosition()
                 .subtract(livingEntity.getPosition(partialTicks).add(0, f, 0));

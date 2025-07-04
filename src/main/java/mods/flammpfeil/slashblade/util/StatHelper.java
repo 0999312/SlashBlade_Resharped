@@ -1,10 +1,10 @@
 package mods.flammpfeil.slashblade.util;
 
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.ServerStatsCounter;
 import net.minecraft.stats.Stat;
 import net.minecraft.stats.Stats;
-import net.minecraft.resources.ResourceLocation;
 
 public class StatHelper {
 

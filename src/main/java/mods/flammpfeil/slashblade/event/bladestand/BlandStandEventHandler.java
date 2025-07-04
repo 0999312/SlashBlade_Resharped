@@ -7,297 +7,460 @@ import mods.flammpfeil.slashblade.entity.BladeStandEntity;
 import mods.flammpfeil.slashblade.event.SlashBladeEvent;
 import mods.flammpfeil.slashblade.init.SBItems;
 import mods.flammpfeil.slashblade.item.ItemSlashBlade;
-import mods.flammpfeil.slashblade.registry.SlashArtsRegistry;
 import mods.flammpfeil.slashblade.recipe.RequestDefinition;
 import mods.flammpfeil.slashblade.recipe.SlashBladeIngredient;
+import mods.flammpfeil.slashblade.registry.SlashArtsRegistry;
 import mods.flammpfeil.slashblade.registry.SpecialEffectsRegistry;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.util.RandomSource;
 import net.minecraft.tags.DamageTypeTags;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import static net.minecraft.world.item.enchantment.EnchantmentHelper.*;
+import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @EventBusSubscriber()
 public class BlandStandEventHandler {
+    @SubscribeEvent
+    public static void eventKoseki(SlashBladeEvent.BladeStandAttackEvent event) {
+        var slashBladeDefinitionRegistry = SlashBlade.getSlashBladeDefinitionRegistry(event.getBladeStand().level());
+        if (!slashBladeDefinitionRegistry.containsKey(SlashBladeBuiltInRegistry.KOSEKI.location())) {
+            return;
+        }
+        if (!(event.getDamageSource().getEntity() instanceof WitherBoss)) {
+            return;
+        }
+        if (!event.getDamageSource().is(DamageTypeTags.IS_EXPLOSION)) {
+            return;
+        }
+        var in = SlashBladeIngredient.of(RequestDefinition.Builder.newInstance().build());
+        if (!in.test(event.getBlade())) {
+            return;
+        }
+        event.getBladeStand().setItem(Objects.requireNonNull(slashBladeDefinitionRegistry.get(SlashBladeBuiltInRegistry.KOSEKI)).getBlade());
+    }
 
-	@SubscribeEvent
-	public static void eventKoseki(SlashBladeEvent.BladeStandAttackEvent event) {
-		var slashBladeDefinitionRegistry = SlashBlade.getSlashBladeDefinitionRegistry(event.getBladeStand().level());
-		if (!slashBladeDefinitionRegistry.containsKey(SlashBladeBuiltInRegistry.KOSEKI.location()))
-			return;
-		if (!(event.getDamageSource().getEntity() instanceof WitherBoss))
-			return;
-		if (!event.getDamageSource().is(DamageTypeTags.IS_EXPLOSION))
-			return;
-		var in = SlashBladeIngredient.of(RequestDefinition.Builder.newInstance().build());
-		if (!in.test(event.getBlade()))
-			return;
-		event.getBladeStand().setItem(slashBladeDefinitionRegistry.get(SlashBladeBuiltInRegistry.KOSEKI).getBlade());
-	}
+    @SubscribeEvent
+    public static void eventChangeSE(SlashBladeEvent.BladeStandAttackEvent event) {
+        if (!(event.getDamageSource().getEntity() instanceof ServerPlayer player)) {
+            return;
+        }
+        ItemStack stack = player.getItemInHand(InteractionHand.MAIN_HAND);
+        ItemStack blade = event.getBlade();
+        if (blade.isEmpty()) {
+            return;
+        }
+        if (!stack.is(SlashBladeItemTags.CAN_CHANGE_SE)) {
+            return;
+        }
+        var world = player.level();
+        var state = event.getSlashBladeState();
 
-	@SubscribeEvent
-	public static void eventChangeSE(SlashBladeEvent.BladeStandAttackEvent event) {
-		var world = event.getBladeStand().level();
-		if (!(event.getDamageSource().getEntity() instanceof ServerPlayer) || world.isClientSide())
-			return;
-		Player player = (Player) event.getDamageSource().getEntity();
-		ItemStack stack = player.getItemInHand(InteractionHand.MAIN_HAND);
-		ItemStack blade = event.getBlade();
-		if (blade.isEmpty())
-			return;
-		if (!stack.is(SBItems.proudsoul_crystal))
-			return;
-		var state = event.getSlashBladeState();
+        if (stack.getTag() == null) {
+            return;
+        }
 
-		if (stack.getTag() == null)
-			return;
+        CompoundTag tag = stack.getTag();
+        if (tag.contains("SpecialEffectType")) {
+            var bladeStand = event.getBladeStand();
+            ResourceLocation SEKey = new ResourceLocation(tag.getString("SpecialEffectType"));
+            if (!(SpecialEffectsRegistry.REGISTRY.get().containsKey(SEKey))) {
+                return;
+            }
+            if (state.hasSpecialEffect(SEKey)) {
+                return;
+            }
 
-		CompoundTag tag = stack.getTag();
-		if (tag.contains("SpecialEffectType")) {
-			var bladeStand = event.getBladeStand();
-			ResourceLocation SEKey = new ResourceLocation(tag.getString("SpecialEffectType"));
-			if (!(SpecialEffectsRegistry.REGISTRY.get().containsKey(SEKey)))
-				return;
-			if (state.hasSpecialEffect(SEKey))
-				return;
-			state.addSpecialEffect(SEKey);
-			RandomSource random = player.getRandom();
-			//播放成功效果
-			spawnSucceedEffects(world,bladeStand,random);
-			if (!player.isCreative())
-				stack.shrink(1);
-		}
-	}
+            BladeChangeSpecialEffectEvent e = new BladeChangeSpecialEffectEvent(
+                    blade, state, SEKey, event);
 
-	@SubscribeEvent
-	public static void eventChangeSA(SlashBladeEvent.BladeStandAttackEvent event) {
-		var world = event.getBladeStand().level();
-		if (!(event.getDamageSource().getEntity() instanceof ServerPlayer) || world.isClientSide())
-			return;
-		Player player = (Player) event.getDamageSource().getEntity();
-		ItemStack stack = player.getItemInHand(InteractionHand.MAIN_HAND);
-		CompoundTag tag = stack.getTag();
+            if (!player.isCreative()) {
+                e.setShrinkCount(1);
+            }
 
-		if (!stack.is(SBItems.proudsoul_sphere) || tag == null || !tag.contains("SpecialAttackType"))
-			return;
+            MinecraftForge.EVENT_BUS.post(e);
+            if (e.isCanceled()) {
+                return;
+            }
 
-		ResourceLocation SAKey = new ResourceLocation(tag.getString("SpecialAttackType"));
-		if (!SlashArtsRegistry.REGISTRY.get().containsKey(SAKey))
-			return;
+            if (stack.getCount() < e.getShrinkCount()) {
+                return;
+            }
 
-		ItemStack blade = event.getBlade();
+            state.addSpecialEffect(e.getSEKey());
 
-		blade.getCapability(ItemSlashBlade.BLADESTATE).ifPresent(state -> {
-			if (!SAKey.equals(state.getSlashArtsKey())) {
-				state.setSlashArtsKey(SAKey);
+            RandomSource random = player.getRandom();
 
-				RandomSource random = player.getRandom();
-				BladeStandEntity bladeStand = event.getBladeStand();
-				//播放成功效果
-				spawnSucceedEffects(world,bladeStand,random);
+            spawnSucceedEffects(world, bladeStand, random);
 
-				if (!player.isCreative()) {
-					stack.shrink(1);
-				}
-			}
-		});
-	}
+            stack.shrink(e.getShrinkCount());
 
-	@SubscribeEvent
-	public static void eventCopySE(SlashBladeEvent.BladeStandAttackEvent event) {
-		var world = event.getBladeStand().level();
-		if (!(event.getDamageSource().getEntity() instanceof ServerPlayer) || world.isClientSide())
-			return;
-		Player player = (Player) event.getDamageSource().getEntity();
-		ItemStack stack = player.getItemInHand(InteractionHand.MAIN_HAND);
-		ItemStack blade = event.getBlade();
-		if (blade.isEmpty())
-			return;
-		if (!stack.is(SBItems.proudsoul_crystal))
-			return;
+            event.setCanceled(true);
+        }
+    }
 
-		CompoundTag crystalTag = stack.getTag();
-		if (crystalTag != null && crystalTag.contains("SpecialEffectType"))
-			return;
+    @SubscribeEvent
+    public static void eventChangeSA(SlashBladeEvent.BladeStandAttackEvent event) {
+        if (!(event.getDamageSource().getEntity() instanceof ServerPlayer player)) {
+            return;
+        }
+        ItemStack stack = player.getItemInHand(InteractionHand.MAIN_HAND);
+        CompoundTag tag = stack.getTag();
 
-		var state = event.getSlashBladeState();
-		var bladeStand = event.getBladeStand();
-		var specialEffects = state.getSpecialEffects();
+        if (!stack.is(SlashBladeItemTags.CAN_CHANGE_SA) || tag == null || !tag.contains("SpecialAttackType")) {
+            return;
+        }
 
-		for (var se : specialEffects) {
-			if (!SpecialEffectsRegistry.REGISTRY.get().containsKey(se))
-				continue;
-			if (!SpecialEffectsRegistry.REGISTRY.get().getValue(se).isCopiable())
-				continue;
-			ItemStack orb = new ItemStack(SBItems.proudsoul_crystal);
-			CompoundTag tag = new CompoundTag();
-			tag.putString("SpecialEffectType", se.toString());
-			orb.setTag(tag);
-			if (!player.isCreative())
-				stack.shrink(1);
-			RandomSource random = player.getRandom();
-			//播放成功效果
-			spawnSucceedEffects(world,bladeStand,random);
-			player.drop(orb, true);
-			if (SpecialEffectsRegistry.REGISTRY.get().getValue(se).isRemovable())
-				state.removeSpecialEffect(se);
-			return;
-		}
-	}
+        ResourceLocation SAKey = new ResourceLocation(tag.getString("SpecialAttackType"));
+        if (!SlashArtsRegistry.REGISTRY.get().containsKey(SAKey)) {
+            return;
+        }
 
-	@SubscribeEvent
-	public static void eventCopySA(SlashBladeEvent.BladeStandAttackEvent event) {
-		var world = event.getBladeStand().level();
-		if (!(event.getDamageSource().getEntity() instanceof ServerPlayer) || world.isClientSide())
-			return;
-		Player player = (Player) event.getDamageSource().getEntity();
-		ItemStack stack = player.getItemInHand(InteractionHand.MAIN_HAND);
-		ItemStack blade = event.getBlade();
-		if (blade.isEmpty())
-			return;
-		if (!stack.is(SBItems.proudsoul_ingot) || !stack.isEnchanted())
-			return;
-		var state = event.getSlashBladeState();
-		var bladeStand = event.getBladeStand();
-		var enchantments = EnchantmentHelper.getEnchantments(stack).keySet();
-		for (Enchantment e : enchantments) {
-			if (EnchantmentHelper.getTagEnchantmentLevel(e, blade) < e.getMaxLevel())
-				return;
-		}
+        ItemStack blade = event.getBlade();
 
-		ResourceLocation SA = state.getSlashArtsKey();
-		if (SA != null && !SA.equals(SlashArtsRegistry.NONE.getId())) {
-			ItemStack orb = new ItemStack(SBItems.proudsoul_sphere);
-			CompoundTag tag = new CompoundTag();
-			tag.putString("SpecialAttackType", state.getSlashArtsKey().toString());
-			orb.setTag(tag);
+        blade.getCapability(ItemSlashBlade.BLADESTATE).ifPresent(state -> {
+            if (!SAKey.equals(state.getSlashArtsKey())) {
 
-			RandomSource random = player.getRandom();
-			//播放成功效果
-			spawnSucceedEffects(world,bladeStand,random);
+                BladeChangeSpecialAttackEvent e = new BladeChangeSpecialAttackEvent(
+                        blade, state, SAKey, event);
 
-			if (!player.isCreative())
-				stack.shrink(1);
-			player.drop(orb, true);
-		}
+                if (!player.isCreative()) {
+                    e.setShrinkCount(1);
+                }
 
-	}
+                MinecraftForge.EVENT_BUS.post(e);
+                if (e.isCanceled()) {
+                    return;
+                }
 
-	@SubscribeEvent(priority = EventPriority.LOWEST)
-	public static void eventProudSoulEnchantment(SlashBladeEvent.BladeStandAttackEvent event) {
-		var world = event.getBladeStand().level();
-		if (!(event.getDamageSource().getEntity() instanceof ServerPlayer) || world.isClientSide())
-			return;
-		Player player = (Player) event.getDamageSource().getEntity();
-		ItemStack stack = player.getItemInHand(InteractionHand.MAIN_HAND);
-		ItemStack blade = event.getBlade();
+                if (stack.getCount() < e.getShrinkCount()) {
+                    return;
+                }
 
-		if (blade.isEmpty() || !stack.is(SlashBladeItemTags.PROUD_SOULS) || !stack.isEnchanted())
-			return;
-		var random = world.getRandom();
-		var bladeStand = event.getBladeStand();
+                state.setSlashArtsKey(e.getSAKey());
+
+                RandomSource random = player.getRandom();
+                BladeStandEntity bladeStand = event.getBladeStand();
+
+                spawnSucceedEffects(player.level(), bladeStand, random);
+
+                stack.shrink(e.getShrinkCount());
+            }
+        });
+        event.setCanceled(true);
+    }
+
+    @SubscribeEvent
+    public static void eventCopySE(SlashBladeEvent.BladeStandAttackEvent event) {
+        if (!(event.getDamageSource().getEntity() instanceof ServerPlayer player)) {
+            return;
+        }
+        ItemStack stack = player.getItemInHand(InteractionHand.MAIN_HAND);
+        ItemStack blade = event.getBlade();
+        if (blade.isEmpty()) {
+            return;
+        }
+        if (!stack.is(SlashBladeItemTags.CAN_COPY_SE)) {
+            return;
+        }
+
+        CompoundTag crystalTag = stack.getTag();
+        if (crystalTag != null && crystalTag.contains("SpecialEffectType")) {
+            return;
+        }
+
+        var world = player.level();
+        var state = event.getSlashBladeState();
+        var bladeStand = event.getBladeStand();
+        var specialEffects = state.getSpecialEffects();
+
+        for (var se : specialEffects) {
+            if (!SpecialEffectsRegistry.REGISTRY.get().containsKey(se)) {
+                continue;
+            }
+
+            PreCopySpecialEffectFromBladeEvent pe = new PreCopySpecialEffectFromBladeEvent(
+                    blade, state, se, event, Objects.requireNonNull(SpecialEffectsRegistry.REGISTRY.get().getValue(se)).isRemovable(),
+                    Objects.requireNonNull(SpecialEffectsRegistry.REGISTRY.get().getValue(se)).isCopiable());
+
+            if (!player.isCreative()) {
+                pe.setShrinkCount(1);
+            }
+
+            MinecraftForge.EVENT_BUS.post(pe);
+            if (pe.isCanceled()) {
+                return;
+            }
+
+            if (stack.getCount() < pe.getShrinkCount()) {
+                continue;
+            }
+
+            if (!pe.isCopiable()) {
+                continue;
+            }
+
+            ItemStack orb = new ItemStack(SBItems.proudsoul_crystal);
+            CompoundTag tag = new CompoundTag();
+            tag.putString("SpecialEffectType", se.toString());
+            orb.setTag(tag);
+
+            stack.shrink(pe.getShrinkCount());
+
+            RandomSource random = player.getRandom();
+
+            spawnSucceedEffects(world, bladeStand, random);
+
+            ItemEntity itemEntity = player.drop(orb, true);
+
+            if (pe.isRemovable()) {
+                state.removeSpecialEffect(se);
+            }
+
+            CopySpecialEffectFromBladeEvent e = new CopySpecialEffectFromBladeEvent(
+                    pe, orb, itemEntity);
+
+            MinecraftForge.EVENT_BUS.post(e);
+
+            event.setCanceled(true);
+            return;
+        }
+    }
+
+    @SubscribeEvent
+    public static void eventCopySA(SlashBladeEvent.BladeStandAttackEvent event) {
+        if (!(event.getDamageSource().getEntity() instanceof Player player)) {
+            return;
+        }
+        ItemStack stack = player.getItemInHand(InteractionHand.MAIN_HAND);
+        ItemStack blade = event.getBlade();
+        if (blade.isEmpty()) {
+            return;
+        }
+        if (!stack.is(SlashBladeItemTags.CAN_COPY_SA) || !stack.isEnchanted()) {
+            return;
+        }
+        var world = player.level();
+        var state = event.getSlashBladeState();
+        var bladeStand = event.getBladeStand();
+        ResourceLocation SA = state.getSlashArtsKey();
+        if (SA != null && !SA.equals(SlashArtsRegistry.NONE.getId())) {
+
+            PreCopySpecialAttackFromBladeEvent pe = new PreCopySpecialAttackFromBladeEvent(
+                    blade, state, SA, event);
+
+            if (!player.isCreative()) {
+                pe.setShrinkCount(1);
+            }
+
+            MinecraftForge.EVENT_BUS.post(pe);
+            if (pe.isCanceled()) {
+                return;
+            }
+
+            if (stack.getCount() < pe.getShrinkCount()) {
+                return;
+            }
+
+            ItemStack orb = new ItemStack(SBItems.proudsoul_sphere);
+            CompoundTag tag = new CompoundTag();
+            tag.putString("SpecialAttackType", state.getSlashArtsKey().toString());
+            orb.setTag(tag);
+
+            stack.shrink(pe.getShrinkCount());
+
+            RandomSource random = player.getRandom();
+
+            spawnSucceedEffects(world, bladeStand, random);
+
+            ItemEntity itemEntity = player.drop(orb, true);
+
+            CopySpecialAttackFromBladeEvent e = new CopySpecialAttackFromBladeEvent(
+                    pe, orb, itemEntity);
+
+            MinecraftForge.EVENT_BUS.post(e);
+
+            event.setCanceled(true);
+        }
+    }
+
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public static void eventProudSoulEnchantment(SlashBladeEvent.BladeStandAttackEvent event) {
+        if (!(event.getDamageSource().getEntity() instanceof Player player)) {
+            return;
+        }
+        ItemStack stack = player.getItemInHand(InteractionHand.MAIN_HAND);
+        ItemStack blade = event.getBlade();
+
+        if (blade.isEmpty()) {
+            return;
+        }
+
+        if (!stack.is(SlashBladeItemTags.PROUD_SOULS)) {
+            return;
+        }
+
+        if (!stack.isEnchanted()) {
+            return;
+        }
+
+        var world = player.level();
+        var random = world.getRandom();
+        var bladeStand = event.getBladeStand();
+        Map<Enchantment, Integer> currentBladeEnchantments = blade.getAllEnchantments();
+        Map<Enchantment, Integer> enchantments = new HashMap<>();
+
+        AtomicInteger totalShrinkCount = new AtomicInteger(0);
+        if (!player.isCreative()) {
+            totalShrinkCount.set(1);
+        }
+        stack.getAllEnchantments().forEach((enchantment, level) -> {
+            if (event.isCanceled()) {
+                return;
+            }
+            if (!blade.canApplyAtEnchantingTable(enchantment)) {
+                return;
+            }
+
+            var probability = 1.0F;
+            if (stack.is(SBItems.proudsoul_tiny)) {
+                probability = 0.25F;
+            }
+            if (stack.is(SBItems.proudsoul)) {
+                probability = 0.5F;
+            }
+            if (stack.is(SBItems.proudsoul_ingot)) {
+                probability = 0.75F;
+            }
+
+            int enchantLevel = Math.min(enchantment.getMaxLevel(),
+                    EnchantmentHelper.getTagEnchantmentLevel(enchantment, blade) + 1);
+
+            ProudSoulEnchantmentEvent e = new ProudSoulEnchantmentEvent(
+                    blade, event.getSlashBladeState(), enchantment, enchantLevel, false, probability,
+                    totalShrinkCount.get(), event);
+
+            MinecraftForge.EVENT_BUS.post(e);
+            if (e.isCanceled()) {
+                return;
+            }
+
+            totalShrinkCount.set(e.getTotalShrinkCount());
+
+            enchantments.put(e.getEnchantment(), e.getEnchantLevel());
+
+            if (!e.willTryNextEnchant()) {
+                event.setCanceled(true);
+            }
+        });
+
+        if (stack.getCount() < totalShrinkCount.get()) {
+            return;
+        }
+        stack.shrink(totalShrinkCount.get());
+
+        currentBladeEnchantments.putAll(enchantments);
+        EnchantmentHelper.setEnchantments(currentBladeEnchantments, blade);
+
+        if (!enchantments.isEmpty()) {
+            spawnSucceedEffects(world, bladeStand, random);
+        }
+
+        event.setCanceled(true);
+    }
 
 
-		Map<ResourceLocation, Integer> upgradeEnchantmentMap = new HashMap();
-		//遍历耀魂的所有附魔
-		stack.getAllEnchantments().forEach((enchantment, level) -> {
-			if (!blade.canApplyAtEnchantingTable(enchantment)) return;
-			//获取当前拔刀该附魔的等级(没有则为0)
-			int currentLevel = EnchantmentHelper.getTagEnchantmentLevel(enchantment, blade);
-			if (currentLevel >= enchantment.getMaxLevel()) return;
-			ResourceLocation enchantmentID = getEnchantmentId(enchantment);
-			upgradeEnchantmentMap.put(enchantmentID, Math.min(enchantment.getMaxLevel() - currentLevel,level));
-		});
+    @SubscribeEvent
+    public static void copySAEnchantmentCheck(PreCopySpecialAttackFromBladeEvent event) {
+        SlashBladeEvent.BladeStandAttackEvent oriEvent = event.getOriginalEvent();
+        if (oriEvent == null) {
+            return;
+        }
+        Player player = (Player) oriEvent.getDamageSource().getEntity();
+        if (player != null) {
+            ItemStack stack = player.getItemInHand(InteractionHand.MAIN_HAND);
 
-		if (!upgradeEnchantmentMap.isEmpty()){
-			var probability = 1.0F;
-			if (stack.is(SBItems.proudsoul_tiny))
-				probability = 0.25F;
-			if (stack.is(SBItems.proudsoul))
-				probability = 0.5F;
-			if (stack.is(SBItems.proudsoul_ingot))
-				probability = 0.75F;
-			if (random.nextFloat() <= probability) {
-				//获取当前拔刀的所有附魔
-				ListTag bladeTag = blade.getEnchantmentTags();
-				if (bladeTag.isEmpty()){
-					upgradeEnchantmentMap.forEach((enchantmentID, level) -> {
-						bladeTag.add(storeEnchantment(enchantmentID,level));
-					});
-					blade.getOrCreateTag().put("Enchantments", bladeTag);
-				}else{
-					//遍历拔刀的所有附魔
-					for (int i = 0; i < bladeTag.size(); i++) {
-						CompoundTag enchantmentTag = bladeTag.getCompound(i);
-						ResourceLocation enchantmentID = getEnchantmentId(enchantmentTag);
+            ItemStack blade = event.getBlade();
+            Set<Enchantment> enchantments = EnchantmentHelper.getEnchantments(stack).keySet();
+            boolean flag = false;
+            for (Enchantment e : enchantments) {
+                if (EnchantmentHelper.getTagEnchantmentLevel(e, blade) >= e.getMaxLevel()) {
+                    flag = true;
+                }
+            }
+            if (!flag) {
+                event.setCanceled(true);
+            }
+        }
+    }
 
-						if (upgradeEnchantmentMap.containsKey(enchantmentID)) {
-							int upgradeLevel = upgradeEnchantmentMap.get(enchantmentID);
-							EnchantmentHelper.setEnchantmentLevel(enchantmentTag,getEnchantmentLevel(enchantmentTag) + upgradeLevel);
-							upgradeEnchantmentMap.remove(enchantmentID);
-						}
-					}
-					upgradeEnchantmentMap.forEach((enchantmentID, level) -> {
-						bladeTag.add(storeEnchantment(enchantmentID,level));
-					});
-				}
-				//播放成功效果
-				spawnSucceedEffects(world,bladeStand,random);
-			}
-			if (!player.isCreative()){
-				stack.shrink(1);
-			}
-		}
-	}
+    @SubscribeEvent
+    public static void proudSoulEnchantmentProbabilityCheck(ProudSoulEnchantmentEvent event) {
+        SlashBladeEvent.BladeStandAttackEvent oriEvent = event.getOriginalEvent();
+        if (oriEvent == null) {
+            return;
+        }
+        Player player = (Player) oriEvent.getDamageSource().getEntity();
+        if (player != null) {
+            Level world = player.level();
+            RandomSource random = world.getRandom();
 
-	private static void spawnSucceedEffects(Level world, BladeStandEntity bladeStand, RandomSource random) {
-		if (!(world instanceof ServerLevel serverLevel)) return;
-		// 音效
-		serverLevel.playSound(
-				bladeStand,
-				bladeStand.getPos(),
-				SoundEvents.WITHER_SPAWN,
-				SoundSource.BLOCKS,
-				0.5f,
-				0.8f
-		);
+            if (random.nextFloat() > event.getProbability()) {
+                event.setCanceled(true);
+            }
+        }
+    }
 
-		// 粒子效果
-		for (int i = 0; i < 32; ++i) {
-			double xDist = (random.nextFloat() * 2.0F - 1.0F);
-			double yDist = (random.nextFloat() * 2.0F - 1.0F);
-			double zDist = (random.nextFloat() * 2.0F - 1.0F);
-			if (!(xDist * xDist + yDist * yDist + zDist * zDist > 1.0D)) {
-				double x = bladeStand.getX(xDist / 4.0D);
-				double y = bladeStand.getY(0.5D + yDist / 4.0D);
-				double z = bladeStand.getZ(zDist / 4.0D);
-				serverLevel.sendParticles(
-						ParticleTypes.PORTAL,
-						x, y, z,
-						0,
-						xDist, yDist + 0.2D, zDist,
-						1);
-			}
-		}
-	}
+    private static void spawnSucceedEffects(Level world, BladeStandEntity bladeStand, RandomSource random) {
+        if (!(world instanceof ServerLevel serverLevel)) {
+            return;
+        }
+        // 音效
+        serverLevel.playSound(
+                bladeStand,
+                bladeStand.getPos(),
+                SoundEvents.WITHER_SPAWN,
+                SoundSource.BLOCKS,
+                0.5f,
+                0.8f
+        );
+
+        // 粒子效果
+        for (int i = 0; i < 32; ++i) {
+            double xDist = (random.nextFloat() * 2.0F - 1.0F);
+            double yDist = (random.nextFloat() * 2.0F - 1.0F);
+            double zDist = (random.nextFloat() * 2.0F - 1.0F);
+            if (xDist * xDist + yDist * yDist + zDist * zDist <= 1.0D) {
+                double x = bladeStand.getX(xDist / 4.0D);
+                double y = bladeStand.getY(0.5D + yDist / 4.0D);
+                double z = bladeStand.getZ(zDist / 4.0D);
+                serverLevel.sendParticles(
+                        ParticleTypes.PORTAL,
+                        x, y, z,
+                        0,
+                        xDist, yDist + 0.2D, zDist,
+                        1);
+            }
+        }
+    }
 }

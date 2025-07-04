@@ -1,31 +1,31 @@
-/* 
+/*
  * PROJECT: NyMmd
  * --------------------------------------------------------------------------------
  * The MMD for Java is Java version MMD Motion player class library.
  * NyMmd is modules which removed the ARToolKit origin codes from ARTK_MMD,
- * and was ported to Java. 
+ * and was ported to Java.
  *
  * This is based on the ARTK_MMD v0.1 by PY.
  * http://ppyy.if.land.to/artk_mmd.html
  * py1024<at>gmail.com
  * http://www.nicovideo.jp/watch/sm7398691
  *
- * 
+ *
  * The MIT License
  * Copyright (C)2008-2012 nyatla
  * nyatla39<at>gmail.com
  * http://nyatla.jp
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -33,7 +33,7 @@
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
- * 
+ *
  */
 package jp.nyatla.nymmd.types;
 
@@ -42,42 +42,74 @@ public class MmdMatrix {
     // <NyARToolkitからのポート>
     //////
 
-    /** 行列の要素値です。 */
+    /**
+     * 行列の要素値です。
+     */
     public double m00;
-    /** 行列の要素値です。 */
+    /**
+     * 行列の要素値です。
+     */
     public double m01;
-    /** 行列の要素値です。 */
+    /**
+     * 行列の要素値です。
+     */
     public double m02;
-    /** 行列の要素値です。 */
+    /**
+     * 行列の要素値です。
+     */
     public double m03;
-    /** 行列の要素値です。 */
+    /**
+     * 行列の要素値です。
+     */
     public double m10;
-    /** 行列の要素値です。 */
+    /**
+     * 行列の要素値です。
+     */
     public double m11;
-    /** 行列の要素値です。 */
+    /**
+     * 行列の要素値です。
+     */
     public double m12;
-    /** 行列の要素値です。 */
+    /**
+     * 行列の要素値です。
+     */
     public double m13;
-    /** 行列の要素値です。 */
+    /**
+     * 行列の要素値です。
+     */
     public double m20;
-    /** 行列の要素値です。 */
+    /**
+     * 行列の要素値です。
+     */
     public double m21;
-    /** 行列の要素値です。 */
+    /**
+     * 行列の要素値です。
+     */
     public double m22;
-    /** 行列の要素値です。 */
+    /**
+     * 行列の要素値です。
+     */
     public double m23;
-    /** 行列の要素値です。 */
+    /**
+     * 行列の要素値です。
+     */
     public double m30;
-    /** 行列の要素値です。 */
+    /**
+     * 行列の要素値です。
+     */
     public double m31;
-    /** 行列の要素値です。 */
+    /**
+     * 行列の要素値です。
+     */
     public double m32;
-    /** 行列の要素値です。 */
+    /**
+     * 行列の要素値です。
+     */
     public double m33;
 
     /**
      * この関数は、オブジェクトの配列を生成して返します。
-     * 
+     *
      * @param i_number 配列の長さ
      * @return 新しいオブジェクト配列
      */
@@ -114,7 +146,7 @@ public class MmdMatrix {
 
     /**
      * この関数は、オブジェクトの内容をインスタンスにコピーします。
-     * 
+     *
      * @param i_value コピー元のオブジェクト
      */
     public void setValue(MmdMatrix i_value) {
@@ -182,7 +214,7 @@ public class MmdMatrix {
 
     /**
      * この関数は、要素数16の配列に、行列の内容を転置してからコピーします。 順番は、00,10,20,30,01...の順です。
-     * 
+     *
      * @param o_value 値を受け取る配列
      */
     public void getValueT(double[] o_value) {
@@ -207,7 +239,7 @@ public class MmdMatrix {
 
     /**
      * この関数は、逆行列を計算して、インスタンスにセットします。
-     * 
+     *
      * @param i_src 逆行列を計算するオブジェクト。thisを指定できます。
      * @return 逆行列を得られると、trueを返します。
      */
@@ -311,7 +343,7 @@ public class MmdMatrix {
 
     /**
      * この関数は、行列同士の掛け算をして、インスタンスに格納します。 i_mat_lとi_mat_rには、thisを指定しないでください。
-     * 
+     *
      * @param i_mat_l 左成分の行列
      * @param i_mat_r 右成分の行列
      */
@@ -431,16 +463,20 @@ public class MmdMatrix {
             c = (float) Math.atan2(m01, m00);
             // b = (float)Math.asin(-m02);
             a = (float) Math.asin(m12 / bb);
-            if (m22 < 0)
+            if (m22 < 0) {
                 a = Math.PI - a;
+            }
         }
 
-        if (Double.isNaN(a) || Double.isInfinite(a))
+        if (Double.isNaN(a) || Double.isInfinite(a)) {
             a = 0;
-        if (Double.isNaN(b) || Double.isInfinite(b))
+        }
+        if (Double.isNaN(b) || Double.isInfinite(b)) {
             b = 0;
-        if (Double.isNaN(c) || Double.isInfinite(c))
+        }
+        if (Double.isNaN(c) || Double.isInfinite(c)) {
             c = 0;
+        }
 
         return new MmdVector3((float) a, (float) b, (float) c);
     }

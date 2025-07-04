@@ -12,7 +12,9 @@ public class EnchantmentsHelper {
         Map<Enchantment, Integer> enchantmentsB = EnchantmentHelper.getEnchantments(stackB);
 
         // 如果B没有附魔要求，直接返回true
-        if (enchantmentsB.isEmpty()) return true;
+        if (enchantmentsB.isEmpty()) {
+            return true;
+        }
 
         Map<Enchantment, Integer> enchantmentsA = EnchantmentHelper.getEnchantments(stackA);
 

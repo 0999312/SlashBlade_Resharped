@@ -30,17 +30,21 @@ public class SneakingMotionCanceller {
     public void onRenderPlayerEventPre(RenderPlayerEvent.Pre event) {
         ItemStack stack = event.getEntity().getMainHandItem();
 
-        if (stack.isEmpty())
+        if (stack.isEmpty()) {
             return;
-        if (!(stack.getCapability(ItemSlashBlade.BLADESTATE).isPresent()))
+        }
+        if (!(stack.getCapability(ItemSlashBlade.BLADESTATE).isPresent())) {
             return;
+        }
 
-        if (!event.getRenderer().getModel().crouching)
+        if (!event.getRenderer().getModel().crouching) {
             return;
+        }
 
         final Minecraft instance = Minecraft.getInstance();
-        if (instance.options.getCameraType() == CameraType.FIRST_PERSON && instance.player == event.getEntity())
+        if (instance.options.getCameraType() == CameraType.FIRST_PERSON && instance.player == event.getEntity()) {
             return;
+        }
 
         event.getRenderer().getModel().crouching = false;
 

@@ -1,18 +1,10 @@
 package mods.flammpfeil.slashblade.recipe;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Consumer;
-
-import javax.annotation.Nullable;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-
 import mods.flammpfeil.slashblade.init.SBItems;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementRewards;
@@ -31,6 +23,14 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.ItemLike;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.jetbrains.annotations.NotNull;
+
+import javax.annotation.Nullable;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.function.Consumer;
 
 public class SlashBladeShapedRecipeBuilder extends CraftingRecipeBuilder implements RecipeBuilder {
     private final RecipeCategory category = RecipeCategory.COMBAT;
@@ -94,12 +94,14 @@ public class SlashBladeShapedRecipeBuilder extends CraftingRecipeBuilder impleme
         }
     }
 
-    public SlashBladeShapedRecipeBuilder unlockedBy(String key, CriterionTriggerInstance trigger) {
+    @Override
+    public @NotNull SlashBladeShapedRecipeBuilder unlockedBy(@NotNull String key, @NotNull CriterionTriggerInstance trigger) {
         this.advancement.addCriterion(key, trigger);
         return this;
     }
 
-    public SlashBladeShapedRecipeBuilder group(@Nullable String group) {
+    @Override
+    public @NotNull SlashBladeShapedRecipeBuilder group(@Nullable String group) {
         this.group = group;
         return this;
     }
@@ -109,16 +111,18 @@ public class SlashBladeShapedRecipeBuilder extends CraftingRecipeBuilder impleme
         return this;
     }
 
-    public Item getResult() {
+    @Override
+    public @NotNull Item getResult() {
         return this.result;
     }
 
     @Override
-    public void save(Consumer<FinishedRecipe> consumer) {
-        this.save(consumer, this.blade != null ? this.blade : ForgeRegistries.ITEMS.getKey(this.getResult()));
+    public void save(@NotNull Consumer<FinishedRecipe> consumer) {
+        this.save(consumer, this.blade != null ? this.blade : Objects.requireNonNull(ForgeRegistries.ITEMS.getKey(this.getResult())));
     }
 
-    public void save(Consumer<FinishedRecipe> consumer, ResourceLocation id) {
+    @Override
+    public void save(Consumer<FinishedRecipe> consumer, @NotNull ResourceLocation id) {
         this.ensureValid(id);
         this.advancement.parent(ROOT_RECIPE_ADVANCEMENT)
                 .addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(id))
@@ -172,8 +176,8 @@ public class SlashBladeShapedRecipeBuilder extends CraftingRecipeBuilder impleme
         private final boolean showNotification;
 
         public Result(ResourceLocation id, Item result, int count, ResourceLocation bladeId, String group,
-                List<String> pattern, Map<Character, Ingredient> key, Advancement.Builder advancement,
-                ResourceLocation advancementId, boolean showNotification) {
+                      List<String> pattern, Map<Character, Ingredient> key, Advancement.Builder advancement,
+                      ResourceLocation advancementId, boolean showNotification) {
             super(CraftingBookCategory.EQUIPMENT);
             this.id = id;
             this.result = result;
@@ -187,7 +191,8 @@ public class SlashBladeShapedRecipeBuilder extends CraftingRecipeBuilder impleme
             this.showNotification = showNotification;
         }
 
-        public void serializeRecipeData(JsonObject json) {
+        @Override
+        public void serializeRecipeData(@NotNull JsonObject json) {
             super.serializeRecipeData(json);
             if (!this.group.isEmpty()) {
                 json.addProperty("group", this.group);
@@ -208,32 +213,37 @@ public class SlashBladeShapedRecipeBuilder extends CraftingRecipeBuilder impleme
 
             json.add("key", jsonobject);
             JsonObject jsonobject1 = new JsonObject();
-            jsonobject1.addProperty("item", ForgeRegistries.ITEMS.getKey(this.result).toString());
+            jsonobject1.addProperty("item", Objects.requireNonNull(ForgeRegistries.ITEMS.getKey(this.result)).toString());
             if (this.count > 1) {
                 jsonobject1.addProperty("count", this.count);
             }
 
             json.add("result", jsonobject1);
 
-            if (this.bladeId != null)
+            if (this.bladeId != null) {
                 json.addProperty("blade", this.bladeId.toString());
+            }
 
             json.addProperty("show_notification", this.showNotification);
         }
 
-        public RecipeSerializer<?> getType() {
+        @Override
+        public @NotNull RecipeSerializer<?> getType() {
             return SlashBladeShapedRecipe.SERIALIZER;
         }
 
-        public ResourceLocation getId() {
+        @Override
+        public @NotNull ResourceLocation getId() {
             return this.id;
         }
 
+        @Override
         @Nullable
         public JsonObject serializeAdvancement() {
             return this.advancement.serializeToJson();
         }
 
+        @Override
         @Nullable
         public ResourceLocation getAdvancementId() {
             return this.advancementId;

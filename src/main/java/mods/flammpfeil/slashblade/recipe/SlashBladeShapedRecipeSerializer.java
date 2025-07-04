@@ -1,20 +1,18 @@
 package mods.flammpfeil.slashblade.recipe;
 
-import java.util.function.BiFunction;
-
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
 import com.google.gson.JsonObject;
-
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public record SlashBladeShapedRecipeSerializer<T extends Recipe<?>, U extends T> (RecipeSerializer<T> compose,
-        BiFunction<T, @Nullable ResourceLocation, U> converter) implements RecipeSerializer<U> {
+import java.util.function.BiFunction;
+
+public record SlashBladeShapedRecipeSerializer<T extends Recipe<?>, U extends T>(RecipeSerializer<T> compose,
+                                                                                 BiFunction<T, @Nullable ResourceLocation, U> converter) implements RecipeSerializer<U> {
     @Override
     @NotNull
     public U fromJson(@NotNull ResourceLocation id, @NotNull JsonObject json) {
@@ -36,8 +34,9 @@ public record SlashBladeShapedRecipeSerializer<T extends Recipe<?>, U extends T>
     @NotNull
     public U fromNetwork(@NotNull ResourceLocation id, @NotNull FriendlyByteBuf buf) {
         T recipe = compose().fromNetwork(id, buf);
-        if (buf.readBoolean())
+        if (buf.readBoolean()) {
             return converter().apply(recipe, buf.readResourceLocation());
+        }
         return converter().apply(recipe, null);
     }
 
@@ -47,9 +46,11 @@ public record SlashBladeShapedRecipeSerializer<T extends Recipe<?>, U extends T>
         if (recipe instanceof SlashBladeShapedRecipe bladeRecipe) {
             boolean hasName = bladeRecipe.getOutputBlade() != null;
             buf.writeBoolean(hasName);
-            if (hasName)
+            if (hasName) {
                 buf.writeResourceLocation(bladeRecipe.getOutputBlade());
-        } else
+            }
+        } else {
             buf.writeBoolean(false);
+        }
     }
 }

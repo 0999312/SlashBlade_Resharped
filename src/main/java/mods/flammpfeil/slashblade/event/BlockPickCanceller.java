@@ -29,15 +29,18 @@ public class BlockPickCanceller {
     @OnlyIn(Dist.CLIENT)
     @SubscribeEvent
     public void onBlockPick(InputEvent.InteractionKeyMappingTriggered event) {
-        if (!event.isPickBlock())
+        if (!event.isPickBlock()) {
             return;
+        }
 
         final Minecraft instance = Minecraft.getInstance();
         LocalPlayer player = instance.player;
-        if (player == null)
+        if (player == null) {
             return;
-        if (SlashBladeKeyMappings.KEY_SUMMON_BLADE.getKey() != SlashBladeKeyMappings.KEY_SUMMON_BLADE.getDefaultKey())
+        }
+        if (SlashBladeKeyMappings.KEY_SUMMON_BLADE.getKey() != SlashBladeKeyMappings.KEY_SUMMON_BLADE.getDefaultKey()) {
             return;
+        }
         if (player.getMainHandItem().getCapability(ItemSlashBlade.BLADESTATE).isPresent()) {
             event.setCanceled(true);
         }

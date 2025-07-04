@@ -1,12 +1,14 @@
 package mods.flammpfeil.slashblade.event;
 
 import mods.flammpfeil.slashblade.util.NBTHelper;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.entity.living.LivingKnockBackEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+
+import java.util.Objects;
 
 public class KnockBackHandler {
 
@@ -25,7 +27,7 @@ public class KnockBackHandler {
     }
 
     static public void setFactor(LivingEntity target, double horizontalFactor, double verticalFactor,
-            double addFallDistance) {
+                                 double addFallDistance) {
         NBTHelper.putVector3d(target.getPersistentData(), NBT_KEY,
                 new Vec3(horizontalFactor, verticalFactor, addFallDistance));
     }
@@ -36,21 +38,24 @@ public class KnockBackHandler {
 
         CompoundTag nbt = target.getPersistentData();
 
-        if (!nbt.contains(NBT_KEY))
+        if (!nbt.contains(NBT_KEY)) {
             return;
+        }
 
         Vec3 factor = NBTHelper.getVector3d(nbt, NBT_KEY);
         nbt.remove(NBT_KEY);
 
-        if (target.fallDistance < 0)
+        if (target.fallDistance < 0) {
             target.fallDistance = 0;
+        }
 
         // z = falldistance factor
-        target.fallDistance += factor.z;
+        target.fallDistance += (float) factor.z;
 
         // movement factor is resistable
-        if ((target.getRandom().nextDouble() < target.getAttribute(Attributes.KNOCKBACK_RESISTANCE).getValue()))
+        if ((target.getRandom().nextDouble() < Objects.requireNonNull(target.getAttribute(Attributes.KNOCKBACK_RESISTANCE)).getValue())) {
             return;
+        }
 
         target.hasImpulse = true;
 
@@ -61,8 +66,9 @@ public class KnockBackHandler {
             event.setCanceled(true);
 
             motion = motion.multiply(0, 1, 0);
-        } else
+        } else {
             event.setStrength((float) (event.getStrength() * factor.x));
+        }
 
         // y = vertical factor
 

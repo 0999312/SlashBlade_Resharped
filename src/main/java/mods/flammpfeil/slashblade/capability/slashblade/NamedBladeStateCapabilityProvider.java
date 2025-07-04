@@ -1,27 +1,30 @@
 package mods.flammpfeil.slashblade.capability.slashblade;
 
+import mods.flammpfeil.slashblade.item.ItemSlashBlade;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.capabilities.*;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.util.LazyOptional;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-
-import mods.flammpfeil.slashblade.item.ItemSlashBlade;
 
 public class NamedBladeStateCapabilityProvider implements ICapabilityProvider, ICapabilitySerializable<CompoundTag> {
 
     protected LazyOptional<ISlashBladeState> state;
-    private ItemStack blade;
+    private final ItemStack blade;
+
     public NamedBladeStateCapabilityProvider(ItemStack blade) {
-    	if(!blade.isEmpty()) {
-	    	state = LazyOptional.of( () -> new SlashBladeState(blade));
-	    	this.blade = blade;
-    	}else {
-	    	state = LazyOptional.empty();
-	    	this.blade = ItemStack.EMPTY;
-    	}
+        if (!blade.isEmpty()) {
+            state = LazyOptional.of(() -> new SlashBladeState(blade));
+            this.blade = blade;
+        } else {
+            state = LazyOptional.empty();
+            this.blade = ItemStack.EMPTY;
+        }
     }
 
     @Nonnull

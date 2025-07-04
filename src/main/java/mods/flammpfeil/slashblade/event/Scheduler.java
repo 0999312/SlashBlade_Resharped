@@ -1,12 +1,14 @@
 package mods.flammpfeil.slashblade.event;
 
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.level.timers.*;
+import net.minecraft.world.level.timers.TimerCallback;
+import net.minecraft.world.level.timers.TimerCallbacks;
+import net.minecraft.world.level.timers.TimerQueue;
 
 public class Scheduler {
-    public static final TimerCallbacks<LivingEntity> SB_CALLBACKS = (new TimerCallbacks<LivingEntity>());
-    
-    private TimerQueue<LivingEntity> queue = new TimerQueue<>(SB_CALLBACKS);
+    public static final TimerCallbacks<LivingEntity> SB_CALLBACKS = (new TimerCallbacks<>());
+
+    private final TimerQueue<LivingEntity> queue = new TimerQueue<>(SB_CALLBACKS);
 
     public Scheduler() {
     }

@@ -13,7 +13,7 @@ public abstract class Projectile extends net.minecraft.world.entity.projectile.P
             EntityDataSerializers.INT);
 
     protected Projectile(EntityType<? extends net.minecraft.world.entity.projectile.Projectile> p_37248_,
-            Level p_37249_) {
+                         Level p_37249_) {
         super(p_37248_, p_37249_);
     }
 
@@ -29,8 +29,9 @@ public abstract class Projectile extends net.minecraft.world.entity.projectile.P
 
         if (0 <= id) {
             Entity tmp = this.level().getEntity(id);
-            if (super.getOwner() != tmp)
+            if (super.getOwner() != tmp) {
                 this.setOwner(tmp);
+            }
         } else {
             this.setOwner(null);
         }
@@ -40,10 +41,11 @@ public abstract class Projectile extends net.minecraft.world.entity.projectile.P
 
     @Override
     public void setOwner(@Nullable Entity p_37263_) {
-        if (p_37263_ != null)
+        if (p_37263_ != null) {
             this.entityData.set(OWNERID, p_37263_.getId());
-        else
+        } else {
             this.entityData.set(OWNERID, -1);
+        }
 
         super.setOwner(p_37263_);
     }

@@ -1,14 +1,14 @@
 package mods.flammpfeil.slashblade.event.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Axis;
 import mods.flammpfeil.slashblade.item.ItemSlashBlade;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
-import com.mojang.math.Axis;
 import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -37,13 +37,15 @@ public class UserPoseOverrider {
     private static final String TAG_ROT_PREV = "sb_yrot_prev";
 
     @SubscribeEvent
-    public void onRenderPlayerEventPre(RenderLivingEvent.Pre<?,?> event) {
+    public void onRenderPlayerEventPre(RenderLivingEvent.Pre<?, ?> event) {
         ItemStack stack = event.getEntity().getMainHandItem();
 
-        if (stack.isEmpty())
+        if (stack.isEmpty()) {
             return;
-        if (!(stack.getItem() instanceof ItemSlashBlade))
+        }
+        if (!(stack.getItem() instanceof ItemSlashBlade)) {
             return;
+        }
 
         float rot = event.getEntity().getPersistentData().getFloat(TAG_ROT);
         float rotPrev = event.getEntity().getPersistentData().getFloat(TAG_ROT_PREV);
@@ -64,7 +66,7 @@ public class UserPoseOverrider {
 
     static public void anotherPoseRotP(PoseStack matrixStackIn, LivingEntity entityLiving, float partialTicks) {
         final boolean isPositive = true;
-        final float np = isPositive ? 1 : -1;
+        final float np = 1;
 
         float f = entityLiving.getSwimAmount(partialTicks);
         if (entityLiving.isFallFlying()) {
@@ -95,7 +97,7 @@ public class UserPoseOverrider {
 
     static public void anotherPoseRotN(PoseStack matrixStackIn, LivingEntity entityLiving, float partialTicks) {
         final boolean isPositive = false;
-        final float np = isPositive ? 1 : -1;
+        final float np = -1;
 
         float f = entityLiving.getSwimAmount(partialTicks);
         if (entityLiving.isFallFlying()) {
@@ -131,8 +133,9 @@ public class UserPoseOverrider {
         float prevRot = tag.getFloat(TAG_ROT);
         tag.putFloat(TAG_ROT_PREV, prevRot);
 
-        if (isOffset)
+        if (isOffset) {
             rotYaw += prevRot;
+        }
 
         tag.putFloat(TAG_ROT, rotYaw);
     }

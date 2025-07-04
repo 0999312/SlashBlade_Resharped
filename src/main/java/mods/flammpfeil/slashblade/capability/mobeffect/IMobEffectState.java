@@ -2,17 +2,21 @@ package mods.flammpfeil.slashblade.capability.mobeffect;
 
 import net.minecraft.world.effect.MobEffect;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Optional;
+import java.util.Set;
 
 public interface IMobEffectState {
     default void setManagedStun(long now, long duration) {
-        if (duration <= 0)
+        if (duration <= 0) {
             return;
+        }
 
         long solvedDuration = Math.min(duration, this.getStunLimit());
         long timeout = now + solvedDuration;
-        if (this.getStunTimeOut() < timeout)
+        if (this.getStunTimeOut() < timeout) {
             this.setStunTimeOut(timeout);
+        }
     }
 
     void setStunTimeOut(long timeout);
@@ -32,14 +36,16 @@ public interface IMobEffectState {
         long timeout = getStunTimeOut();
 
         // not stun
-        if (timeout <= 0)
+        if (timeout <= 0) {
             return false;
+        }
 
         // timeout
         timeout = timeout - now;
         if (timeout <= 0 || getStunLimit() < timeout) {
-            if (!isVirtual)
+            if (!isVirtual) {
                 clearStunTimeOut();
+            }
             return false;
         }
 
@@ -56,20 +62,23 @@ public interface IMobEffectState {
     void setUntouchableLimit(int limit);
 
     default void setManagedUntouchable(long now, long duration) {
-        if (duration <= 0)
+        if (duration <= 0) {
             return;
+        }
 
         long solvedDuration = Math.min(duration, this.getUntouchableLimit());
         long timeout = now + solvedDuration;
-        if (!this.getUntouchableTimeOut().isPresent() || this.getUntouchableTimeOut().get() < timeout)
+        if (this.getUntouchableTimeOut().isEmpty() || this.getUntouchableTimeOut().get() < timeout) {
             this.setUntouchableTimeOut(Optional.of(timeout));
+        }
     }
 
     void setUntouchableTimeOut(Optional<Long> timeout);
 
     default void clearUntouchableTimeOut(boolean isVirtual) {
-        if (!isVirtual)
+        if (!isVirtual) {
             setUntouchableTimeOut(Optional.empty());
+        }
     }
 
     Optional<Long> getUntouchableTimeOut();
@@ -115,19 +124,21 @@ public interface IMobEffectState {
 
     void setAvoidCount(int value);
 
-    static final int AVOID_MAX = 3;
-    static final int COOLDOWN_TICKS = 20;
+    int AVOID_MAX = 3;
+    int COOLDOWN_TICKS = 20;
 
     default boolean checkCanAvoid(long now) {
-        if (getAvoidCount() < AVOID_MAX)
+        if (getAvoidCount() < AVOID_MAX) {
             return true;
+        }
 
-        return !getAvoidCooldown().filter(ct -> now < ct).isPresent();
+        return getAvoidCooldown().filter(ct -> now < ct).isEmpty();
     }
 
     default int doAvoid(long now) {
-        if (!checkCanAvoid(now))
+        if (!checkCanAvoid(now)) {
             return 0;
+        }
 
         return getAvoidCooldown().filter(ct -> now < ct).map(ct -> {
             int count = getAvoidCount() + 1;

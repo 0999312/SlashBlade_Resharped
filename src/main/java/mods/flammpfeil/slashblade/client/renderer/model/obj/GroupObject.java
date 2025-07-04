@@ -8,7 +8,7 @@ import java.util.ArrayList;
 
 public class GroupObject {
     public String name;
-    public ArrayList<Face> faces = new ArrayList<Face>();
+    public ArrayList<Face> faces = new ArrayList<>();
     public int glDrawingMode;
 
     public GroupObject() {
@@ -26,7 +26,7 @@ public class GroupObject {
 
     @OnlyIn(Dist.CLIENT)
     public void render(VertexConsumer tessellator) {
-        if (faces.size() > 0) {
+        if (!faces.isEmpty()) {
             for (Face face : faces) {
                 face.addFaceForRender(tessellator);
             }

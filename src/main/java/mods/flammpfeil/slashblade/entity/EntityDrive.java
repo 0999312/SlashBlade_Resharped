@@ -4,6 +4,7 @@ import mods.flammpfeil.slashblade.SlashBlade;
 import mods.flammpfeil.slashblade.ability.StunManager;
 import mods.flammpfeil.slashblade.capability.concentrationrank.ConcentrationRankCapabilityProvider;
 import mods.flammpfeil.slashblade.capability.concentrationrank.IConcentrationRank;
+import mods.flammpfeil.slashblade.capability.slashblade.ISlashBladeState;
 import mods.flammpfeil.slashblade.item.ItemSlashBlade;
 import mods.flammpfeil.slashblade.util.AttackManager;
 import mods.flammpfeil.slashblade.util.EnumSetConverter;
@@ -20,7 +21,6 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -28,7 +28,6 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.EnderMan;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
-import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
@@ -37,8 +36,8 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.entity.PartEntity;
-import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.network.PlayMessages;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -47,21 +46,21 @@ import static mods.flammpfeil.slashblade.SlashBladeConfig.REFINE_DAMAGE_MULTIPLI
 import static mods.flammpfeil.slashblade.SlashBladeConfig.SLASHBLADE_DAMAGE_MULTIPLIER;
 
 public class EntityDrive extends EntityAbstractSummonedSword {
-    private static final EntityDataAccessor<Integer> COLOR = SynchedEntityData.<Integer>defineId(EntityDrive.class,
+    private static final EntityDataAccessor<Integer> COLOR = SynchedEntityData.defineId(EntityDrive.class,
             EntityDataSerializers.INT);
-    private static final EntityDataAccessor<Integer> FLAGS = SynchedEntityData.<Integer>defineId(EntityDrive.class,
+    private static final EntityDataAccessor<Integer> FLAGS = SynchedEntityData.defineId(EntityDrive.class,
             EntityDataSerializers.INT);
-    private static final EntityDataAccessor<Float> RANK = SynchedEntityData.<Float>defineId(EntityDrive.class,
+    private static final EntityDataAccessor<Float> RANK = SynchedEntityData.defineId(EntityDrive.class,
             EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<Float> ROTATION_OFFSET = SynchedEntityData
-            .<Float>defineId(EntityDrive.class, EntityDataSerializers.FLOAT);
-    private static final EntityDataAccessor<Float> ROTATION_ROLL = SynchedEntityData.<Float>defineId(EntityDrive.class,
+            .defineId(EntityDrive.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Float> ROTATION_ROLL = SynchedEntityData.defineId(EntityDrive.class,
             EntityDataSerializers.FLOAT);
-    private static final EntityDataAccessor<Float> BASESIZE = SynchedEntityData.<Float>defineId(EntityDrive.class,
+    private static final EntityDataAccessor<Float> BASESIZE = SynchedEntityData.defineId(EntityDrive.class,
             EntityDataSerializers.FLOAT);
-    private static final EntityDataAccessor<Float> SPEED = SynchedEntityData.<Float>defineId(EntityDrive.class,
+    private static final EntityDataAccessor<Float> SPEED = SynchedEntityData.defineId(EntityDrive.class,
             EntityDataSerializers.FLOAT);
-    private static final EntityDataAccessor<Float> LIFETIME = SynchedEntityData.<Float>defineId(EntityDrive.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Float> LIFETIME = SynchedEntityData.defineId(EntityDrive.class, EntityDataSerializers.FLOAT);
 
     private KnockBacks action = KnockBacks.cancel;
 
@@ -76,10 +75,11 @@ public class EntityDrive extends EntityAbstractSummonedSword {
     }
 
     public void setKnockBackOrdinal(int ordinal) {
-        if (0 <= ordinal && ordinal < KnockBacks.values().length)
+        if (0 <= ordinal && ordinal < KnockBacks.values().length) {
             this.action = KnockBacks.values()[ordinal];
-        else
+        } else {
             this.action = KnockBacks.cancel;
+        }
     }
 
     public EntityDrive(EntityType<? extends Projectile> entityTypeIn, Level worldIn) {
@@ -130,8 +130,8 @@ public class EntityDrive extends EntityAbstractSummonedSword {
     }
 
     @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
+    public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket() {
+        return super.getAddEntityPacket();
     }
 
     @Override
@@ -146,6 +146,7 @@ public class EntityDrive extends EntityAbstractSummonedSword {
         return distance < d0 * d0;
     }
 
+    @Override
     protected void removeFlags(FlagsState value) {
         this.flags.remove(value);
         refreshFlags();
@@ -153,7 +154,7 @@ public class EntityDrive extends EntityAbstractSummonedSword {
 
     private void refreshFlags() {
         if (this.level().isClientSide()) {
-            int newValue = this.entityData.get(FLAGS).intValue();
+            int newValue = this.entityData.get(FLAGS);
             if (intFlags != newValue) {
                 intFlags = newValue;
                 flags = EnumSetConverter.convertToEnumSet(FlagsState.class, intFlags);
@@ -173,17 +174,21 @@ public class EntityDrive extends EntityAbstractSummonedSword {
         tryDespawn();
     }
 
+    @Override
     protected void tryDespawn() {
         if (!this.level().isClientSide()) {
-            if (getLifetime() < this.tickCount)
+            if (getLifetime() < this.tickCount) {
                 this.remove(RemovalReason.DISCARDED);
+            }
         }
     }
 
+    @Override
     public int getColor() {
         return this.getEntityData().get(COLOR);
     }
 
+    @Override
     public void setColor(int value) {
         this.getEntityData().set(COLOR, value);
     }
@@ -243,23 +248,21 @@ public class EntityDrive extends EntityAbstractSummonedSword {
     @Nullable
     @Override
     public Entity getShooter() {
-        return this.getOwner();
+        return super.getShooter();
     }
 
     @Override
     public void setShooter(Entity shooter) {
-        setOwner(shooter);
+        super.setShooter(shooter);
     }
 
+    @Override
     public List<MobEffectInstance> getPotionEffects() {
-        List<MobEffectInstance> effects = PotionUtils.getAllEffects(this.getPersistentData());
 
-        if (effects.isEmpty())
-            effects.add(new MobEffectInstance(MobEffects.POISON, 1, 1));
-
-        return effects;
+        return super.getPotionEffects();
     }
 
+    @Override
     public void setDamage(double damageIn) {
         this.damage = damageIn;
     }
@@ -269,6 +272,7 @@ public class EntityDrive extends EntityAbstractSummonedSword {
         return this.damage;
     }
 
+    @Override
     protected void onHitEntity(EntityHitResult entityHitResult) {
         Entity targetEntity = entityHitResult.getEntity();
         float damageValue = (float) this.getDamage();
@@ -295,23 +299,23 @@ public class EntityDrive extends EntityAbstractSummonedSword {
 
         // todo: attack manager
         targetEntity.invulnerableTime = 0;
-        if(this.getOwner() instanceof LivingEntity living) {
-            damageValue *= living.getAttributeValue(Attributes.ATTACK_DAMAGE);
+        if (this.getOwner() instanceof LivingEntity living) {
+            damageValue *= (float) living.getAttributeValue(Attributes.ATTACK_DAMAGE);
             //评分等级加成
-            if (living instanceof Player player){
+            if (living instanceof Player player) {
                 IConcentrationRank.ConcentrationRanks rankBonus = player
                         .getCapability(ConcentrationRankCapabilityProvider.RANK_POINT)
                         .map(rp -> rp.getRank(player.getCommandSenderWorld().getGameTime()))
                         .orElse(IConcentrationRank.ConcentrationRanks.NONE);
                 float rankDamageBonus = rankBonus.level / 2.0f;
                 if (IConcentrationRank.ConcentrationRanks.S.level <= rankBonus.level) {
-                    int refine = player.getMainHandItem().getCapability(ItemSlashBlade.BLADESTATE).map(rp -> rp.getRefine()).orElse(0);
+                    int refine = player.getMainHandItem().getCapability(ItemSlashBlade.BLADESTATE).map(ISlashBladeState::getRefine).orElse(0);
                     int level = player.experienceLevel;
                     rankDamageBonus = (float) Math.max(rankDamageBonus, Math.min(level, refine) * REFINE_DAMAGE_MULTIPLIER.get());
                 }
                 damageValue += rankDamageBonus;
             }
-            damageValue *= AttackManager.getSlashBladeDamageScale(living) * SLASHBLADE_DAMAGE_MULTIPLIER.get();
+            damageValue *= (float) (AttackManager.getSlashBladeDamageScale(living) * SLASHBLADE_DAMAGE_MULTIPLIER.get());
             if (this.getIsCritical()) {
                 damageValue += this.random.nextInt((Mth.ceil(damageValue) / 2 + 2));
             }
@@ -323,8 +327,7 @@ public class EntityDrive extends EntityAbstractSummonedSword {
                 hits = ((PartEntity<?>) targetEntity).getParent();
             }
 
-            if (hits instanceof LivingEntity) {
-                LivingEntity targetLivingEntity = (LivingEntity) hits;
+            if (hits instanceof LivingEntity targetLivingEntity) {
 
                 StunManager.setStun(targetLivingEntity);
                 if (!this.level().isClientSide() && shooter instanceof LivingEntity) {
@@ -334,7 +337,7 @@ public class EntityDrive extends EntityAbstractSummonedSword {
 
                 affectEntity(targetLivingEntity, getPotionEffects(), 1.0f);
 
-                if (shooter != null && targetLivingEntity != shooter && targetLivingEntity instanceof Player
+                if (targetLivingEntity != shooter && targetLivingEntity instanceof Player
                         && shooter instanceof ServerPlayer) {
                     ((ServerPlayer) shooter).playNotifySound(this.getHitEntityPlayerSound(), SoundSource.PLAYERS, 0.18F,
                             0.45F);
@@ -352,12 +355,11 @@ public class EntityDrive extends EntityAbstractSummonedSword {
         this.setRemoved(RemovalReason.DISCARDED);
     }
 
+    @Override
     @Nullable
     public EntityHitResult getRayTrace(Vec3 p_213866_1_, Vec3 p_213866_2_) {
         return ProjectileUtil.getEntityHitResult(this.level(), this, p_213866_1_, p_213866_2_,
-                this.getBoundingBox().expandTowards(this.getDeltaMovement()).inflate(1.0D), (entity) -> {
-                    return !entity.isSpectator() && entity.isAlive() && entity.isPickable()
-                            && (entity != this.getShooter());
-                });
+                this.getBoundingBox().expandTowards(this.getDeltaMovement()).inflate(1.0D), (entity) -> !entity.isSpectator() && entity.isAlive() && entity.isPickable()
+                        && (entity != this.getShooter()));
     }
 }
