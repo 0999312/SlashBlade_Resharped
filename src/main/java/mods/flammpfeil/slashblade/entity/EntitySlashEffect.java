@@ -4,7 +4,7 @@ import com.google.common.collect.Lists;
 import com.mojang.math.Axis;
 import mods.flammpfeil.slashblade.SlashBlade;
 import mods.flammpfeil.slashblade.capability.concentrationrank.IConcentrationRank;
-import mods.flammpfeil.slashblade.event.FallHandler;
+import mods.flammpfeil.slashblade.event.handler.FallHandler;
 import mods.flammpfeil.slashblade.util.AttackManager;
 import mods.flammpfeil.slashblade.util.EnumSetConverter;
 import mods.flammpfeil.slashblade.util.KnockBacks;

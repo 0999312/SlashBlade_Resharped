@@ -1,4 +1,4 @@
-package mods.flammpfeil.slashblade.event;
+package mods.flammpfeil.slashblade.event.handler;
 
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.server.ServerAboutToStartEvent;

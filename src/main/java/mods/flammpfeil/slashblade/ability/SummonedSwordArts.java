@@ -7,7 +7,7 @@ import mods.flammpfeil.slashblade.capability.concentrationrank.IConcentrationRan
 import mods.flammpfeil.slashblade.capability.inputstate.CapabilityInputState;
 import mods.flammpfeil.slashblade.capability.slashblade.SlashBladeState;
 import mods.flammpfeil.slashblade.entity.*;
-import mods.flammpfeil.slashblade.event.InputCommandEvent;
+import mods.flammpfeil.slashblade.event.handler.InputCommandEvent;
 import mods.flammpfeil.slashblade.item.ItemSlashBlade;
 import mods.flammpfeil.slashblade.item.SwordType;
 import mods.flammpfeil.slashblade.util.*;

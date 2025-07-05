@@ -1,7 +1,7 @@
 package mods.flammpfeil.slashblade.ability;
 
 import mods.flammpfeil.slashblade.capability.inputstate.CapabilityInputState;
-import mods.flammpfeil.slashblade.event.InputCommandEvent;
+import mods.flammpfeil.slashblade.event.handler.InputCommandEvent;
 import mods.flammpfeil.slashblade.item.ItemSlashBlade;
 import mods.flammpfeil.slashblade.util.InputCommand;
 import mods.flammpfeil.slashblade.util.RayTraceHelper;

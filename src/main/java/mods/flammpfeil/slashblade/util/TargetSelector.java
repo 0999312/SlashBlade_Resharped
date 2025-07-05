@@ -4,7 +4,7 @@ import com.google.common.collect.Lists;
 import mods.flammpfeil.slashblade.SlashBladeConfig;
 import mods.flammpfeil.slashblade.data.tag.SlashBladeEntityTypeTagProvider.EntityTypeTags;
 import mods.flammpfeil.slashblade.entity.IShootable;
-import mods.flammpfeil.slashblade.event.InputCommandEvent;
+import mods.flammpfeil.slashblade.event.handler.InputCommandEvent;
 import mods.flammpfeil.slashblade.item.ItemSlashBlade;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;

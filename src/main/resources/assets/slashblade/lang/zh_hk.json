@@ -1,0 +1,198 @@
+{
+  "itemGroup.slashblade": "拔刀劍",
+  "itemGroup.slashblade.desc": "墜入阿修羅道",
+
+  "attribute.name.generic.reachDistance": "攻擊距離",
+
+  "stat.slashblade.sword_summoned": "幻影劍",
+
+  "key.category.slashblade": "拔刀劍",
+  "key.slashblade.special_move": "特殊行動",
+  "key.slashblade.summon_blade": "召喚幻影劍",
+
+  "slashblade.tooltip.killcount": "斬殺數：%1$s",
+  "slashblade.tooltip.refine": "鍛造數：%1$s",
+  "slashblade.tooltip.proud_soul": "耀魂數：%1$s",
+  "slashblade.tooltip.slash_art": "SA:%1$s",
+  
+  "se.slashblade.wither_edge": "凋零性",
+
+  "item.slashblade.slashblade": "無銘刀「無名」",
+  "item.slashblade.slashblade.desc": "起始之刃\n無垢之器",
+  "item.slashblade.slashblade_wood": "無銘刀「木偶」",
+  "item.slashblade.slashblade_wood.desc": "帶鞘的木刀",
+  "item.slashblade.slashblade_white": "利刀「白鞘」",
+  "item.slashblade.slashblade_white.desc": "鐵制的刀刃",
+  "item.slashblade.slashblade_bamboo": "無銘刀「竹光」",
+  "item.slashblade.slashblade_bamboo.desc": "未完成的刀胚",
+  "item.slashblade.slashblade_silverbamboo": "名刀「銀紙竹光」",
+
+  "item.slashblade.ruby": "利刀「無名」紅玉",
+  "item.slashblade.ruby.desc": "傑作",
+  "item.slashblade.ruby.material": "鑄刀配件「紅玉」",
+
+  "item.slashblade.fox_white": "狐月刀「白狐」",
+  "item.slashblade.fox_white.desc": "象徵幸運與招福",
+  "item.slashblade.fox_black": "狐月刀「黑狐」",
+  "item.slashblade.fox_black.desc": "象徵退魔與平穩",
+
+  "item.slashblade.yuzukitukumo": "結月刀「付喪」",
+  "item.slashblade.yuzukitukumo.desc": "鐵の木刀の軌跡",
+
+  "item.slashblade.muramasa": "「千鶴」村正",
+  "item.slashblade.muramasa.desc": "遺失的一把村正刀",
+
+  "item.slashblade.yamato": "魔刀「閻魔」",
+
+  "item.slashblade.sange": "散華",
+  "item.slashblade.yasha": "夜叉",
+  "item.slashblade.yasha_true": "夜叉「鬼哭」",
+  "item.slashblade.sabigatana": "鏽刀",
+  "item.slashblade.doutanuki": "剛劍「胴田貫」",
+
+  "item.slashblade.tagayasan": "木刀「鐵刀木」",
+  "item.slashblade.agito": "偽物「鄂門」",
+  "item.slashblade.orotiagito_sealed": "「鄂門」",
+  "item.slashblade.orotiagito": "名刀「大蛇鄂門」",
+  "item.slashblade.agito_rust": "鏽刀「鄂门」",
+  "item.slashblade.orotiagito_rust": "鏽刀「鄂门」",
+
+  "item.slashblade.rodai_wooden": "「擊柝」露臺",
+  "item.slashblade.rodai_stone": "「銳岩」露臺",
+  "item.slashblade.rodai_iron": "利刀「鐵」露臺",
+  "item.slashblade.rodai_golden": "寶刀「山吹」露臺",
+  "item.slashblade.rodai_diamond": "名刀「金剛」露臺",
+  "item.slashblade.rodai_netherite": "名刀「玄鈺」露臺",
+  
+  "item.slashblade.koseki": "枯石大刀",
+
+  "item.slashblade.proudsoul": "耀魂",
+  "item.slashblade.proudsoul_tiny": "耀魂碎片",
+  "item.slashblade.proudsoul_ingot": "耀魂錠",
+  "item.slashblade.proudsoul_sphere": "耀魂珠",
+  "item.slashblade.proudsoul_crystal": "耀魂結晶",
+  "item.slashblade.proudsoul_trapezohedron": "搖曳的耀魂結晶",
+
+  "item.slashblade.bladestand_1": "單層刀架",
+  "item.slashblade.bladestand_2": "雙層刀架",
+  "item.slashblade.bladestand_v": "直立刀架",
+  "item.slashblade.bladestand_s": "小型刀架",
+  "item.slashblade.bladestand_1w": "壁掛式單層刀架",
+  "item.slashblade.bladestand_2w": "壁掛式雙層刀架",
+
+  "entity.slashblade.abstract_summoned_sword": "幻影劍",
+  "entity.slashblade.blade_stand_entity": "刀架",
+
+  "slash_art.slashblade.none": "無",
+  "slash_art.slashblade.judgement_cut": "次元斬",
+  "slash_art.slashblade.sakura_end": "終焉櫻",
+  "slash_art.slashblade.void_slash": "虛無刀界",
+  "slash_art.slashblade.circle_slash": "円刃",
+  "slash_art.slashblade.drive": "幻影刃",
+  "slash_art.slashblade.drive_horizontal": "幻影刃",
+  "slash_art.slashblade.drive_vertical": "幻影刃－縱",
+  "slash_art.slashblade.wave_edge": "波刀龍膽",
+  "slash_art.slashblade.piercing":"平突",
+
+  "slashblade.sword_type.bewitched": "妖",
+  "slashblade.sword_type.enchanted": "印",
+  "slashblade.sword_type.noname": "封",
+
+  "adv.slashblade.proudsoul": "精煉上限=50\n刀雖易折\n然魂不滅",
+  "adv.slashblade.proudsoul_tiny": "精煉上限=10\n幽微的耀魂",
+  "adv.slashblade.proudsoul_ingot": "精煉上限=100\n與耀魂合成的鋼鐵",
+  "adv.slashblade.proudsoul_sphere": "精煉上限=150\n使用熔爐冶煉\n繚繞耀魂的寶珠",
+  "adv.slashblade.proudsoul_crystal": "精煉上限=200\n使用高爐精煉\n耀魂的結晶",
+  "adv.slashblade.proudsoul_trapezohedron": "無精煉上限\n使用煙燻精煉\n耀魂的極致",
+
+  "adv.slashblade.reforge": "重鑄",
+  "adv.slashblade.reforge.desc": "用鐵砧組裝拔刀劍和部件",
+
+  "adv.slashblade.refine": "精煉",
+  "adv.slashblade.refine.desc": "經過精煉的刀，潛能將有所提升",
+
+  "adv.slashblade.white_broken": "折斷的刀刃",
+  "adv.slashblade.white_broken.desc": "重鑄！",
+
+  "adv.slashblade.bladestand": "刀架",
+  "adv.slashblade.bladestand.desc": "刀劍歇息之處",
+
+  "adv.slashblade.imitation_broken": "雕文刻鏤",
+  "adv.slashblade.imitation_broken.desc": "一意孤行的下場",
+
+  "adv.slashblade.movesets": "拔刀術",
+  "adv.slashblade.movesets.desc": "拔刀術說明",
+
+  "adv.slashblade.combo_a": "拔刀術《連擊‧壹》",
+  "adv.slashblade.combo_a.desc": "【按鍵】：\n攻擊(♠)：%s\n【施展方式】：\n地面\n♠-♠-♠-♠",
+  "adv.slashblade.combo_b": "拔刀術《連擊‧貳》",
+  "adv.slashblade.combo_b.desc": "【按鍵】：\n攻擊(♠)：%s\n【施展方式】：\n地面\n♠-♠-♠，停頓後反覆 ♠ ",
+  "adv.slashblade.combo_b_max": "極《連擊‧貳》",
+  "adv.slashblade.combo_b_max.desc": "撕碎！",
+  "adv.slashblade.combo_c": "拔刀術《連擊‧參》",
+  "adv.slashblade.combo_c.desc": "【按鍵】：\n攻擊(♠)：%s\n【施展方式】：\n地面\n♠-♠，停頓後 ♠",
+  "adv.slashblade.combo_a_ex": "拔刀術《連擊‧壹 二型》",
+  "adv.slashblade.combo_a_ex.desc": "【按鍵】\n攻擊 ♠：%s\n【施展時機】在力量或飢餓的效果下\n【施展方式】：\n地面\n♠-♠-♠-♠-♠",
+
+  "adv.slashblade.aerial_a": "拔刀術《飛翔斬‧壹》",
+  "adv.slashblade.aerial_a.desc": "【按鍵】\n攻擊(♠)：%s\n【施展方式】：\n滯空\n♠-♠-♠",
+  "adv.slashblade.aerial_b": "拔刀術《飛翔斬‧貳》",
+  "adv.slashblade.aerial_b.desc": "【按鍵】\n攻擊(♠)：%s\n【施展方式】：\n滯空\n♠-♠，停頓後 ♠-♠",
+  "adv.slashblade.aerial_cleave": "拔刀術《墬擊斬》",
+  "adv.slashblade.aerial_cleave.desc": "【按鍵】\n攻擊(♠)：%s\n後退(ᐁ)：%s\n潛行(⚪)：%s\n【施展方式】：\n滯空\n⚪+ᐁ+♠",
+
+  "adv.slashblade.judgement_cut": "拔刀術《次元斬》",
+  "adv.slashblade.judgement_cut.desc": "【按鍵】\n攻擊(♠)：%s\n【施展方式】：\n長按 ♠，直到出現粒子效果時放開",
+  "adv.slashblade.judgement_cut_just": "拔刀術《次元斬 二型》",
+  "adv.slashblade.judgement_cut_just.desc": "【按鍵】\n攻擊(♠)：%s\n【施展方式】：\n長按 ♠，在出現粒子效果前一刻放開",
+  "adv.slashblade.quick_charge": "拔刀術《迅速蓄力》",
+  "adv.slashblade.quick_charge.desc": "【按鍵】\n攻擊(♠)：%s\n【施展方式】：\n在收刀的瞬間按下 ♠",
+
+  "adv.slashblade.rapid_slash": "拔刀術《疾走居合》",
+  "adv.slashblade.rapid_slash.desc": "【按鍵】\n攻擊(♠)：%s\n前進(ᐃ)：%s\n潛行(⚪)：%s\n【施展方式】：\n地面\n⚪+ᐃ+♠",
+  "adv.slashblade.rising_star": "拔刀術《羅閃天翔》",
+  "adv.slashblade.rising_star.desc": "【按鍵】\n攻擊(♠)：%s\n【施展方式】：\n施展《疾走居合》後\n長按 ♠，直到命中敵人",
+
+  "adv.slashblade.upperslash": "拔刀術《上升斬》",
+  "adv.slashblade.upperslash.desc": "【按鍵】\n攻擊(♠)：%s\n後退(ᐁ)：%s\n潛行(⚪)：%s\n【施展方式】：\n地面\n⚪+ᐁ-♠",
+  "adv.slashblade.upperslash_jump": "拔刀術《迴旋跳斬》",
+  "adv.slashblade.upperslash_jump.desc": "【按鍵】\n攻擊(♠)：%s\n【施展方式】：\n施展《上升斬》後\n長按 ♠",
+
+  "adv.slashblade.air_trick": "技能《瞬步》",
+  "adv.slashblade.air_trick.desc": "瞬移至注視中的敵人的上方\n【按鍵】\n特殊行動(♠)：%s\n前進(ᐃ)：%s\n潛行(⚪)：%s\n【施展方式】：\n⚪+ᐃ+♠",
+  "adv.slashblade.trick_down": "技能《瞬步退行》",
+  "adv.slashblade.trick_down.desc": "滯空時迅速落地\n【按鍵】\n特殊行動(♠)：%s\n後退(ᐁ)：%s\n潛行(⚪)：%s\n【施展方式】：\n⚪+ᐁ+♠",
+  "adv.slashblade.trick_dodge": "技能《瞬步回避》",
+  "adv.slashblade.trick_dodge.desc": "朝任意方向衝刺以回避傷害\n【按鍵】\n特殊行動(♠)：%s\n【施展方式】：\n在移動中按下 ♠",
+  "adv.slashblade.trick_up": "技能《瞬步上行》",
+  "adv.slashblade.trick_up.desc": "向上衝刺\n【按鍵】\n特殊行動(♠)：%s\n前進(ᐃ)：%s\n潛行(⚪)：%s\n【施展方式】：\n⚪+ᐃ+♠",
+  "adv.slashblade.enemy_step": "技能《踏敵跳》",
+  "adv.slashblade.enemy_step.desc": "滯空時墊腳敵人以二段跳\n【按鍵】\n跳躍(□)：%s\n【施展方式】：\n滯空靠近敵人時按下 □",
+  "adv.slashblade.kick_jump": "技能《蹬牆跳》",
+  "adv.slashblade.kick_jump.desc": "滯空時蹬牆以二段跳\n【按鍵】\n跳躍(□)：%s\n【施展方式】：\n滯空靠近牆體時按下 □",
+
+  "adv.slashblade.guard": "技能《抵禦》",
+  "adv.slashblade.guard.desc": "消耗耐久度以抵銷敵人的遠程攻擊\n行進間無法發動\n【按鍵】\n潛行(⚪)：%s\n【施展方式】：\n⚪",
+  "adv.slashblade.guard_just": "技能《格擋》",
+  "adv.slashblade.guard_just.desc": "在敵人攻擊的瞬間擋下其攻擊, 可提高評級\n評級高時則不會消耗耐久度。\n【按鍵】\n潛行(⚪)：%s\n【施展方式】：\n在受到攻擊時 ⚪",
+
+  "adv.slashblade.summonedswords": "飛劍術《幻影劍》",
+  "adv.slashblade.summonedswords.desc": "消耗2點耀魂來發射幻影劍\n【按鍵】\n%s(♠)：%s\n【施展方式】：\n♠",
+  "adv.slashblade.spiral_swords": "飛劍術《環形幻劍陣》",
+  "adv.slashblade.spiral_swords.desc": "消耗20點耀魂值，在自身周圍形成幻影劍環來防禦\n【按鍵】\n%s(♠)：%s\n【施展方式】：\n♠ 按住",
+  "adv.slashblade.storm_swords": "飛劍術《怒風幻劍陣》",
+  "adv.slashblade.storm_swords.desc": "消耗20點耀魂，將幻影劍如暴風般圍繞敵人攻擊並將其擊飛\n【按鍵】\n%s(♠)：%s\n後退(ᐁ)：%s\n潛行(⚪)：%s\n【施展方式】：\n按住⚪-按住♠-ᐁ-放開♠",
+  "adv.slashblade.blistering_swords": "飛劍術《急襲幻劍陣》",
+  "adv.slashblade.blistering_swords.desc": "消耗20點耀魂，在自身周圍凝聚數把幻影劍，一齊射向敵人\n【按鍵】\n%s(♠)：%s\n前進(ᐃ)：%s\n潛行(⚪)：%s\n【施展方式】：\n按住⚪-按住♠-ᐃ-放開♠",
+  "adv.slashblade.heavy_rain_swords": "飛劍術《暴雨幻劍陣》",
+  "adv.slashblade.heavy_rain_swords.desc": "消耗20點耀魂，自敵人上方施放劍雨\n【按鍵】\n%s(♠)：%s\n後退(ᐁ)：%s\n前進(ᐃ)：%s\n潛行(⚪)：%s\n【施展方式】：\n按住⚪-ᐁ-按住♠-ᐃ 放開♠",
+
+  "adv.slashblade.exeffect": "附魔增強",
+  "adv.slashblade.exeffect.desc": "附魔的額外效果",
+
+  "adv.slashblade.exeffect.soul_speed": "靈魂疾走",
+  "adv.slashblade.exeffect.soul_speed.desc": "附魔－靈魂疾走每1級能夠使技能《格擋》的判定時間延長1刻(tick)",
+
+  "adv.slashblade.exeffect.feather_falling": "輕盈",
+  "adv.slashblade.exeffect.feather_falling.desc": "附魔－輕盈能延長出招後的滯空時間"
+}

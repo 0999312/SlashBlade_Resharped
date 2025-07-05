@@ -1,4 +1,4 @@
-package mods.flammpfeil.slashblade.event;
+package mods.flammpfeil.slashblade.event.handler;
 
 import mods.flammpfeil.slashblade.SlashBladeConfig;
 import mods.flammpfeil.slashblade.capability.concentrationrank.ConcentrationRankCapabilityProvider;

@@ -1,4 +1,4 @@
-package mods.flammpfeil.slashblade.event;
+package mods.flammpfeil.slashblade.event.handler;
 
 import mods.flammpfeil.slashblade.SlashBlade;
 import mods.flammpfeil.slashblade.event.drop.EntityDropEntry;
