@@ -9,15 +9,8 @@ import mods.flammpfeil.slashblade.capability.slashblade.CapabilitySlashBlade;
 import mods.flammpfeil.slashblade.client.renderer.entity.*;
 import mods.flammpfeil.slashblade.client.renderer.model.BladeModelManager;
 import mods.flammpfeil.slashblade.entity.*;
-import mods.flammpfeil.slashblade.event.*;
-import mods.flammpfeil.slashblade.event.handler.AllowFlightOverrwrite;
-import mods.flammpfeil.slashblade.event.handler.BlockPickCanceller;
-import mods.flammpfeil.slashblade.event.handler.CapabilityAttachHandler;
-import mods.flammpfeil.slashblade.event.handler.FallHandler;
-import mods.flammpfeil.slashblade.event.handler.KillCounter;
-import mods.flammpfeil.slashblade.event.handler.KnockBackHandler;
-import mods.flammpfeil.slashblade.event.handler.RankPointHandler;
-import mods.flammpfeil.slashblade.event.handler.RefineHandler;
+import mods.flammpfeil.slashblade.event.BladeMotionEventBroadcaster;
+import mods.flammpfeil.slashblade.event.handler.*;
 import mods.flammpfeil.slashblade.item.BladeStandItem;
 import mods.flammpfeil.slashblade.item.ItemSlashBlade;
 import mods.flammpfeil.slashblade.item.ItemSlashBladeDetune;
@@ -495,9 +488,9 @@ public class SlashBlade {
             return resourcelocation;
         }
 
-        /**
-         * /scoreboard objectives add stat minecraft.custom:slashblade.sword_summoned
-         * /scoreboard objectives setdisplay sidebar stat
+        /*
+          /scoreboard objectives add stat minecraft.custom:slashblade.sword_summoned
+          /scoreboard objectives setdisplay sidebar stat
          */
     }
 

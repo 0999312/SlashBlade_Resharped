@@ -30,7 +30,7 @@ public class VmdAnimation implements IAnimation {
         try {
             return new MmdPmdModelMc(new ResourceLocation(SlashBlade.MODID, "model/pa/alex.pmd"));
         } catch (IOException | MmdException e) {
-            e.printStackTrace();
+            SlashBlade.LOGGER.error(e);
         }
         return null;
     });
@@ -42,7 +42,7 @@ public class VmdAnimation implements IAnimation {
             try {
                 mmp.setPmd(pmd);
             } catch (MmdException e) {
-                e.printStackTrace();
+                SlashBlade.LOGGER.error(e);
             }
         });
 
@@ -256,27 +256,7 @@ public class VmdAnimation implements IAnimation {
         tmp.x = Math.atan2(m12, m22);
 
         return tmp;
-        
-/*        Vector3d tmp = new Vector3d();
 
-        double a_x_x = Math.pow(qt.w, 2) + Math.pow(qt.x, 2) - Math.pow(qt.y, 2) - Math.pow(qt.z, 2);
-        double a_x_y = 2 * (qt.x * qt.y + qt.w * qt.z);
-        double a_x_z = 2 * (qt.x * qt.z - qt.w * qt.y);
-
-//        double a_y_x = 2 * (qt.x * qt.y - qt.w * qt.z);
-//        double a_y_y = Math.pow(qt.w, 2) - Math.pow(qt.x, 2) + Math.pow(qt.y, 2) - Math.pow(qt.z, 2);
-        double a_y_z = 2 * (qt.y * qt.z + qt.w * qt.x);
-
-//        double a_z_x = 2 * (qt.x * qt.z + qt.w * qt.y);
-//        double a_z_y = 2 * (qt.y * qt.z - qt.w * qt.x);
-        double a_z_z = Math.pow(qt.w, 2) - Math.pow(qt.x, 2) - Math.pow(qt.y, 2) + Math.pow(qt.z, 2);
-
-        // Quaternion to Euler zyx
-        tmp.z = Math.atan2(a_x_y, a_x_x);
-        tmp.y = Math.asin(-a_x_z);
-        tmp.x = Math.atan2(a_y_z, a_z_z);
-
-        return tmp;*/
     }
 
     @Override
@@ -293,7 +273,7 @@ public class VmdAnimation implements IAnimation {
             mmp.setVmd(motion);
             eofTime = TimeValueHelper.getMSecFromFrames(motion.getMaxFrame());
         } catch (Exception e) {
-            e.printStackTrace();
+            SlashBlade.LOGGER.error(e);
         }
 
         double time = TimeValueHelper.getMSecFromTicks((float) (currentTick + (double) tickDelta));
@@ -303,7 +283,7 @@ public class VmdAnimation implements IAnimation {
         try {
             mmp.updateMotion((float) time);
         } catch (MmdException e) {
-            e.printStackTrace();
+            SlashBlade.LOGGER.error(e);
         }
     }
 }

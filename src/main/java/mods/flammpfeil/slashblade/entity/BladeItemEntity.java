@@ -115,11 +115,6 @@ public class BladeItemEntity extends ItemEntity {
     }
 
     @Override
-    public boolean isOnFire() {
-        return super.isOnFire();
-    }
-
-    @Override
     public boolean causeFallDamage(float distance, float damageMultiplier, @NotNull DamageSource ds) {
         super.causeFallDamage(distance, damageMultiplier, ds);
 

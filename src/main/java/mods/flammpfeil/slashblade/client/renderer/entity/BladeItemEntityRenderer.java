@@ -70,7 +70,7 @@ public class BladeItemEntityRenderer extends ItemEntityRenderer {
                 try (MSAutoCloser msac2 = MSAutoCloser.pushMatrix(matrixStackIn)) {
 
                     float heightOffset;
-                    float xOffset = 0;
+                    float xOffset;
                     String renderTarget;
                     if (types.contains(SwordType.EDGEFRAGMENT)) {
                         heightOffset = 225;

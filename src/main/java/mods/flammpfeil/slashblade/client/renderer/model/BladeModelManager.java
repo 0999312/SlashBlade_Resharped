@@ -3,6 +3,7 @@ package mods.flammpfeil.slashblade.client.renderer.model;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import mods.flammpfeil.slashblade.SlashBlade;
 import mods.flammpfeil.slashblade.client.renderer.model.obj.WavefrontObject;
 import mods.flammpfeil.slashblade.init.DefaultResources;
 import mods.flammpfeil.slashblade.registry.slashblade.SlashBladeDefinition;
@@ -47,7 +48,7 @@ public class BladeModelManager {
         cache = CacheBuilder.newBuilder()
                 .build(CacheLoader.asyncReloading(new CacheLoader<>() {
                     @Override
-                    public @NotNull WavefrontObject load(@NotNull ResourceLocation key) throws Exception {
+                    public @NotNull WavefrontObject load(@NotNull ResourceLocation key) {
                         try {
                             return new WavefrontObject(key);
                         } catch (Exception e) {
@@ -70,7 +71,7 @@ public class BladeModelManager {
             try {
                 return cache.get(loc);
             } catch (Exception e) {
-                e.printStackTrace();
+                SlashBlade.LOGGER.error(e);
             }
         }
         return defaultModel;

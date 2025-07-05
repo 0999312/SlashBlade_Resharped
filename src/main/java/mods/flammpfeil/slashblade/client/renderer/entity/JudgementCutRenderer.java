@@ -18,7 +18,6 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nullable;
 import java.awt.*;
 
 @OnlyIn(Dist.CLIENT)
@@ -29,9 +28,8 @@ public class JudgementCutRenderer<T extends EntityJudgementCut> extends EntityRe
     static private final ResourceLocation textureLocation = new ResourceLocation(SlashBlade.MODID,
             "model/util/slashdim.png");
 
-    @Nullable
     @Override
-    public ResourceLocation getTextureLocation(@NotNull T entity) {
+    public @NotNull ResourceLocation getTextureLocation(@NotNull T entity) {
         return textureLocation;
     }
 
@@ -54,8 +52,6 @@ public class JudgementCutRenderer<T extends EntityJudgementCut> extends EntityRe
             int lifetime = entity.getLifetime();
 
             double deathTime = lifetime;
-            // double baseAlpha = Math.sin(Math.PI * 0.5 * (Math.min(deathTime, Math.max(0,
-            // (lifetime - (entity.ticksExisted) - partialTicks))) / deathTime));
             double baseAlpha = (Math.min(deathTime, Math.max(0, (lifetime - (entity.tickCount) - partialTicks)))
                     / deathTime);
             baseAlpha = -Math.pow(baseAlpha - 1, 4.0) + 1.0;

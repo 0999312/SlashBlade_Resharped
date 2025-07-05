@@ -20,8 +20,6 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nullable;
-
 @OnlyIn(Dist.CLIENT)
 public class SlashEffectRenderer<T extends EntitySlashEffect> extends EntityRenderer<T> {
 
@@ -30,9 +28,8 @@ public class SlashEffectRenderer<T extends EntitySlashEffect> extends EntityRend
     static private final ResourceLocation textureLocation = new ResourceLocation(SlashBlade.MODID,
             "model/util/slash.png");
 
-    @Nullable
     @Override
-    public ResourceLocation getTextureLocation(@NotNull T entity) {
+    public @NotNull ResourceLocation getTextureLocation(@NotNull T entity) {
         return textureLocation;
     }
 
@@ -58,8 +55,6 @@ public class SlashEffectRenderer<T extends EntitySlashEffect> extends EntityRend
             float progress = Math.min(lifetime, (entity.tickCount + partialTicks)) / lifetime;
 
             double deathTime = lifetime;
-            // double baseAlpha = Math.sin(Math.PI * 0.5 * (Math.min(deathTime, Math.max(0,
-            // (lifetime - (entity.ticksExisted) - partialTicks))) / deathTime));
             double baseAlpha = (Math.min(deathTime, Math.max(0, (lifetime - (entity.tickCount) - partialTicks)))
                     / deathTime);
             baseAlpha = -Math.pow(baseAlpha - 1, 4.0) + 1.0;

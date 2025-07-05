@@ -10,7 +10,6 @@ import mods.flammpfeil.slashblade.client.renderer.util.BladeRenderState;
 import mods.flammpfeil.slashblade.client.renderer.util.MSAutoCloser;
 import mods.flammpfeil.slashblade.entity.BladeStandEntity;
 import mods.flammpfeil.slashblade.init.DefaultResources;
-import mods.flammpfeil.slashblade.init.SBItems;
 import mods.flammpfeil.slashblade.item.ItemSlashBlade;
 import mods.flammpfeil.slashblade.item.ItemSlashBladeDetune;
 import mods.flammpfeil.slashblade.item.SwordType;
@@ -82,7 +81,7 @@ public class SlashBladeTEISR extends BlockEntityWithoutLevelRenderer {
 
             // EnumSet<SwordType> types = SwordType.from( stack);
 
-            boolean handle = false;
+            boolean handle;
 
             handle = Objects.requireNonNull(BladeModel.user).getMainArm() == HumanoidArm.RIGHT
                     ? transformType == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND
@@ -142,11 +141,11 @@ public class SlashBladeTEISR extends BlockEntityWithoutLevelRenderer {
         EnumSet<SwordType> types = SwordType.from(stack);
 
         ResourceLocation modelLocation = stack.getCapability(ItemSlashBlade.BLADESTATE)
-                .filter(s -> s.getModel().isPresent()).map(s -> s.getModel().get())
+                .filter(s -> s.getModel().isPresent()).map(s -> s.getModel().orElse(DefaultResources.resourceDefaultModel))
                 .orElseGet(() -> stackDefaultModel(stack));
         WavefrontObject model = BladeModelManager.getInstance().getModel(modelLocation);
         ResourceLocation textureLocation = stack.getCapability(ItemSlashBlade.BLADESTATE)
-                .filter(s -> s.getTexture().isPresent()).map(s -> s.getTexture().get())
+                .filter(s -> s.getTexture().isPresent()).map(s -> s.getTexture().orElse(DefaultResources.resourceDefaultTexture))
                 .orElseGet(() -> stackDefaultTexture(stack));
 
         String renderTarget;
@@ -155,11 +154,6 @@ public class SlashBladeTEISR extends BlockEntityWithoutLevelRenderer {
         } else {
             renderTarget = "item_blade";
         }
-//        if(!types.contains(SwordType.NoScabbard)) {
-//                renderTarget = "item_blade";
-//        } else{
-//            renderTarget = "item_bladens";
-//        }
 
         BladeRenderState.renderOverrided(stack, model, renderTarget, textureLocation, matrixStack, bufferIn, lightIn);
         BladeRenderState.renderOverridedLuminous(stack, model, renderTarget + "_luminous", textureLocation, matrixStack,
@@ -239,11 +233,11 @@ public class SlashBladeTEISR extends BlockEntityWithoutLevelRenderer {
         // BladeModel.itemBlade.getModelLocation(itemStackIn)
 
         ResourceLocation modelLocation = stack.getCapability(ItemSlashBlade.BLADESTATE)
-                .filter(s -> s.getModel().isPresent()).map(s -> s.getModel().get())
+                .filter(s -> s.getModel().isPresent()).map(s -> s.getModel().orElse(DefaultResources.resourceDefaultModel))
                 .orElseGet(() -> stackDefaultModel(stack));
         WavefrontObject model = BladeModelManager.getInstance().getModel(modelLocation);
         ResourceLocation textureLocation = stack.getCapability(ItemSlashBlade.BLADESTATE)
-                .filter(s -> s.getTexture().isPresent()).map(s -> s.getTexture().get())
+                .filter(s -> s.getTexture().isPresent()).map(s -> s.getTexture().orElse(DefaultResources.resourceDefaultTexture))
                 .orElseGet(() -> stackDefaultTexture(stack));
 
         Vec3 bladeOffset = Vec3.ZERO;
@@ -283,8 +277,6 @@ public class SlashBladeTEISR extends BlockEntityWithoutLevelRenderer {
                         break;
                 }
 
-                if (type == SBItems.bladestand_1) {
-                }
             }
         }
 

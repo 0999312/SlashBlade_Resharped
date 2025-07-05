@@ -277,9 +277,6 @@ public class AttackManager {
                                                                           double reach, boolean forceHit, boolean resetHit, float comboRatio, List<Entity> exclude) {
         List<Entity> founds = Lists.newArrayList();
 
-        // AABB bb = owner.getBoundingBox();
-        // bb = bb.grow(3.0D, 3D, 3.0D);
-
         if (!owner.level().isClientSide()) {
             founds = TargetSelector.getTargettableEntitiesWithinAABB(owner.level(), reach, owner);
 

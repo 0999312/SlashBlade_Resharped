@@ -27,8 +27,6 @@ public class RankPointHandler {
 
     /**
      * Not reached if canceled.
-     *
-     * @param event
      */
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onLivingDeathEvent(LivingHurtEvent event) {

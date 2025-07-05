@@ -20,7 +20,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -40,7 +39,6 @@ import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
-import java.util.List;
 
 import static mods.flammpfeil.slashblade.SlashBladeConfig.REFINE_DAMAGE_MULTIPLIER;
 import static mods.flammpfeil.slashblade.SlashBladeConfig.SLASHBLADE_DAMAGE_MULTIPLIER;
@@ -107,7 +105,7 @@ public class EntityDrive extends EntityAbstractSummonedSword {
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundTag compound) {
+    public void addAdditionalSaveData(@NotNull CompoundTag compound) {
         super.addAdditionalSaveData(compound);
 
         NBTHelper.getNBTCoupler(compound).put("RotationOffset", this.getRotationOffset())
@@ -118,7 +116,7 @@ public class EntityDrive extends EntityAbstractSummonedSword {
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundTag compound) {
+    public void readAdditionalSaveData(@NotNull CompoundTag compound) {
         super.readAdditionalSaveData(compound);
 
         NBTHelper.getNBTCoupler(compound).get("RotationOffset", this::setRotationOffset)
@@ -254,12 +252,6 @@ public class EntityDrive extends EntityAbstractSummonedSword {
     @Override
     public void setShooter(Entity shooter) {
         super.setShooter(shooter);
-    }
-
-    @Override
-    public List<MobEffectInstance> getPotionEffects() {
-
-        return super.getPotionEffects();
     }
 
     @Override

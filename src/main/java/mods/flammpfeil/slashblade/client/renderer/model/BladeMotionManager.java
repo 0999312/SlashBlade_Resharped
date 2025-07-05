@@ -5,6 +5,7 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import jp.nyatla.nymmd.MmdException;
 import jp.nyatla.nymmd.MmdVmdMotionMc;
+import mods.flammpfeil.slashblade.SlashBlade;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -36,13 +37,13 @@ public class BladeMotionManager {
         try {
             defaultMotion = new MmdVmdMotionMc(ExMotionLocation);
         } catch (IOException | MmdException e) {
-            e.printStackTrace();
+            SlashBlade.LOGGER.error(e);
         }
 
         cache = CacheBuilder.newBuilder()
                 .build(CacheLoader.asyncReloading(new CacheLoader<>() {
                     @Override
-                    public @NotNull MmdVmdMotionMc load(@NotNull ResourceLocation key) throws Exception {
+                    public @NotNull MmdVmdMotionMc load(@NotNull ResourceLocation key) {
                         try {
                             return new MmdVmdMotionMc(key);
                         } catch (Exception e) {
@@ -61,7 +62,7 @@ public class BladeMotionManager {
         try {
             defaultMotion = new MmdVmdMotionMc(ExMotionLocation);
         } catch (IOException | MmdException e) {
-            e.printStackTrace();
+            SlashBlade.LOGGER.error(e);
         }
     }
 
@@ -70,7 +71,7 @@ public class BladeMotionManager {
             try {
                 return cache.get(loc);
             } catch (Exception e) {
-                e.printStackTrace();
+                SlashBlade.LOGGER.error(e);
             }
         }
         return defaultMotion;

@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
 
 /**
  * Wavefront Object importer Based heavily off of the specifications found at
- * http://en.wikipedia.org/wiki/Wavefront_.obj_file
+ * <a href="http://en.wikipedia.org/wiki/Wavefront_.obj_file">...</a>
  */
 public class WavefrontObject {
 
@@ -63,7 +63,7 @@ public class WavefrontObject {
     private void loadObjModel(InputStream inputStream) throws ModelFormatException {
         BufferedReader reader = null;
 
-        String currentLine = null;
+        String currentLine;
         int lineCount = 0;
 
         try {
@@ -74,7 +74,6 @@ public class WavefrontObject {
                 currentLine = currentLine.replaceAll("\\s+", " ").trim();
 
                 if (currentLine.startsWith("#") || currentLine.isEmpty()) {
-                    continue;
                 } else if (currentLine.startsWith("v ")) {
                     Vertex vertex = parseVertex(currentLine, lineCount);
                     if (vertex != null) {
@@ -249,14 +248,14 @@ public class WavefrontObject {
     }
 
     private Face parseFace(String line, int lineCount) throws ModelFormatException {
-        Face face = null;
+        Face face;
 
         if (isValidFaceLine(line)) {
             face = new Face();
 
             String trimmedLine = line.substring(line.indexOf(" ") + 1);
             String[] tokens = trimmedLine.split(" ");
-            String[] subTokens = null;
+            String[] subTokens;
 
             if (tokens.length == 3) {
                 if (currentGroupObject.glDrawingMode == -1) {

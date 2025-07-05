@@ -169,7 +169,7 @@ public class Face {
     public Vertex calculateFaceNormal() {
         Vec3 v1 = new Vec3(vertices[1].x - vertices[0].x, vertices[1].y - vertices[0].y, vertices[1].z - vertices[0].z);
         Vec3 v2 = new Vec3(vertices[2].x - vertices[0].x, vertices[2].y - vertices[0].y, vertices[2].z - vertices[0].z);
-        Vec3 normalVector = null;
+        Vec3 normalVector;
 
         normalVector = v1.cross(v2).normalize();
 

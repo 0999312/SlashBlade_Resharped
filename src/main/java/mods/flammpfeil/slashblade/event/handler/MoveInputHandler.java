@@ -34,7 +34,6 @@ public class MoveInputHandler {
         return (data & flags) == flags;
     }
 
-    @SuppressWarnings("resource")
     @OnlyIn(Dist.CLIENT)
     @SubscribeEvent()
     public static void onPlayerPostTick(ClientTickEvent event) {

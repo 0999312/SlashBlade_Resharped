@@ -104,7 +104,6 @@ public class ProudsoulShapelessRecipe extends ShapelessRecipe {
         @Override
         public @NotNull ProudsoulShapelessRecipe fromJson(@NotNull ResourceLocation p_44290_, @NotNull JsonObject p_44291_) {
             String s = GsonHelper.getAsString(p_44291_, "group", "");
-            @SuppressWarnings("deprecation")
             CraftingBookCategory craftingbookcategory = CraftingBookCategory.CODEC
                     .byName(GsonHelper.getAsString(p_44291_, "category", null), CraftingBookCategory.MISC);
             NonNullList<Ingredient> nonnulllist = itemsFromJson(GsonHelper.getAsJsonArray(p_44291_, "ingredients"));

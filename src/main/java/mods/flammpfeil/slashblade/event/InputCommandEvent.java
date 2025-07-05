@@ -1,4 +1,4 @@
-package mods.flammpfeil.slashblade.event.handler;
+package mods.flammpfeil.slashblade.event;
 
 import mods.flammpfeil.slashblade.capability.inputstate.IInputState;
 import mods.flammpfeil.slashblade.util.InputCommand;

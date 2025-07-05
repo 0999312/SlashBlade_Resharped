@@ -18,14 +18,11 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nullable;
-
 @OnlyIn(Dist.CLIENT)
 public class SummonedSwordRenderer<T extends EntityAbstractSummonedSword> extends EntityRenderer<T> {
 
-    @Nullable
     @Override
-    public ResourceLocation getTextureLocation(T entity) {
+    public @NotNull ResourceLocation getTextureLocation(T entity) {
         return entity.getTextureLoc();
     }
 

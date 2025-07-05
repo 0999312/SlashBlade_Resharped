@@ -62,8 +62,6 @@ public class BladeModel implements BakedModel {
     @Override
     public @NotNull TextureAtlasSprite getParticleIcon() {
         return original.getParticleIcon();
-        // return
-        // Minecraft.getInstance().getItemRenderer().getItemModelMesher().getParticleIcon(SlashBlade.proudSoul);
     }
 
     /*

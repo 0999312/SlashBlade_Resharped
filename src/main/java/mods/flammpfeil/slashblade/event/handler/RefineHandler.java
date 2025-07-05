@@ -1,7 +1,5 @@
 package mods.flammpfeil.slashblade.event.handler;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 import mods.flammpfeil.slashblade.SlashBlade;
 import mods.flammpfeil.slashblade.SlashBladeConfig;
 import mods.flammpfeil.slashblade.capability.slashblade.ISlashBladeState;
@@ -10,14 +8,16 @@ import mods.flammpfeil.slashblade.event.RefineProgressEvent;
 import mods.flammpfeil.slashblade.event.RefineSettlementEvent;
 import mods.flammpfeil.slashblade.item.ItemSlashBlade;
 import mods.flammpfeil.slashblade.util.AdvancementHelper;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AnvilUpdateEvent;
 import net.minecraftforge.event.entity.player.AnvilRepairEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class RefineHandler {
     private static final class SingletonHolder {
@@ -37,8 +37,9 @@ public class RefineHandler {
 
     @SubscribeEvent(priority = EventPriority.LOW)
     public void onAnvilUpdateEvent(AnvilUpdateEvent event) {
-        if (!event.getOutput().isEmpty())
+        if (!event.getOutput().isEmpty()) {
             return;
+        }
 
         ItemStack base = event.getLeft();
         ItemStack material = event.getRight();
@@ -134,31 +135,49 @@ public class RefineHandler {
     @SubscribeEvent
     public void onAnvilRepairEvent(AnvilRepairEvent event) {
 
-        if (!(event.getEntity() instanceof ServerPlayer))
+        if (!(event.getEntity() instanceof ServerPlayer)) {
             return;
+        }
 
         ItemStack material = event.getRight();// .getIngredientInput();
         ItemStack base = event.getLeft();// .getItemInput();
         ItemStack output = event.getOutput();
 
-        if (base.isEmpty())
+        if (base.isEmpty()) {
             return;
-        if (!(base.getItem() instanceof ItemSlashBlade))
+        }
+        if (!(base.getItem() instanceof ItemSlashBlade)) {
             return;
-        if (material.isEmpty())
+        }
+        if (material.isEmpty()) {
             return;
+        }
 
         boolean isRepairable = base.getItem().isValidRepairItem(base, material);
 
-        if (!isRepairable)
+        if (!isRepairable) {
             return;
+        }
 
-        int before = base.getCapability(ItemSlashBlade.BLADESTATE).map(s -> s.getRefine()).orElse(0);
-        int after = output.getCapability(ItemSlashBlade.BLADESTATE).map(s -> s.getRefine()).orElse(0);
+        int before = base.getCapability(ItemSlashBlade.BLADESTATE).map(ISlashBladeState::getRefine).orElse(0);
+        int after = output.getCapability(ItemSlashBlade.BLADESTATE).map(ISlashBladeState::getRefine).orElse(0);
 
-        if (before < after)
+        if (before < after) {
             AdvancementHelper.grantCriterion((ServerPlayer) event.getEntity(), REFINE);
+        }
 
+    }
+
+    @SubscribeEvent
+    public void refineLimitCheck(RefineProgressEvent event) {
+        AnvilUpdateEvent oriEvent = event.getOriginalEvent();
+        if (oriEvent == null) {
+            return;
+        }
+        int refineLimit = Math.max(10, oriEvent.getRight().getEnchantmentValue());
+        if (event.getRefineResult() <= refineLimit) {
+            event.setRefineResult(event.getRefineResult() + 1);
+        }
     }
 
 }

@@ -42,7 +42,7 @@ public class EntityJudgementCut extends Projectile implements IShootable {
             EntityDataSerializers.FLOAT);
 
     private int lifetime = 10;
-    private int seed = -1;
+    private final int seed;
 
     private double damage = 1.0D;
 
@@ -351,8 +351,6 @@ public class EntityJudgementCut extends Projectile implements IShootable {
     }
 
     public void burst() {
-        // this.playSound(SoundEvents.BLOCK_GLASS_BREAK, 1.0F, 1.2F /
-        // (this.rand.nextFloat() * 0.2F + 0.9F));
 
         if (!this.level().isClientSide()) {
             if (this.level() instanceof ServerLevel) {

@@ -108,9 +108,9 @@ public class Guard {
         // performance branch -----------------
         // just check
         long timeStartPress = input.map(i -> {
-            Long l = i.getLastPressTime(targetCommand);
+            long l = i.getLastPressTime(targetCommand);
             return l;
-        }).get();
+        }).orElse(0L);
         long timeCurrent = victim.level().getGameTime();
 
         int soulSpeedLevel = EnchantmentHelper.getEnchantmentLevel(Enchantments.SOUL_SPEED, victim);

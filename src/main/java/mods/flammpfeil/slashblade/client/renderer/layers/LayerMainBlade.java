@@ -55,7 +55,7 @@ public class LayerMainBlade<T extends LivingEntity, M extends EntityModel<T>> ex
         try {
             return new MmdPmdModelMc(new ResourceLocation(SlashBlade.MODID, "model/bladeholder.pmd"));
         } catch (IOException | MmdException e) {
-            e.printStackTrace();
+            SlashBlade.LOGGER.error(e);
         }
         return null;
     });
@@ -67,7 +67,7 @@ public class LayerMainBlade<T extends LivingEntity, M extends EntityModel<T>> ex
             try {
                 mmp.setPmd(pmd);
             } catch (MmdException e) {
-                e.printStackTrace();
+                SlashBlade.LOGGER.error(e);
             }
         });
 
@@ -219,7 +219,7 @@ public class LayerMainBlade<T extends LivingEntity, M extends EntityModel<T>> ex
             double time = TimeValueHelper.getMSecFromTicks(
                     Math.max(0, entity.level().getGameTime() - s.getLastActionTime()) + partialTicks);
 
-            while (combo != ComboStateRegistry.NONE.get() && combo.getTimeoutMS() < time) {
+            while (combo != ComboStateRegistry.NONE.get() && Objects.requireNonNull(combo).getTimeoutMS() < time) {
                 time -= combo.getTimeoutMS();
 
                 combo = ComboStateRegistry.REGISTRY.get().getValue(combo.getNextOfTimeout(entity)) != null
@@ -232,14 +232,14 @@ public class LayerMainBlade<T extends LivingEntity, M extends EntityModel<T>> ex
                         : ComboStateRegistry.STANDBY.get();
             }
 
-            MmdVmdMotionMc motion = BladeMotionManager.getInstance().getMotion(combo.getMotionLoc());
+            MmdVmdMotionMc motion = BladeMotionManager.getInstance().getMotion(Objects.requireNonNull(combo).getMotionLoc());
 
             double maxSeconds = 0;
             try {
                 mmp.setVmd(motion);
                 maxSeconds = TimeValueHelper.getMSecFromFrames(motion.getMaxFrame());
             } catch (Exception e) {
-                e.printStackTrace();
+                SlashBlade.LOGGER.error(e);
             }
 
             double start = TimeValueHelper.getMSecFromFrames(combo.getStartFrame());
@@ -258,7 +258,7 @@ public class LayerMainBlade<T extends LivingEntity, M extends EntityModel<T>> ex
             try {
                 mmp.updateMotion((float) time);
             } catch (MmdException e) {
-                e.printStackTrace();
+                SlashBlade.LOGGER.error(e);
             }
 
             try (MSAutoCloser msacA = MSAutoCloser.pushMatrix(matrixStack)) {

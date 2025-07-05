@@ -18,17 +18,14 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nullable;
-
 @OnlyIn(Dist.CLIENT)
 public class DriveRenderer<T extends EntityDrive> extends EntityRenderer<T> {
 
     private static final ResourceLocation TEXTURE = SlashBlade.prefix("model/util/ss.png");
     private static final ResourceLocation MODEL = SlashBlade.prefix("model/util/drive.obj");
 
-    @Nullable
     @Override
-    public ResourceLocation getTextureLocation(T entity) {
+    public @NotNull ResourceLocation getTextureLocation(T entity) {
         return entity.getTextureLoc();
     }
 

@@ -183,7 +183,7 @@ public class AdvancementsRecipeRenderer implements PlaceRecipe<Ingredient> {
     static public class RecipeView {
         final RecipeType<?> recipeType;
         final ResourceLocation background;
-        List<Vec3i> slots = Lists.newArrayList();
+        List<Vec3i> slots;
         final boolean isWideOutputSlot;
 
         public RecipeView(RecipeType<?> recipeType, ResourceLocation background, List<Vec3i> slots) {

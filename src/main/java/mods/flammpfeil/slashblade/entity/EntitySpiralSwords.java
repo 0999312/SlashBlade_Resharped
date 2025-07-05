@@ -113,7 +113,6 @@ public class EntitySpiralSwords extends EntityAbstractSummonedSword {
             if (entity instanceof Player && entity1 instanceof Player
                     && !((Player) entity1).canHarmPlayer((Player) entity)) {
                 raytraceresult = null;
-                entityraytraceresult = null;
             }
         }
 
