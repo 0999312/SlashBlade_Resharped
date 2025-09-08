@@ -122,13 +122,10 @@ public class BladeStandEntity extends ItemFrame implements IEntityAdditionalSpaw
 		
 		ISlashBladeState state = blade.getCapability(ItemSlashBlade.BLADESTATE).orElseThrow(NullPointerException::new);
 
-		if(MinecraftForge.EVENT_BUS.post(new SlashBladeEvent.BladeStandAttackEvent(blade, state, this, damageSource)))
-			return false;
-
 		if (damageSource.getEntity() instanceof Player player){
 			ItemStack stack = player.getItemInHand(InteractionHand.MAIN_HAND);
 			if (stack.is(SlashBladeItemTags.PROUD_SOULS)){
-				return false;
+				return MinecraftForge.EVENT_BUS.post(new SlashBladeEvent.BladeStandAttackEvent(blade, state, this, damageSource));
 			}
 		}
 
