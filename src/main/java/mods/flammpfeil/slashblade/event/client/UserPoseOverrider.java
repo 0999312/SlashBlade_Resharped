@@ -150,8 +150,13 @@ public class UserPoseOverrider {
     }
 
     static public void invertRot(PoseStack matrixStack, Entity entity, float partialTicks) {
-        float rot = entity.getPersistentData().getFloat(TAG_ROT);
-        float rotPrev = entity.getPersistentData().getFloat(TAG_ROT_PREV);
+        // 防止是否安装PlayerAnim对非玩家实体造成影响
+        // 对于非玩家实体，应由其自行实现动画
+        if (!(entity instanceof Player player)) {
+            return;
+        }
+        float rot = player.getPersistentData().getFloat(TAG_ROT);
+        float rotPrev = player.getPersistentData().getFloat(TAG_ROT_PREV);
         matrixStack.mulPose(Axis.YP.rotationDegrees(Mth.rotLerp(partialTicks, rot, rotPrev)));
     }
 }
