@@ -7,6 +7,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.RenderLivingEvent;
@@ -38,6 +39,11 @@ public class UserPoseOverrider {
 
     @SubscribeEvent
     public void onRenderPlayerEventPre(RenderLivingEvent.Pre<?, ?> event) {
+        // 防止是否安装PlayerAnim对非玩家实体造成影响
+        // 对于非玩家实体，应由其自行实现动画
+        if (!(event.getEntity() instanceof Player player)) {
+            return;
+        }
         ItemStack stack = event.getEntity().getMainHandItem();
 
         if (stack.isEmpty()) {
@@ -51,21 +57,19 @@ public class UserPoseOverrider {
         float rotPrev = event.getEntity().getPersistentData().getFloat(TAG_ROT_PREV);
 
         PoseStack matrixStackIn = event.getPoseStack();
-        LivingEntity entityLiving = event.getEntity();
         float partialTicks = event.getPartialTick();
 
-        float f = Mth.rotLerp(partialTicks, entityLiving.yBodyRotO, entityLiving.yBodyRot);
+        float f = Mth.rotLerp(partialTicks, player.yBodyRotO, player.yBodyRot);
         matrixStackIn.mulPose(Axis.YP.rotationDegrees(180.0F - f));
-        anotherPoseRotP(matrixStackIn, entityLiving, partialTicks);
+        anotherPoseRotP(matrixStackIn, player, partialTicks);
 
         matrixStackIn.mulPose(Axis.YP.rotationDegrees(Mth.rotLerp(partialTicks, rot, rotPrev)));
 
-        anotherPoseRotN(matrixStackIn, entityLiving, partialTicks);
+        anotherPoseRotN(matrixStackIn, player, partialTicks);
         matrixStackIn.mulPose(Axis.YN.rotationDegrees(180.0F - f));
     }
 
     static public void anotherPoseRotP(PoseStack matrixStackIn, LivingEntity entityLiving, float partialTicks) {
-        final boolean isPositive = true;
         final float np = 1;
 
         float f = entityLiving.getSwimAmount(partialTicks);
@@ -96,7 +100,6 @@ public class UserPoseOverrider {
     }
 
     static public void anotherPoseRotN(PoseStack matrixStackIn, LivingEntity entityLiving, float partialTicks) {
-        final boolean isPositive = false;
         final float np = -1;
 
         float f = entityLiving.getSwimAmount(partialTicks);
