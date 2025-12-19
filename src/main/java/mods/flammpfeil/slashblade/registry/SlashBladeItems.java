@@ -119,9 +119,9 @@ public class SlashBladeItems {
     public static final RegistryObject<Item> BLADESTAND_S = ITEMS.register("bladestand_s", () ->
             new BladeStandItem((new Item.Properties()).rarity(Rarity.COMMON)));
     public static final RegistryObject<Item> BLADESTAND_1_W = ITEMS.register("bladestand_1w", () ->
-            new BladeStandItem((new Item.Properties()).rarity(Rarity.COMMON)));
+            new BladeStandItem((new Item.Properties()).rarity(Rarity.COMMON),true));
     public static final RegistryObject<Item> BLADESTAND_2_W = ITEMS.register("bladestand_2w", () ->
-            new BladeStandItem((new Item.Properties()).rarity(Rarity.COMMON)));
+            new BladeStandItem((new Item.Properties()).rarity(Rarity.COMMON),true));
 
     public static final RegistryObject<Item> SLASHBLADE_WOOD = ITEMS.register("slashblade_wood", () ->
             new ItemSlashBladeDetune(new ItemTierSlashBlade(60, 2F), 2, 0.0F,

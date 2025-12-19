@@ -79,7 +79,7 @@ public class BladeFirstPersonRender {
             matrixStack.mulPose(Axis.XP.rotationDegrees(-mc.player.getXRot()));
 
             // layer.disableOffhandRendering();
-            float partialTicks = mc.getFrameTime();
+            float partialTicks = mc.getPartialTick();
             layer.render(matrixStack, bufferIn, combinedLightIn, mc.player, 0, 0, partialTicks, 0, 0, 0);
         }
     }

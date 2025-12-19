@@ -154,6 +154,20 @@ public abstract class SlashBladeEvent extends Event {
 
     }
 
+    public static class BladeStandTickEvent extends SlashBladeEvent {
+        private final BladeStandEntity bladeStand;
+
+        public BladeStandTickEvent(ItemStack blade, ISlashBladeState state, BladeStandEntity bladeStand) {
+            super(blade, state);
+            this.bladeStand = bladeStand;
+        }
+
+        public BladeStandEntity getBladeStand() {
+            return bladeStand;
+        }
+
+    }
+
     @Cancelable
     public static class HitEvent extends SlashBladeEvent {
         private final LivingEntity target;
