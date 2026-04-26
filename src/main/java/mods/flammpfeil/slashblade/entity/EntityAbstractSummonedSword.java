@@ -1,6 +1,8 @@
 package mods.flammpfeil.slashblade.entity;
 
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import java.util.HashSet;
+import java.util.UUID;
 import mods.flammpfeil.slashblade.SlashBlade;
 import mods.flammpfeil.slashblade.ability.StunManager;
 import mods.flammpfeil.slashblade.event.SlashBladeEvent;
@@ -83,6 +85,9 @@ public class EntityAbstractSummonedSword extends Projectile implements IShootabl
     private double damage = 1.0D;
 
     private IntOpenHashSet alreadyHits;
+
+    // 防止无限循环：记录本 tick 已处理的实体
+    private final HashSet<UUID> hitEntitiesThisTick = new HashSet<>();
 
     private Entity hitEntity = null;
 
@@ -280,6 +285,9 @@ public class EntityAbstractSummonedSword extends Projectile implements IShootabl
     public void tick() {
         super.tick();
 
+        // 每个 tick 重置已命中实体列表
+        hitEntitiesThisTick.clear();
+
         if (getHitEntity() != null) {
             Entity hits = getHitEntity();
 
@@ -349,7 +357,17 @@ public class EntityAbstractSummonedSword extends Projectile implements IShootabl
                 movedVec = raytraceresult.getLocation();
             }
 
+            // 添加循环保护：最大迭代次数
+            int maxIterations = 100;
+            int iterations = 0;
             while (this.isAlive()) {
+                // 防止无限循环
+                if (++iterations > maxIterations) {
+                    SlashBlade.LOGGER.warn("Summoned sword pierce loop exceeded {} iterations, breaking to prevent server hang. Shooter: {}", 
+                        maxIterations, this.getShooter());
+                    break;
+                }
+
                 // todo : replace TargetSelector
                 EntityHitResult entityraytraceresult = this.getRayTrace(positionVec, movedVec);
                 if (entityraytraceresult != null) {
@@ -361,6 +379,18 @@ public class EntityAbstractSummonedSword extends Projectile implements IShootabl
                     if (raytraceresult instanceof EntityHitResult) {
                         entity = ((EntityHitResult) raytraceresult).getEntity();
                     }
+
+                    // 检查是否已经处理过这个实体（防止事件被取消时的无限循环）
+                    if (entity != null && hitEntitiesThisTick.contains(entity.getUUID())) {
+                        // 已经在本 tick 处理过这个实体，退出循环
+                        break;
+                    }
+
+                    // 记录本次处理的实体
+                    if (entity != null) {
+                        hitEntitiesThisTick.add(entity.getUUID());
+                    }
+
                     Entity entity1 = this.getShooter();
                     if (entity instanceof LivingEntity && entity1 instanceof LivingEntity) {
                         if (!TargetSelector.test.test((LivingEntity) entity1, (LivingEntity) entity)) {
