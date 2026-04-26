@@ -363,54 +363,54 @@ public class EntityAbstractSummonedSword extends Projectile implements IShootabl
                 int maxIterations = 100;
                 int iterations = 0;
                 while (this.isAlive()) {
-                // 防止无限循环
-                if (++iterations > maxIterations) {
-                    SlashBlade.LOGGER.warn("Summoned sword pierce loop exceeded {} iterations, breaking to prevent server hang. Shooter: {}", 
-                        maxIterations, this.getShooter());
-                    break;
-                }
-
-                // todo : replace TargetSelector
-                EntityHitResult entityraytraceresult = this.getRayTrace(positionVec, movedVec);
-                if (entityraytraceresult != null) {
-                    raytraceresult = entityraytraceresult;
-                }
-
-                if (raytraceresult != null && raytraceresult.getType() == HitResult.Type.ENTITY) {
-                    Entity entity = null;
-                    if (raytraceresult instanceof EntityHitResult) {
-                        entity = ((EntityHitResult) raytraceresult).getEntity();
-                    }
-
-                    // 检查是否已经处理过这个实体（防止事件被取消时的无限循环）
-                    if (entity != null && hitEntitiesThisTick.contains(entity.getUUID())) {
-                        // 已经在本 tick 处理过这个实体，退出循环
+                    // 防止无限循环
+                    if (++iterations > maxIterations) {
+                        SlashBlade.LOGGER.warn("Summoned sword pierce loop exceeded {} iterations, breaking to prevent server hang. Shooter: {}", 
+                            maxIterations, this.getShooter());
                         break;
                     }
 
-                    // 记录本次处理的实体
-                    if (entity != null) {
-                        hitEntitiesThisTick.add(entity.getUUID());
+                    // todo : replace TargetSelector
+                    EntityHitResult entityraytraceresult = this.getRayTrace(positionVec, movedVec);
+                    if (entityraytraceresult != null) {
+                        raytraceresult = entityraytraceresult;
                     }
 
-                    Entity entity1 = this.getShooter();
-                    if (entity instanceof LivingEntity && entity1 instanceof LivingEntity) {
-                        if (!TargetSelector.test.test((LivingEntity) entity1, (LivingEntity) entity)) {
-                            raytraceresult = null;
-                            entityraytraceresult = null;
+                    if (raytraceresult != null && raytraceresult.getType() == HitResult.Type.ENTITY) {
+                        Entity entity = null;
+                        if (raytraceresult instanceof EntityHitResult) {
+                            entity = ((EntityHitResult) raytraceresult).getEntity();
+                        }
+
+                        // 检查是否已经处理过这个实体（防止事件被取消时的无限循环）
+                        if (entity != null && hitEntitiesThisTick.contains(entity.getUUID())) {
+                            // 已经在本 tick 处理过这个实体，退出循环
+                            break;
+                        }
+
+                        // 记录本次处理的实体
+                        if (entity != null) {
+                            hitEntitiesThisTick.add(entity.getUUID());
+                        }
+
+                        Entity entity1 = this.getShooter();
+                        if (entity instanceof LivingEntity && entity1 instanceof LivingEntity) {
+                            if (!TargetSelector.test.test((LivingEntity) entity1, (LivingEntity) entity)) {
+                                raytraceresult = null;
+                                entityraytraceresult = null;
+                            }
                         }
                     }
-                }
 
-                if (raytraceresult != null && !(disallowedHitBlock && raytraceresult.getType() == HitResult.Type.BLOCK)
-                        && !net.minecraftforge.event.ForgeEventFactory.onProjectileImpact(this, raytraceresult)) {
-                    this.onHit(raytraceresult);
-                    this.hasImpulse = true;
-                }
+                    if (raytraceresult != null && !(disallowedHitBlock && raytraceresult.getType() == HitResult.Type.BLOCK)
+                            && !net.minecraftforge.event.ForgeEventFactory.onProjectileImpact(this, raytraceresult)) {
+                        this.onHit(raytraceresult);
+                        this.hasImpulse = true;
+                    }
 
-                if (entityraytraceresult == null || this.getPierce() <= 0) {
-                    break;
-                }
+                    if (entityraytraceresult == null || this.getPierce() <= 0) {
+                        break;
+                    }
 
                     raytraceresult = null;
                 }
