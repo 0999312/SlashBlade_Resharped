@@ -357,10 +357,12 @@ public class EntityAbstractSummonedSword extends Projectile implements IShootabl
                 movedVec = raytraceresult.getLocation();
             }
 
-            // 添加循环保护：最大迭代次数
-            int maxIterations = 100;
-            int iterations = 0;
-            while (this.isAlive()) {
+            // 穿透检测只在服务端执行，避免客户端也陷入无限循环
+            if (!this.level().isClientSide()) {
+                // 添加循环保护：最大迭代次数
+                int maxIterations = 100;
+                int iterations = 0;
+                while (this.isAlive()) {
                 // 防止无限循环
                 if (++iterations > maxIterations) {
                     SlashBlade.LOGGER.warn("Summoned sword pierce loop exceeded {} iterations, breaking to prevent server hang. Shooter: {}", 
@@ -410,7 +412,8 @@ public class EntityAbstractSummonedSword extends Projectile implements IShootabl
                     break;
                 }
 
-                raytraceresult = null;
+                    raytraceresult = null;
+                }
             }
 
             motionVec = this.getDeltaMovement();
