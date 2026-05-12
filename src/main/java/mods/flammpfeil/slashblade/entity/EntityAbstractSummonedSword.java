@@ -375,6 +375,8 @@ public class EntityAbstractSummonedSword extends Projectile implements IShootabl
                     }
                 }
 
+                if (raytraceresult == null)
+                    break;
                 if (!(disallowedHitBlock && raytraceresult.getType() == HitResult.Type.BLOCK)
                         && impactCheck) {
                     this.onHit(raytraceresult);
