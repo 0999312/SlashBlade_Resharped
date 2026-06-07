@@ -475,6 +475,9 @@ public class EntityAbstractSummonedSword extends Projectile implements IShootabl
 
     @Override
     protected void onHit(HitResult raytraceResultIn) {
+        if (raytraceResultIn == null){
+            return;
+        }
         HitResult.Type type = raytraceResultIn.getType();
         switch (type) {
             case ENTITY:
