@@ -230,21 +230,22 @@ public class ComboState {
         }
 
         private final Map<Integer, Consumer<LivingEntity>> timeLine;
-        private int lastProcessedTick = -1;
 
         TimeLineTickAction(Map<Integer, Consumer<LivingEntity>> timeLine) {
             this.timeLine = Maps.newHashMap(timeLine);
         }
-        
+
         @Override
         public void accept(LivingEntity livingEntity) {
             int elapsed = (int) getElapsed(livingEntity);
+            long lastProcessed = BladeStateAccess.of(livingEntity.getMainHandItem())
+                    .map(ISlashBladeState::getLastProcessedComboTick).orElse(-1L);
 
-            if (lastProcessedTick == elapsed) {
+            if (lastProcessed == elapsed) {
                 return;
             }
-            lastProcessedTick = elapsed;
-
+            BladeStateAccess.of(livingEntity.getMainHandItem())
+                    .ifPresent(state -> state.setLastProcessedComboTick(elapsed));
             Consumer<LivingEntity> action = timeLine.get(elapsed);
             if (action != null) {
                 action.accept(livingEntity);
