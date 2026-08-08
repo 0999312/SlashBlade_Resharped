@@ -327,6 +327,9 @@ public class EntityAbstractSummonedSword extends Projectile implements IShootabl
         }
 
         if (this.inGround && !disallowedHitBlock) {
+            if (this.inBlockState == null) {
+                this.inBlockState = blockstate;
+            }
             if (this.inBlockState != blockstate && this.level().noCollision(this.getBoundingBox().inflate(0.06D))) {
                 // block breaked
                 this.burst();
