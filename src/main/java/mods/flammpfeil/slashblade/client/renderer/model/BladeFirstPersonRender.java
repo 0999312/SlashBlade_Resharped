@@ -5,6 +5,7 @@ import com.mojang.math.Axis;
 import mods.flammpfeil.slashblade.capability.slashblade.BladeStateAccess;
 import mods.flammpfeil.slashblade.client.renderer.layers.LayerMainBlade;
 import mods.flammpfeil.slashblade.client.renderer.util.MSAutoCloser;
+import net.irisshaders.iris.Iris;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -15,13 +16,15 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-
-import javax.annotation.Nullable;
+import net.neoforged.fml.ModList;
 
 public class BladeFirstPersonRender {
-    @Nullable
     private LayerMainBlade<LocalPlayer, ?> layer = null;
-    
+
+    // 迁移自Myself分支的修复：加载iris时对第一人称刀剑渲染进行旋转补偿，且避免未加载iris时抛出NoClassDefFoundError
+    // Migrated fix from the Myself branch: apply rotation compensation when iris shaders are active, and avoid NoClassDefFoundError when iris is not loaded. 2026-08-20:16-43
+    private final boolean isIrisLoaded = ModList.get().isLoaded("iris");
+
     private BladeFirstPersonRender() {
         initLayer();
     }
@@ -80,7 +83,16 @@ public class BladeFirstPersonRender {
             me.normal().identity();
             
             float partialTicks = mc.getTimer().getGameTimeDeltaPartialTick(false);
-            matrixStack.mulPose(Axis.YP.rotationDegrees(180.0F - Mth.lerp(partialTicks, player.yRotO, player.getYRot())));
+            float yaw = Mth.lerp(partialTicks, player.yRotO, player.getYRot());
+            
+            // 这里顺序不要乱动，Java的“短路与”检测机制在不加载iris时isIrisLoaded为false，后续的Iris.isPackInUseQuick()直接不会被调用，从而避免了NoClassDefFoundError
+            // Do not change this order: short-circuit evaluation means when iris is not loaded, isIrisLoaded is false and Iris.isPackInUseQuick() will not be called, avoiding NoClassDefFoundError.
+            if (isIrisLoaded && Iris.isPackInUseQuick()) {
+                matrixStack.mulPose(Axis.XP.rotationDegrees(player.getXRot()));
+                matrixStack.mulPose(Axis.YP.rotationDegrees(yaw + 180.0F));
+            }
+            
+            matrixStack.mulPose(Axis.YP.rotationDegrees(180.0F - yaw));
             
             matrixStack.translate(0.0f, 0.0f, -0.5f);
             matrixStack.mulPose(Axis.ZP.rotationDegrees(180.0f));

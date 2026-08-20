@@ -152,6 +152,12 @@ dependencies {
     implementation "curse.maven:the-twilight-forest-227639:7797302"
     
     implementation "maven.modrinth:patchouli:1.21.1-93-neoforge"
+
+    // 1.0.8 加速渲染
+    compileOnly "curse.maven:accelerated-rendering-1314021:7342942"
+    // 1.8.12 iris
+    compileOnly "curse.maven:irisshaders-455508:6661598"
+
 }
 
 tasks.named('processResources', ProcessResources).configure {
