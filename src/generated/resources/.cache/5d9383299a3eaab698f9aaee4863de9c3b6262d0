@@ -1,3 +1,4 @@
-// 1.21.1	2026-05-03T02:11:01.4933576	Tags for minecraft:entity_type mod id slashblade
+// 1.21.1	2026-09-02T17:23:20.8910112	Tags for minecraft:entity_type mod id slashblade
 6659f307917d4e6c4e87d8eebb82cd07b8e224f3 data/slashblade/tags/entity_type/blacklist/attackable.json
 8802b5cb055472383f4eb497e52248c046fd9a84 data/slashblade/tags/entity_type/blacklist/render_layer.json
+8c3e275cda6ac98f21eface83b369e2cf9532b93 data/slashblade/tags/entity_type/whitelist/attackable.json

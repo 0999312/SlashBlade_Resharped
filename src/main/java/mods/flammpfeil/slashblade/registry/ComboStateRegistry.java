@@ -1195,13 +1195,13 @@ public class ComboStateRegistry {
         );
     
     public static final DeferredHolder<ComboState, ComboState> PIERCING = COMBO_STATE.register("piercing", ComboState.Builder
-        .newInstance().startAndEnd(1, 33).priority(50).motionLoc(DefaultResources.testLocation)
+        .newInstance().startAndEnd(1, 28).priority(50).motionLoc(DefaultResources.testLocation)
         .next(entity -> SlashBlade.prefix("piercing"))
         .nextOfTimeout(entity -> SlashBlade.prefix("piercing_2"))
         ::build);
     
     public static final DeferredHolder<ComboState, ComboState> PIERCING_2 = COMBO_STATE.register("piercing_2", ComboState.Builder
-        .newInstance().startAndEnd(33, 55).priority(50).motionLoc(DefaultResources.testLocation)
+        .newInstance().startAndEnd(29, 55).priority(50).motionLoc(DefaultResources.testLocation)
         .next(ComboState.TimeoutNext.buildFromFrame(10, entity -> SlashBlade.prefix("none")))
         .nextOfTimeout(entity -> SlashBlade.prefix("piercing_end"))
         .addTickAction((entity) -> {

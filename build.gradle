@@ -138,6 +138,11 @@ dependencies {
     compileOnly           "org.projectlombok:lombok:1.18.38"
     annotationProcessor   "org.projectlombok:lombok:1.18.38"
 
+    // 假人
+    runtimeOnly "curse.maven:powerful-dummy-1276893:8232901"
+    runtimeOnly "curse.maven:selene-499980:8749776"
+    runtimeOnly "curse.maven:mmmmmmmmmmmm-225738:8510632"
+
     // 1.0.8 加速渲染
     compileOnly "curse.maven:accelerated-rendering-1314021:7342942"
     // 1.8.12 iris

@@ -1,0 +1,12 @@
+{
+  "values": [
+    {
+      "id": "powerful_dummy:test_dummy",
+      "required": false
+    },
+    {
+      "id": "dummmmmmy:target_dummy",
+      "required": false
+    }
+  ]
+}
