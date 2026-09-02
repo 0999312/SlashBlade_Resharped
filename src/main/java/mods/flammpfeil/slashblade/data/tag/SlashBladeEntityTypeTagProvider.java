@@ -22,6 +22,10 @@ public class SlashBladeEntityTypeTagProvider extends EntityTypeTagsProvider {
     
     @Override
     protected void addTags(Provider lookupProvider) {
+        this.tag(EntityTypeTags.ATTACKABLE_WHITELIST)
+                        .addOptional(ResourceLocation.fromNamespaceAndPath("powerful_dummy", "test_dummy"))
+                        .addOptional(ResourceLocation.fromNamespaceAndPath("dummmmmmy", "target_dummy"));
+
         this.tag(EntityTypeTags.ATTACKABLE_BLACKLIST)
             .add(EntityType.VILLAGER)
             .addOptional(ResourceLocation.fromNamespaceAndPath("touhou_little_maid", "maid"));
@@ -31,6 +35,9 @@ public class SlashBladeEntityTypeTagProvider extends EntityTypeTagsProvider {
     }
     
     public static class EntityTypeTags {
+        public static final TagKey<EntityType<?>> ATTACKABLE_WHITELIST = TagKey.create(Registries.ENTITY_TYPE,
+                        SlashBlade.prefix("whitelist/attackable"));
+
         public static final TagKey<EntityType<?>> ATTACKABLE_BLACKLIST = TagKey.create(Registries.ENTITY_TYPE,
             SlashBlade.prefix("blacklist/attackable"));
         public static final TagKey<EntityType<?>> RENDER_LAYER_BLACKLIST = TagKey.create(Registries.ENTITY_TYPE,
