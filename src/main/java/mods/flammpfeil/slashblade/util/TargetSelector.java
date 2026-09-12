@@ -13,6 +13,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.OwnableEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
@@ -74,6 +75,17 @@ public class TargetSelector {
             
             if (livingentity.getTags().contains(AttackableTag)) {
                 livingentity.removeTag(AttackableTag);
+                return true;
+            }
+
+            // 防误伤宠物机制
+            if (livingentity instanceof OwnableEntity ownable) {
+                if (ownable.getOwner() instanceof Player) {
+                    return false;
+                }
+            }
+
+            if (livingentity.getType().is(EntityTypeTags.ATTACKABLE_WHITELIST)) {
                 return true;
             }
             
