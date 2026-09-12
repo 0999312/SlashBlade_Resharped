@@ -3,7 +3,6 @@ package mods.flammpfeil.slashblade.compat.playerAnim;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import dev.kosmx.playerAnim.api.TransformType;
-import dev.kosmx.playerAnim.api.layered.IAnimation;
 import dev.kosmx.playerAnim.core.util.Vec3f;
 import jp.nyatla.nymmd.MmdException;
 import jp.nyatla.nymmd.MmdMotionPlayerGL2;
@@ -24,7 +23,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-public class VmdAnimation implements IAnimation {
+public class VmdAnimation extends PlayerAnimationBase {
     @Nullable
     static final MmdPmdModelMc alex;
     
@@ -34,7 +33,8 @@ public class VmdAnimation implements IAnimation {
     static {
         MmdPmdModelMc tmpAlex = null;
         try {
-            tmpAlex = new MmdPmdModelMc(ResourceLocation.fromNamespaceAndPath(SlashBlade.MODID, "model/pa/alex.pmd"));
+            tmpAlex = new MmdPmdModelMc(
+                ResourceLocation.fromNamespaceAndPath(SlashBlade.MODID, "model/pa/alex.pmd"));
         } catch (IOException | MmdException e) {
             SlashBlade.LOGGER.warn(e);
         }
@@ -52,21 +52,6 @@ public class VmdAnimation implements IAnimation {
         motionPlayer = tmpMp;
     }
     
-    int currentTick;
-    private int lastCachedTick = -1;
-    private float lastCachedPartial = -1.0f;
-    
-    final ResourceLocation loc;
-    double start;
-    double end;
-    double span;
-    boolean loop;
-    
-    private boolean isRunning = true;
-    
-    private boolean blendArms = false;
-    private boolean blendLegs = true;
-    
     static private Map<String, String> initNamemap() {
         Map<String, String> map = Maps.newHashMap();
         map.put("leftArm", "left arm");
@@ -82,67 +67,17 @@ public class VmdAnimation implements IAnimation {
     static final List<String> legs = Lists.newArrayList("leftLeg", "rightLeg");
     
     public VmdAnimation(ResourceLocation loc, double start, double end, boolean loop) {
-        this.loc = loc;
-        this.start = start;
-        this.end = end;
-        
-        this.span = TimeValueHelper.getTicksFromFrames((float) Math.abs(end - start));
-        
-        this.loop = loop;
-        
-        currentTick = 0;
+        super(loc, start, end, loop);
     }
     
+    @Override
     public VmdAnimation getClone() {
-        VmdAnimation tmp = new VmdAnimation(this.loc, this.start, this.end, this.loop);
-        
-        tmp.setBlendArms(this.blendArms);
-        
-        tmp.setBlendLegs(this.blendLegs);
-        
-        return tmp;
-    }
-    
-    public VmdAnimation setBlendArms(boolean blend) {
-        blendArms = blend;
-        return this;
-    }
-    
-    public VmdAnimation setBlendLegs(boolean blend) {
-        blendLegs = blend;
-        return this;
+        return (VmdAnimation) super.getClone();
     }
     
     @Override
-    public void tick() {
-        if (this.isRunning) {
-            this.currentTick++;
-            
-            double endTicks = span;
-            this.loop = false;
-            
-            if (endTicks <= currentTick) {
-                this.stop();
-            }
-        }
-    }
-    
-    public void play() {
-        play(0);
-    }
-    
-    public void play(int ticks) {
-        this.currentTick = Math.max(0, ticks);
-        this.isRunning = true;
-    }
-    
-    public void stop() {
-        this.isRunning = false;
-    }
-    
-    @Override
-    public boolean isActive() {
-        return this.isRunning;
+    protected VmdAnimation createClone() {
+        return new VmdAnimation(this.loc, this.start, this.end, this.loop);
     }
     
     @Override
@@ -234,6 +169,44 @@ public class VmdAnimation implements IAnimation {
         return value0;
     }
     
+    @Override
+    protected void updateAnimation(float tickDelta) {
+        if (motionPlayer == null) {
+            return;
+        }
+        
+        MmdMotionPlayerGL2 mmp = motionPlayer;
+        
+        double eofTime = 0;
+        MmdVmdMotionMc motion = BladeMotionManager.getInstance().getMotion(this.loc);
+        if (motion != null) {
+            try {
+                mmp.setVmd(motion);
+                eofTime = TimeValueHelper.getMSecFromFrames(motion.getMaxFrame());
+            } catch (Exception e) {
+                SlashBlade.LOGGER.warn(e);
+            }
+        } else if (!mmp.hasVmdMotion()) {
+            return;
+        }
+        
+        double time = TimeValueHelper.getMSecFromTicks((float) (this.currentTick + tickDelta));
+        time = Math.min(eofTime, time);
+        time = TimeValueHelper.getMSecFromFrames((float) this.start) + time;
+        
+        try {
+            mmp.updateMotionBonesOnly((float) time);
+        } catch (MmdException e) {
+            SlashBlade.LOGGER.warn(e);
+        }
+    }
+    
+    /**
+     * 将四元数换算为 ZYX 顺序欧拉角（弧度）。
+     *
+     * @param qt 四元数
+     * @return ZYX 欧拉角
+     */
     Vector3d QuaternionToEulerZYX(Quaterniond qt) {
         Vector3d tmp = new Vector3d();
         
@@ -264,7 +237,7 @@ public class VmdAnimation implements IAnimation {
         tmp.x = Math.atan2(m12, m22);
         
         return tmp;
-        
+
 /*        Vector3d tmp = new Vector3d();
 
         double a_x_x = Math.pow(qt.w, 2) + Math.pow(qt.x, 2) - Math.pow(qt.y, 2) - Math.pow(qt.z, 2);
@@ -285,44 +258,5 @@ public class VmdAnimation implements IAnimation {
         tmp.x = Math.atan2(a_y_z, a_z_z);
 
         return tmp;*/
-    }
-    
-    @Override
-    public void setupAnim(float tickDelta) {
-        if (motionPlayer == null) {
-            return;
-        }
-        
-        if (this.currentTick == this.lastCachedTick
-            && Float.floatToIntBits(tickDelta) == Float.floatToIntBits(this.lastCachedPartial)) {
-            return;
-        }
-        this.lastCachedTick = this.currentTick;
-        this.lastCachedPartial = tickDelta;
-
-        MmdMotionPlayerGL2 mmp = motionPlayer;
-        
-        double eofTime = 0;
-        MmdVmdMotionMc motion = BladeMotionManager.getInstance().getMotion(loc);
-        if (motion != null) {
-            try {
-                mmp.setVmd(motion);
-                eofTime = TimeValueHelper.getMSecFromFrames(motion.getMaxFrame());
-            } catch (Exception e) {
-                SlashBlade.LOGGER.warn(e);
-            }
-        } else if (!mmp.hasVmdMotion()) {
-            return;
-        }
-        
-        double time = TimeValueHelper.getMSecFromTicks((float) (currentTick + (double) tickDelta));
-        time = Math.min(eofTime, time);
-        time = TimeValueHelper.getMSecFromFrames((float) start) + time;
-        
-        try {
-            mmp.updateMotionBonesOnly((float) time);
-        } catch (MmdException e) {
-            SlashBlade.LOGGER.warn(e);
-        }
     }
 }

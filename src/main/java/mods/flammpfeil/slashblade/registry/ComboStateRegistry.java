@@ -26,6 +26,7 @@ import net.neoforged.neoforge.registries.RegistryBuilder;
 
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Optional;
 
 @SuppressWarnings("unused")
 public class ComboStateRegistry {
@@ -180,9 +181,9 @@ public class ComboStateRegistry {
             .next(ComboState.TimeoutNext.buildFromFrame(33, entity -> SlashBlade.prefix("none")))
             .nextOfTimeout(entity -> SlashBlade.prefix("combo_a5ex_end"))
             .addTickAction(ComboState.TimeLineTickAction.getBuilder()
-                .put(15, (entityIn) -> AttackManager.doSlash(entityIn, 35, false, true, 1f))
-                .put(17, (entityIn) -> AttackManager.doSlash(entityIn, 40, true, true, 1f))
-                .put(19, (entityIn) -> AttackManager.doSlash(entityIn, 30, true, true, 1f)).build())
+                .put(15, (entityIn) -> Optional.ofNullable(AttackManager.doSlash(entityIn, 35, false, true, 1f)).ifPresent(e -> e.setBaseSize(2)))
+                .put(17, (entityIn) -> Optional.ofNullable(AttackManager.doSlash(entityIn, 40, true, true, 1f)).ifPresent(e -> e.setBaseSize(2)))
+                .put(19, (entityIn) -> Optional.ofNullable(AttackManager.doSlash(entityIn, 30, true, true, 1f)).ifPresent(e -> e.setBaseSize(2))).build())
             .clickAction(a -> AdvancementHelper.grantCriterion(a, AdvancementHelper.ADVANCEMENT_COMBO_A_EX))
             .addHitEffect(StunManager::setStun)
             .rotationKeyframe(13, 72)
@@ -577,6 +578,9 @@ public class ComboStateRegistry {
         ComboState.Builder.newInstance().startAndEnd(1600, 1659).priority(90)
             .next(ComboState.TimeoutNext.buildFromFrame(11, entity -> SlashBlade.prefix("none")))
             .nextOfTimeout(entity -> SlashBlade.prefix("upperslash_end")).addHoldAction((player) -> {
+                if (player.level().isClientSide()) {
+                    return;
+                }
                 int elapsed = player.getTicksUsingItem();
                 
                 int fireTime = (int) TimeValueHelper.getTicksFromFrames(9);
@@ -658,6 +662,10 @@ public class ComboStateRegistry {
                     e.setDeltaMovement(motion.x, motion.y - 3.0, motion.z);
                 }
                 
+                if (e.level().isClientSide()) {
+                    return;
+                }
+                
                 if (elapsed % 2 == 0) {
                     AttackManager.areaAttack(e, KnockBacks.meteor.action, 0.44f, true, false, true);
                 }
@@ -691,6 +699,10 @@ public class ComboStateRegistry {
                 
                 Vec3 motion = e.getDeltaMovement();
                 e.setDeltaMovement(motion.x, motion.y - 3.0, motion.z);
+                
+                if (e.level().isClientSide()) {
+                    return;
+                }
                 
                 long elapsed = ComboState.getElapsed(e);
                 
@@ -732,6 +744,10 @@ public class ComboStateRegistry {
             .clickAction((entityIn) -> AdvancementHelper.grantCriterion(entityIn,
                 AdvancementHelper.ADVANCEMENT_RAPID_SLASH))
             .addHoldAction((e) -> {
+                if (e.level().isClientSide()) {
+                    return;
+                }
+                
                 int elapsed = e.getTicksUsingItem();
                 
                 if (elapsed < 2) {

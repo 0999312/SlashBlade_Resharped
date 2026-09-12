@@ -35,6 +35,9 @@ import org.apache.logging.log4j.Logger;
 public class SlashBlade {
     public static final String MODID = "slashblade";
     
+    @SuppressWarnings("NotNullFieldNotInitialized")
+    public static IEventBus MOD_EVENT_BUS;
+    
     public static ResourceLocation prefix(String path) {
         return ResourceLocation.fromNamespaceAndPath(SlashBlade.MODID, path);
     }
@@ -43,6 +46,8 @@ public class SlashBlade {
     public static final Logger LOGGER = LogManager.getLogger();
     
     public SlashBlade(IEventBus modEventBus, ModContainer container) {
+        SlashBlade.MOD_EVENT_BUS = modEventBus;
+        
         container.registerConfig(ModConfig.Type.COMMON, SlashBladeConfig.COMMON_CONFIG);
         
         modEventBus.addListener(this::setup);

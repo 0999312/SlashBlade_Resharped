@@ -2,9 +2,9 @@ package mods.flammpfeil.slashblade.client.renderer.model;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
-import mods.flammpfeil.slashblade.SlashBlade;
 import mods.flammpfeil.slashblade.capability.slashblade.BladeStateAccess;
 import mods.flammpfeil.slashblade.client.renderer.layers.LayerMainBlade;
+import mods.flammpfeil.slashblade.client.renderer.layers.LayerSlashBlade;
 import mods.flammpfeil.slashblade.client.renderer.util.MSAutoCloser;
 import net.irisshaders.iris.Iris;
 import net.minecraft.client.CameraType;
@@ -17,17 +17,16 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModList;
 
 import javax.annotation.Nullable;
 
 public class BladeFirstPersonRender {
     @Nullable
-    private LayerMainBlade<LocalPlayer, ?> layer = null;
-
+    private LayerSlashBlade<LocalPlayer, ?> layer = null;
+    
     private final boolean isIrisLoaded = ModList.get().isLoaded("iris");
-
+    
     private BladeFirstPersonRender() {
         initLayer();
     }
