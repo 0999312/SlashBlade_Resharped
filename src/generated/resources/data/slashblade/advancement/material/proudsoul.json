@@ -1,0 +1,42 @@
+{
+  "parent": "slashblade:material/proudsoul_tiny",
+  "criteria": {
+    "BrokenBlade": {
+      "conditions": {
+        "items": [
+          {
+            "items": "slashblade:proudsoul"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "adv.slashblade.proudsoul"
+    },
+    "icon": {
+      "count": 1,
+      "id": "slashblade:proudsoul"
+    },
+    "title": {
+      "translate": "item.slashblade.proudsoul"
+    }
+  },
+  "requirements": [
+    [
+      "BrokenBlade"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "slashblade:material/tiny",
+      "slashblade:material/ingot",
+      "slashblade:material/soul",
+      "slashblade:bladestand/bladestand_1",
+      "slashblade:bladestand/bladestand_2"
+    ]
+  },
+  "sends_telemetry_event": true
+}

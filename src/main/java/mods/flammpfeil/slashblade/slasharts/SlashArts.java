@@ -1,5 +1,6 @@
 package mods.flammpfeil.slashblade.slasharts;
 
+import com.mojang.serialization.Codec;
 import mods.flammpfeil.slashblade.SlashBlade;
 import mods.flammpfeil.slashblade.registry.ComboStateRegistry;
 import mods.flammpfeil.slashblade.registry.SlashArtsRegistry;
@@ -40,7 +41,10 @@ public class SlashArts {
     }
     
     public enum ArtsType {
-        Fail, Success, Jackpot, Super
+        Fail, Success, Jackpot, Super;
+        
+        public static final Codec<ArtsType> CODEC = Codec.STRING.xmap(string -> ArtsType.valueOf(string.toUpperCase()),
+            instance -> instance.name().toLowerCase());
     }
     
     private final Function<LivingEntity, ResourceLocation> comboState;

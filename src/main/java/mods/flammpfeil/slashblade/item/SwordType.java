@@ -9,6 +9,7 @@ import net.neoforged.fml.common.asm.enumextension.ExtensionInfo;
 import net.neoforged.fml.common.asm.enumextension.IExtensibleEnum;
 
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.BiFunction;
 
@@ -45,6 +46,7 @@ public enum SwordType implements IExtensibleEnum {
         if (itemStackIn.getItem() instanceof ItemSlashBlade slashBlade) {
             types = slashBlade.getSwordType(types.clone(), itemStackIn, state);
         }
+        types.addAll(state.map(ISlashBladeState::getDefaultSwordTypes).orElse(List.of()));
         return types;
     }
     

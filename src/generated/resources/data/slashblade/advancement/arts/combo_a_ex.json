@@ -1,0 +1,31 @@
+{
+  "parent": "slashblade:arts/combo_c",
+  "criteria": {
+    "customtrigger": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "adv.slashblade.combo_a_ex.desc",
+      "with": [
+        {
+          "keybind": "key.use"
+        }
+      ]
+    },
+    "icon": {
+      "count": 1,
+      "id": "minecraft:netherite_sword"
+    },
+    "title": {
+      "translate": "adv.slashblade.combo_a_ex"
+    }
+  },
+  "requirements": [
+    [
+      "customtrigger"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

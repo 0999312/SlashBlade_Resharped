@@ -1,0 +1,31 @@
+{
+  "parent": "slashblade:abilities/trick_down",
+  "criteria": {
+    "customtrigger": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "adv.slashblade.trick_dodge.desc",
+      "with": [
+        {
+          "keybind": "key.slashblade.special_move"
+        }
+      ]
+    },
+    "icon": {
+      "count": 1,
+      "id": "minecraft:feather"
+    },
+    "title": {
+      "translate": "adv.slashblade.trick_dodge"
+    }
+  },
+  "requirements": [
+    [
+      "customtrigger"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

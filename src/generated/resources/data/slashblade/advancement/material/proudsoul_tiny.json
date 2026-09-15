@@ -1,0 +1,33 @@
+{
+  "parent": "slashblade:root",
+  "criteria": {
+    "BrokenBlade": {
+      "conditions": {
+        "items": [
+          {
+            "items": "slashblade:proudsoul_tiny"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "adv.slashblade.proudsoul_tiny"
+    },
+    "icon": {
+      "count": 1,
+      "id": "slashblade:proudsoul_tiny"
+    },
+    "title": {
+      "translate": "item.slashblade.proudsoul_tiny"
+    }
+  },
+  "requirements": [
+    [
+      "BrokenBlade"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

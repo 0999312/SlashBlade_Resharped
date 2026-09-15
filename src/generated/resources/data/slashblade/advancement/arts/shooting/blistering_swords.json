@@ -1,0 +1,40 @@
+{
+  "parent": "slashblade:arts/shooting/storm_swords",
+  "criteria": {
+    "customtrigger": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "adv.slashblade.blistering_swords.desc",
+      "with": [
+        {
+          "translate": "key.pickItem"
+        },
+        {
+          "keybind": "key.pickItem"
+        },
+        {
+          "keybind": "key.forward"
+        },
+        {
+          "keybind": "key.sneak"
+        }
+      ]
+    },
+    "icon": {
+      "count": 1,
+      "id": "minecraft:firework_rocket"
+    },
+    "title": {
+      "translate": "adv.slashblade.blistering_swords"
+    }
+  },
+  "requirements": [
+    [
+      "customtrigger"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

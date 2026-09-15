@@ -1,0 +1,34 @@
+{
+  "parent": "slashblade:arts/shooting/summonedswords",
+  "criteria": {
+    "customtrigger": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "adv.slashblade.spiral_swords.desc",
+      "with": [
+        {
+          "translate": "key.pickItem"
+        },
+        {
+          "keybind": "key.pickItem"
+        }
+      ]
+    },
+    "icon": {
+      "count": 1,
+      "id": "minecraft:shield"
+    },
+    "title": {
+      "translate": "adv.slashblade.spiral_swords"
+    }
+  },
+  "requirements": [
+    [
+      "customtrigger"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

@@ -2,6 +2,7 @@ package mods.flammpfeil.slashblade.entity;
 
 import com.google.common.collect.Lists;
 import com.mojang.math.Axis;
+import mods.flammpfeil.slashblade.SlashBlade;
 import mods.flammpfeil.slashblade.capability.concentrationrank.IConcentrationRank;
 import mods.flammpfeil.slashblade.event.handler.FallHandler;
 import mods.flammpfeil.slashblade.util.AttackManager;
@@ -15,6 +16,7 @@ import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerEntity;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -23,6 +25,9 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
@@ -52,6 +57,7 @@ public class EntitySlashEffect extends Projectile implements IShootable {
         .defineId(EntitySlashEffect.class, EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<Float> BASESIZE = SynchedEntityData.defineId(EntitySlashEffect.class,
         EntityDataSerializers.FLOAT);
+    public static final ResourceLocation SLASH_BASE_SIZE_ATTRIBUTE_ID = ResourceLocation.fromNamespaceAndPath(SlashBlade.MODID, "slash_base_size");
     
     private int lifetime = 10;
     private KnockBacks action = KnockBacks.cancel;
@@ -285,6 +291,8 @@ public class EntitySlashEffect extends Projectile implements IShootable {
             }
         }
         
+        float baseSize = this.getBaseSize();
+        
         if (tickCount % 2 == 0 || tickCount < 5) {
             Vec3 start = this.position();
             Vector4f normal = new Vector4f(1, 0, 0, 1);
@@ -314,7 +322,7 @@ public class EntitySlashEffect extends Projectile implements IShootable {
             
             IConcentrationRank.ConcentrationRanks rank = getRankCode();
             if (rank != null && IConcentrationRank.ConcentrationRanks.S.level < rank.level) {
-                Vec3 vec3 = start.add(normal3d.scale(this.getBaseSize() * 2.5));
+                Vec3 vec3 = start.add(normal3d.scale(baseSize * 2.5));
                 this.level().addParticle(ParticleTypes.CRIT, vec3.x(), vec3.y(), vec3.z(), dir.x() + normal.x(),
                     dir.y() + normal.y(), dir.z() + normal.z());
                 float randScale = random.nextFloat() + 0.5f;
@@ -336,10 +344,18 @@ public class EntitySlashEffect extends Projectile implements IShootable {
                 List<Entity> hits;
                 if (!getIndirect() && getShooter() instanceof LivingEntity shooter) {
                     float ratio = (float) damage * (getIsCritical() ? 1.1f : 1.0f);
-                    hits = AttackManager.areaAttack(shooter, this.action.action, ratio, forceHit, false, true,
-                        alreadyHits);
+                    // Apply baseSize
+                    AttributeInstance instance = baseSize != 1 ? shooter.getAttribute(Attributes.ENTITY_INTERACTION_RANGE) : null;
+                    if (instance != null) {
+                        AttributeModifier modifier = new AttributeModifier(SLASH_BASE_SIZE_ATTRIBUTE_ID, baseSize, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
+                        instance.addTransientModifier(modifier);
+                    }
+                    hits = AttackManager.areaAttack(shooter, this.action.action, ratio, forceHit, false, true, alreadyHits);
+                    if (instance != null) {
+                        instance.removeModifier(SLASH_BASE_SIZE_ATTRIBUTE_ID);
+                    }
                 } else {
-                    hits = AttackManager.areaAttack(this, this.action.action, 4.0, forceHit, false, alreadyHits);
+                    hits = AttackManager.areaAttack(this, this.action.action, 4 * baseSize, forceHit, false, alreadyHits);
                 }
                 
                 if (!this.doCycleHit()) {

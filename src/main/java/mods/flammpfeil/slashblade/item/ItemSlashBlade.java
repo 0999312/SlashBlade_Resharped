@@ -677,7 +677,7 @@ public class ItemSlashBlade extends SwordItem {
             if (player != null) {
                 tooltip.add(Component.translatable("slashblade.tooltip.special_effect", SpecialEffect.getDescription(se),
                         Component.literal(showingLevel ? String.valueOf(SpecialEffect.getRequestLevel(se)) : "")
-                            .withStyle(SpecialEffect.isEffective(se, player.experienceLevel) ? ChatFormatting.RED
+                            .withStyle(SpecialEffect.isEffective(se, player) ? ChatFormatting.RED
                                 : ChatFormatting.DARK_GRAY))
                     .withStyle(ChatFormatting.GRAY));
             }

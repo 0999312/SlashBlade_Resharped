@@ -1,0 +1,35 @@
+{
+  "criteria": {
+    "attackTheEntity": {
+      "trigger": "minecraft:player_hurt_entity"
+    }
+  },
+  "display": {
+    "background": "minecraft:textures/block/chiseled_quartz_block.png",
+    "description": {
+      "translate": "itemGroup.slashblade.desc"
+    },
+    "icon": {
+      "count": 1,
+      "id": "slashblade:slashblade"
+    },
+    "title": {
+      "translate": "itemGroup.slashblade"
+    }
+  },
+  "requirements": [
+    [
+      "attackTheEntity"
+    ]
+  ],
+  "rewards": {
+    "loot": [
+      "slashblade:rewards/first"
+    ],
+    "recipes": [
+      "slashblade:simple_slashblade",
+      "slashblade:s_wood"
+    ]
+  },
+  "sends_telemetry_event": true
+}

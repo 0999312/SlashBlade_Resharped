@@ -1,0 +1,31 @@
+{
+  "parent": "slashblade:arts/aerial_a",
+  "criteria": {
+    "customtrigger": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "adv.slashblade.aerial_b.desc",
+      "with": [
+        {
+          "keybind": "key.use"
+        }
+      ]
+    },
+    "icon": {
+      "count": 1,
+      "id": "minecraft:stone_sword"
+    },
+    "title": {
+      "translate": "adv.slashblade.aerial_b"
+    }
+  },
+  "requirements": [
+    [
+      "customtrigger"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

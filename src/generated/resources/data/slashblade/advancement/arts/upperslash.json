@@ -1,0 +1,37 @@
+{
+  "parent": "slashblade:arts/combo_a",
+  "criteria": {
+    "customtrigger": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "adv.slashblade.upperslash.desc",
+      "with": [
+        {
+          "keybind": "key.use"
+        },
+        {
+          "keybind": "key.back"
+        },
+        {
+          "keybind": "key.sneak"
+        }
+      ]
+    },
+    "icon": {
+      "count": 1,
+      "id": "minecraft:piston"
+    },
+    "title": {
+      "translate": "adv.slashblade.upperslash"
+    }
+  },
+  "requirements": [
+    [
+      "customtrigger"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

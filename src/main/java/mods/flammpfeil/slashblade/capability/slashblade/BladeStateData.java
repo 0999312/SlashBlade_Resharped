@@ -5,6 +5,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import mods.flammpfeil.slashblade.client.renderer.CarryType;
+import mods.flammpfeil.slashblade.item.SwordType;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -26,6 +27,7 @@ public record BladeStateData(
     boolean sealed,
     ResourceLocation slashArtsKey,
     boolean defaultBewitched,
+    Optional<List<SwordType>> defaultSwordTypes,
     boolean destructable,
     ResourceLocation comboRoot,
     CarryType carryType,
@@ -39,7 +41,7 @@ public record BladeStateData(
     public BladeStateData {
         specialEffects = List.copyOf(specialEffects);
     }
-
+    
     static final ResourceLocation DEFAULT_SLASH_ARTS = ResourceLocation.fromNamespaceAndPath("slashblade", "judgement_cut");
     static final ResourceLocation DEFAULT_COMBO_ROOT = ResourceLocation.fromNamespaceAndPath("slashblade", "standby");
     
@@ -48,6 +50,7 @@ public record BladeStateData(
         false, false,
         DEFAULT_SLASH_ARTS,
         false,
+        Optional.empty(),
         false,
         DEFAULT_COMBO_ROOT,
         CarryType.PSO2,
@@ -79,6 +82,7 @@ public record BladeStateData(
         boolean sealed,
         ResourceLocation slashArtsKey,
         boolean defaultBewitched,
+        Optional<List<SwordType>> defaultSwordTypes,
         boolean destructable
     ) {
     }
@@ -105,6 +109,7 @@ public record BladeStateData(
         Codec.BOOL.fieldOf("sealed").forGetter(CoreFields::sealed),
         ResourceLocation.CODEC.fieldOf("slashArtsKey").forGetter(CoreFields::slashArtsKey),
         Codec.BOOL.fieldOf("defaultBewitched").forGetter(CoreFields::defaultBewitched),
+        SwordType.CODEC.listOf().optionalFieldOf("defaultSwordTypes").forGetter(CoreFields::defaultSwordTypes),
         Codec.BOOL.optionalFieldOf("destructable", false).forGetter(CoreFields::destructable)
     ).apply(instance, CoreFields::new));
     
@@ -131,6 +136,7 @@ public record BladeStateData(
                 pair.getFirst().sealed(),
                 pair.getFirst().slashArtsKey(),
                 pair.getFirst().defaultBewitched(),
+                pair.getFirst().defaultSwordTypes(),
                 pair.getFirst().destructable(),
                 pair.getSecond().comboRoot(),
                 pair.getSecond().carryType(),
@@ -152,6 +158,7 @@ public record BladeStateData(
                     data.sealed(),
                     data.slashArtsKey(),
                     data.defaultBewitched(),
+                    data.defaultSwordTypes(),
                     data.destructable()
                 ),
                 new RenderFields(
@@ -173,7 +180,7 @@ public record BladeStateData(
     
     public BladeStateData withSpecialEffects(@Nullable List<ResourceLocation> effects) {
         return new BladeStateData(translationKey, baseAttackModifier, proudSoul, killCount, refine,
-            broken, sealed, slashArtsKey, defaultBewitched, destructable, comboRoot, carryType,
+            broken, sealed, slashArtsKey, defaultBewitched, defaultSwordTypes, destructable, comboRoot, carryType,
             effectColor, effectColorInverse, adjust, texture, model,
             effects != null ? effects : Collections.emptyList());
     }

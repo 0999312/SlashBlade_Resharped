@@ -1,6 +1,7 @@
 package mods.flammpfeil.slashblade.data;
 
 import mods.flammpfeil.slashblade.SlashBlade;
+import mods.flammpfeil.slashblade.data.advancement.SlashBladeAdvancements;
 import mods.flammpfeil.slashblade.data.builtin.SlashBladeBuiltInRegistry;
 import mods.flammpfeil.slashblade.data.builtin.SlashBladeEntityDropBuiltInRegistry;
 import mods.flammpfeil.slashblade.data.tag.SlashBladeEntityTypeTagProvider;
@@ -61,6 +62,7 @@ public class DataGen {
             CompletableFuture.completedFuture(TagsProvider.TagLookup.empty()),
             existingFileHelper);
         dataGenerator.addProvider(event.includeServer(), itemTagsProvider);
+        dataGenerator.addProvider(event.includeServer(), new SlashBladeAdvancements(packOutput, lookupProvider, existingFileHelper));
     }
     
 }

@@ -1,0 +1,33 @@
+{
+  "parent": "slashblade:material/proudsoul_crystal",
+  "criteria": {
+    "BrokenBlade": {
+      "conditions": {
+        "items": [
+          {
+            "items": "slashblade:proudsoul_trapezohedron"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "adv.slashblade.proudsoul_trapezohedron"
+    },
+    "icon": {
+      "count": 1,
+      "id": "slashblade:proudsoul_trapezohedron"
+    },
+    "title": {
+      "translate": "item.slashblade.proudsoul_trapezohedron"
+    }
+  },
+  "requirements": [
+    [
+      "BrokenBlade"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

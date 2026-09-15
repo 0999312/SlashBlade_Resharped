@@ -1,0 +1,31 @@
+{
+  "parent": "slashblade:abilities/enemy_step",
+  "criteria": {
+    "customtrigger": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "adv.slashblade.kick_jump.desc",
+      "with": [
+        {
+          "keybind": "key.jump"
+        }
+      ]
+    },
+    "icon": {
+      "count": 1,
+      "id": "minecraft:iron_boots"
+    },
+    "title": {
+      "translate": "adv.slashblade.kick_jump"
+    }
+  },
+  "requirements": [
+    [
+      "customtrigger"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

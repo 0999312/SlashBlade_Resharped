@@ -1,0 +1,38 @@
+{
+  "parent": "slashblade:material/proudsoul",
+  "criteria": {
+    "BrokenBlade": {
+      "conditions": {
+        "items": [
+          {
+            "items": "slashblade:proudsoul_ingot"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "adv.slashblade.proudsoul_ingot"
+    },
+    "icon": {
+      "count": 1,
+      "id": "slashblade:proudsoul_ingot"
+    },
+    "title": {
+      "translate": "item.slashblade.proudsoul_ingot"
+    }
+  },
+  "requirements": [
+    [
+      "BrokenBlade"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "slashblade:material/sphere_smelting"
+    ]
+  },
+  "sends_telemetry_event": true
+}

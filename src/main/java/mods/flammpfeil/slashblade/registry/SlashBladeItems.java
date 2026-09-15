@@ -96,7 +96,7 @@ public class SlashBladeItems {
                         if (player != null) {
                             components.add(Component.translatable("slashblade.tooltip.special_effect", SpecialEffect.getDescription(se),
                                     Component.literal(String.valueOf(SpecialEffect.getRequestLevel(se)))
-                                        .withStyle(SpecialEffect.isEffective(se, player.experienceLevel) ? ChatFormatting.RED
+                                        .withStyle(SpecialEffect.isEffective(se, player) ? ChatFormatting.RED
                                             : ChatFormatting.DARK_GRAY))
                                 .withStyle(ChatFormatting.GRAY));
                         }

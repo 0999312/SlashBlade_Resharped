@@ -1,0 +1,40 @@
+{
+  "parent": "slashblade:arts/shooting/spiral_swords",
+  "criteria": {
+    "customtrigger": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "adv.slashblade.storm_swords.desc",
+      "with": [
+        {
+          "translate": "key.pickItem"
+        },
+        {
+          "keybind": "key.pickItem"
+        },
+        {
+          "keybind": "key.back"
+        },
+        {
+          "keybind": "key.sneak"
+        }
+      ]
+    },
+    "icon": {
+      "count": 1,
+      "id": "minecraft:cobweb"
+    },
+    "title": {
+      "translate": "adv.slashblade.storm_swords"
+    }
+  },
+  "requirements": [
+    [
+      "customtrigger"
+    ]
+  ],
+  "sends_telemetry_event": true
+}
