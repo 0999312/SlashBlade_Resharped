@@ -111,7 +111,7 @@ public class LayerMainBlade<T extends LivingEntity, M extends EntityModel<T>> ex
         
         try (MSAutoCloser ignored = MSAutoCloser.pushMatrix(matrixStack)) {
             
-            this.setUserPose(matrixStack, entity, partialTicks, s);
+            this.setUserPose(matrixStack, entity, partialTicks * combo.getSpeed(), s);
             
             // minecraft model neckPoint height = 1.5f
             // mmd model neckPoint height = 12.0f

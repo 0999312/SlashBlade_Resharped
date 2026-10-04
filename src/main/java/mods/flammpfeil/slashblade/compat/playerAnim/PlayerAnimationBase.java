@@ -103,7 +103,7 @@ public abstract class PlayerAnimationBase implements IAnimation {
         this.lastCachedTick = this.currentTick;
         this.lastCachedPartial = tickDelta;
         
-        this.updateAnimation(tickDelta);
+        this.updateAnimation((float) (tickDelta * this.speed));
     }
     
     protected abstract void updateAnimation(float tickDelta);
