@@ -4,7 +4,7 @@ plugins {
     id 'idea'
     id 'maven-publish'
     id 'net.neoforged.moddev' version '1.0.17'
-    id "com.hypherionmc.modutils.modpublisher" version "2.2.1"
+    id "com.hypherionmc.modutils.modpublisher" version "2.2.3"
 }
 
 tasks.named('wrapper', Wrapper).configure {
