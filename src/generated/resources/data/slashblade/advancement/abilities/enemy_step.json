@@ -1,0 +1,31 @@
+{
+  "parent": "slashblade:abilities/trick_up",
+  "criteria": {
+    "customtrigger": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "adv.slashblade.enemy_step.desc",
+      "with": [
+        {
+          "keybind": "key.jump"
+        }
+      ]
+    },
+    "icon": {
+      "count": 1,
+      "id": "minecraft:leather_boots"
+    },
+    "title": {
+      "translate": "adv.slashblade.enemy_step"
+    }
+  },
+  "requirements": [
+    [
+      "customtrigger"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

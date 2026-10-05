@@ -1,8 +1,10 @@
 package mods.flammpfeil.slashblade.capability.slashblade;
 
+import mods.flammpfeil.slashblade.SlashBlade;
 import mods.flammpfeil.slashblade.client.renderer.CarryType;
 import mods.flammpfeil.slashblade.item.ItemSlashBlade;
 import mods.flammpfeil.slashblade.item.ItemSlashBladeDetune;
+import mods.flammpfeil.slashblade.item.SwordType;
 import mods.flammpfeil.slashblade.registry.ComboStateRegistry;
 import mods.flammpfeil.slashblade.registry.SpecialEffectsRegistry;
 import mods.flammpfeil.slashblade.util.NBTHelper;
@@ -43,7 +45,7 @@ public class BladeStateAccess {
         if (stack.getItem() instanceof ItemSlashBladeDetune detune) {
             data = new BladeStateData(
                 "", detune.getBaseAttackModifier(), 0, 0, 0, false, false,
-                BladeStateData.DEFAULT_SLASH_ARTS, false, detune.isDestructable(), BladeStateData.DEFAULT_COMBO_ROOT,
+                BladeStateData.DEFAULT_SLASH_ARTS, false, Optional.empty(), detune.isDestructable(), BladeStateData.DEFAULT_COMBO_ROOT,
                 CarryType.PSO2, 0xFF3333FF, false, Vec3.ZERO,
                 Optional.of(detune.getTexture()),
                 Optional.of(detune.getModel()),
@@ -115,7 +117,7 @@ public class BladeStateAccess {
             update(d -> new BladeStateData(
                 Optional.ofNullable(translationKey).orElse(""), d.baseAttackModifier(),
                 d.proudSoul(), d.killCount(), d.refine(), d.broken(), d.sealed(),
-                d.slashArtsKey(), d.defaultBewitched(), d.destructable(), d.comboRoot(),
+                d.slashArtsKey(), d.defaultBewitched(), d.defaultSwordTypes(), d.destructable(), d.comboRoot(),
                 d.carryType(), d.effectColor(), d.effectColorInverse(), d.adjust(),
                 d.texture(), d.model(), d.specialEffects()));
         }
@@ -129,7 +131,7 @@ public class BladeStateAccess {
         public void setBaseAttackModifier(float baseAttackModifier) {
             update(d -> new BladeStateData(d.translationKey(), baseAttackModifier,
                 d.proudSoul(), d.killCount(), d.refine(), d.broken(), d.sealed(),
-                d.slashArtsKey(), d.defaultBewitched(), d.destructable(), d.comboRoot(),
+                d.slashArtsKey(), d.defaultBewitched(), d.defaultSwordTypes(), d.destructable(), d.comboRoot(),
                 d.carryType(), d.effectColor(), d.effectColorInverse(), d.adjust(),
                 d.texture(), d.model(), d.specialEffects()));
         }
@@ -143,7 +145,7 @@ public class BladeStateAccess {
         public void setProudSoulCount(int psCount) {
             update(d -> new BladeStateData(d.translationKey(), d.baseAttackModifier(),
                 Math.max(0, psCount), d.killCount(), d.refine(), d.broken(), d.sealed(),
-                d.slashArtsKey(), d.defaultBewitched(), d.destructable(), d.comboRoot(),
+                d.slashArtsKey(), d.defaultBewitched(), d.defaultSwordTypes(), d.destructable(), d.comboRoot(),
                 d.carryType(), d.effectColor(), d.effectColorInverse(), d.adjust(),
                 d.texture(), d.model(), d.specialEffects()));
         }
@@ -157,7 +159,7 @@ public class BladeStateAccess {
         public void setKillCount(int killCount) {
             update(d -> new BladeStateData(d.translationKey(), d.baseAttackModifier(),
                 d.proudSoul(), killCount, d.refine(), d.broken(), d.sealed(),
-                d.slashArtsKey(), d.defaultBewitched(), d.destructable(), d.comboRoot(),
+                d.slashArtsKey(), d.defaultBewitched(), d.defaultSwordTypes(), d.destructable(), d.comboRoot(),
                 d.carryType(), d.effectColor(), d.effectColorInverse(), d.adjust(),
                 d.texture(), d.model(), d.specialEffects()));
         }
@@ -171,7 +173,7 @@ public class BladeStateAccess {
         public void setRefine(int refine) {
             update(d -> new BladeStateData(d.translationKey(), d.baseAttackModifier(),
                 d.proudSoul(), d.killCount(), refine, d.broken(), d.sealed(),
-                d.slashArtsKey(), d.defaultBewitched(), d.destructable(), d.comboRoot(),
+                d.slashArtsKey(), d.defaultBewitched(), d.defaultSwordTypes(), d.destructable(), d.comboRoot(),
                 d.carryType(), d.effectColor(), d.effectColorInverse(), d.adjust(),
                 d.texture(), d.model(), d.specialEffects()));
         }
@@ -185,7 +187,7 @@ public class BladeStateAccess {
         public void setBroken(boolean broken) {
             update(d -> new BladeStateData(d.translationKey(), d.baseAttackModifier(),
                 d.proudSoul(), d.killCount(), d.refine(), broken, d.sealed(),
-                d.slashArtsKey(), d.defaultBewitched(), d.destructable(), d.comboRoot(),
+                d.slashArtsKey(), d.defaultBewitched(), d.defaultSwordTypes(), d.destructable(), d.comboRoot(),
                 d.carryType(), d.effectColor(), d.effectColorInverse(), d.adjust(),
                 d.texture(), d.model(), d.specialEffects()));
         }
@@ -199,7 +201,7 @@ public class BladeStateAccess {
         public void setSealed(boolean sealed) {
             update(d -> new BladeStateData(d.translationKey(), d.baseAttackModifier(),
                 d.proudSoul(), d.killCount(), d.refine(), d.broken(), sealed,
-                d.slashArtsKey(), d.defaultBewitched(), d.destructable(), d.comboRoot(),
+                d.slashArtsKey(), d.defaultBewitched(), d.defaultSwordTypes(), d.destructable(), d.comboRoot(),
                 d.carryType(), d.effectColor(), d.effectColorInverse(), d.adjust(),
                 d.texture(), d.model(), d.specialEffects()));
         }
@@ -213,7 +215,7 @@ public class BladeStateAccess {
         public void setSlashArtsKey(@Nullable ResourceLocation key) {
             update(d -> new BladeStateData(d.translationKey(), d.baseAttackModifier(),
                 d.proudSoul(), d.killCount(), d.refine(), d.broken(), d.sealed(),
-                key != null ? key : BladeStateData.DEFAULT_SLASH_ARTS, d.defaultBewitched(), d.destructable(), d.comboRoot(),
+                key != null ? key : BladeStateData.DEFAULT_SLASH_ARTS, d.defaultBewitched(), d.defaultSwordTypes(), d.destructable(), d.comboRoot(),
                 d.carryType(), d.effectColor(), d.effectColorInverse(), d.adjust(),
                 d.texture(), d.model(), d.specialEffects()));
         }
@@ -227,7 +229,7 @@ public class BladeStateAccess {
         public void setDefaultBewitched(boolean defaultBewitched) {
             update(d -> new BladeStateData(d.translationKey(), d.baseAttackModifier(),
                 d.proudSoul(), d.killCount(), d.refine(), d.broken(), d.sealed(),
-                d.slashArtsKey(), defaultBewitched, d.destructable(), d.comboRoot(),
+                d.slashArtsKey(), defaultBewitched, d.defaultSwordTypes(), d.destructable(), d.comboRoot(),
                 d.carryType(), d.effectColor(), d.effectColorInverse(), d.adjust(),
                 d.texture(), d.model(), d.specialEffects()));
         }
@@ -241,7 +243,7 @@ public class BladeStateAccess {
         public void setCarryType(@Nullable CarryType carryType) {
             update(d -> new BladeStateData(d.translationKey(), d.baseAttackModifier(),
                 d.proudSoul(), d.killCount(), d.refine(), d.broken(), d.sealed(),
-                d.slashArtsKey(), d.defaultBewitched(), d.destructable(), d.comboRoot(),
+                d.slashArtsKey(), d.defaultBewitched(), d.defaultSwordTypes(), d.destructable(), d.comboRoot(),
                 carryType != null ? carryType : CarryType.PSO2,
                 d.effectColor(), d.effectColorInverse(), d.adjust(),
                 d.texture(), d.model(), d.specialEffects()));
@@ -256,12 +258,12 @@ public class BladeStateAccess {
         public int getColorCode() {
             return data().effectColor();
         }
-
+        
         @Override
         public void setEffectColor(@Nullable Color effectColor) {
             update(d -> new BladeStateData(d.translationKey(), d.baseAttackModifier(),
                 d.proudSoul(), d.killCount(), d.refine(), d.broken(), d.sealed(),
-                d.slashArtsKey(), d.defaultBewitched(), d.destructable(), d.comboRoot(),
+                d.slashArtsKey(), d.defaultBewitched(), d.defaultSwordTypes(), d.destructable(), d.comboRoot(),
                 d.carryType(), effectColor != null ? effectColor.getRGB() : 0xFF3333FF,
                 d.effectColorInverse(), d.adjust(),
                 d.texture(), d.model(), d.specialEffects()));
@@ -276,7 +278,7 @@ public class BladeStateAccess {
         public void setEffectColorInverse(boolean effectColorInverse) {
             update(d -> new BladeStateData(d.translationKey(), d.baseAttackModifier(),
                 d.proudSoul(), d.killCount(), d.refine(), d.broken(), d.sealed(),
-                d.slashArtsKey(), d.defaultBewitched(), d.destructable(), d.comboRoot(),
+                d.slashArtsKey(), d.defaultBewitched(), d.defaultSwordTypes(), d.destructable(), d.comboRoot(),
                 d.carryType(), d.effectColor(), effectColorInverse, d.adjust(),
                 d.texture(), d.model(), d.specialEffects()));
         }
@@ -290,7 +292,7 @@ public class BladeStateAccess {
         public void setAdjust(@Nullable Vec3 adjust) {
             update(d -> new BladeStateData(d.translationKey(), d.baseAttackModifier(),
                 d.proudSoul(), d.killCount(), d.refine(), d.broken(), d.sealed(),
-                d.slashArtsKey(), d.defaultBewitched(), d.destructable(), d.comboRoot(),
+                d.slashArtsKey(), d.defaultBewitched(), d.defaultSwordTypes(), d.destructable(), d.comboRoot(),
                 d.carryType(), d.effectColor(), d.effectColorInverse(),
                 adjust != null ? adjust : Vec3.ZERO,
                 d.texture(), d.model(), d.specialEffects()));
@@ -305,7 +307,7 @@ public class BladeStateAccess {
         public void setTexture(@Nullable ResourceLocation texture) {
             update(d -> new BladeStateData(d.translationKey(), d.baseAttackModifier(),
                 d.proudSoul(), d.killCount(), d.refine(), d.broken(), d.sealed(),
-                d.slashArtsKey(), d.defaultBewitched(), d.destructable(), d.comboRoot(),
+                d.slashArtsKey(), d.defaultBewitched(), d.defaultSwordTypes(), d.destructable(), d.comboRoot(),
                 d.carryType(), d.effectColor(), d.effectColorInverse(), d.adjust(),
                 Optional.ofNullable(texture), d.model(), d.specialEffects()));
         }
@@ -319,7 +321,7 @@ public class BladeStateAccess {
         public void setModel(@Nullable ResourceLocation model) {
             update(d -> new BladeStateData(d.translationKey(), d.baseAttackModifier(),
                 d.proudSoul(), d.killCount(), d.refine(), d.broken(), d.sealed(),
-                d.slashArtsKey(), d.defaultBewitched(), d.destructable(), d.comboRoot(),
+                d.slashArtsKey(), d.defaultBewitched(), d.defaultSwordTypes(), d.destructable(), d.comboRoot(),
                 d.carryType(), d.effectColor(), d.effectColorInverse(), d.adjust(),
                 d.texture(), Optional.ofNullable(model), d.specialEffects()));
         }
@@ -339,7 +341,7 @@ public class BladeStateAccess {
                 ? resourceLocation : ComboStateRegistry.STANDBY.getId();
             update(d -> new BladeStateData(d.translationKey(), d.baseAttackModifier(),
                 d.proudSoul(), d.killCount(), d.refine(), d.broken(), d.sealed(),
-                d.slashArtsKey(), d.defaultBewitched(), d.destructable(), resolved,
+                d.slashArtsKey(), d.defaultBewitched(), d.defaultSwordTypes(), d.destructable(), resolved,
                 d.carryType(), d.effectColor(), d.effectColorInverse(), d.adjust(),
                 d.texture(), d.model(), d.specialEffects()));
         }
@@ -429,21 +431,35 @@ public class BladeStateAccess {
         public void setMaxDamage(int damage) {
             stack.set(DataComponents.MAX_DAMAGE, Math.max(1, damage));
         }
-
+        
         @Override
         public boolean isDestructable() {
             return data().destructable();
         }
-
+        
         @Override
         public void setDestructable(boolean destructable) {
             update(d -> new BladeStateData(d.translationKey(), d.baseAttackModifier(),
                 d.proudSoul(), d.killCount(), d.refine(), d.broken(), d.sealed(),
-                d.slashArtsKey(), d.defaultBewitched(), destructable, d.comboRoot(),
+                d.slashArtsKey(), d.defaultBewitched(), d.defaultSwordTypes(), destructable, d.comboRoot(),
                 d.carryType(), d.effectColor(), d.effectColorInverse(), d.adjust(),
                 d.texture(), d.model(), d.specialEffects()));
         }
-
+        
+        @Override
+        public List<SwordType> getDefaultSwordTypes() {
+            return data().defaultSwordTypes().orElse(List.of());
+        }
+        
+        @Override
+        public void setDefaultSwordTypes(List<SwordType> defaultSwordTypes) {
+            update(d -> new BladeStateData(d.translationKey(), d.baseAttackModifier(),
+                d.proudSoul(), d.killCount(), d.refine(), d.broken(), d.sealed(),
+                d.slashArtsKey(), d.defaultBewitched(), Optional.of(defaultSwordTypes), d.destructable(), d.comboRoot(),
+                d.carryType(), d.effectColor(), d.effectColorInverse(), d.adjust(),
+                d.texture(), d.model(), d.specialEffects()));
+        }
+        
         // ========== Runtime fields (BladeRuntimeStateData) ==========
         
         @Override
@@ -636,9 +652,25 @@ public class BladeStateAccess {
                 effects = new ArrayList<>(d.specialEffects());
             }
             
+            List<SwordType> defaultSwordTypes;
+            if (tag.contains("DefaultSwordTypes")) {
+                List<SwordType> newSwordTypes = new ArrayList<>();
+                ListTag list = tag.getList("DefaultSwordTypes", 8);
+                for (int i = 0; i < list.size(); i++) {
+                    try {
+                        newSwordTypes.add(SwordType.valueOf(list.getString(i).toUpperCase()));
+                    } catch (IllegalArgumentException e) {
+                        SlashBlade.LOGGER.warn("Unknown SwordType: {}", list.getString(i));
+                    }
+                }
+                defaultSwordTypes = newSwordTypes;
+            } else {
+                defaultSwordTypes = d.defaultSwordTypes().orElse(new ArrayList<>());
+            }
+            
             BladeStateData newData = new BladeStateData(translationKey, baseAttack, proudSoul, killCount,
                 refine, broken, sealed, slashArts != null ? slashArts : BladeStateData.DEFAULT_SLASH_ARTS,
-                defaultBewitched, destructable, comboRoot, carryType, color, colorInverse, adjust,
+                defaultBewitched, Optional.of(defaultSwordTypes), destructable, comboRoot, carryType, color, colorInverse, adjust,
                 texture, model, effects);
             stack.set(SlashBladeDataComponents.BLADE_STATE_DATA.get(), newData);
             

@@ -1,0 +1,31 @@
+{
+  "parent": "slashblade:arts/rapid_slash",
+  "criteria": {
+    "customtrigger": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "adv.slashblade.judgement_cut.desc",
+      "with": [
+        {
+          "keybind": "key.use"
+        }
+      ]
+    },
+    "icon": {
+      "count": 1,
+      "id": "minecraft:book"
+    },
+    "title": {
+      "translate": "adv.slashblade.judgement_cut"
+    }
+  },
+  "requirements": [
+    [
+      "customtrigger"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

@@ -1,0 +1,34 @@
+{
+  "parent": "slashblade:movesets",
+  "criteria": {
+    "customtrigger": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "adv.slashblade.summonedswords.desc",
+      "with": [
+        {
+          "translate": "key.pickItem"
+        },
+        {
+          "keybind": "key.pickItem"
+        }
+      ]
+    },
+    "icon": {
+      "count": 1,
+      "id": "minecraft:arrow"
+    },
+    "title": {
+      "translate": "adv.slashblade.summonedswords"
+    }
+  },
+  "requirements": [
+    [
+      "customtrigger"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

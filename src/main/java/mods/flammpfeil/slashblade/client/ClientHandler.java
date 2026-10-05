@@ -8,6 +8,7 @@ import mods.flammpfeil.slashblade.client.renderer.model.BladeModel;
 import mods.flammpfeil.slashblade.client.renderer.model.BladeMotionManager;
 import mods.flammpfeil.slashblade.compat.playerAnim.PlayerAnimationOverrider;
 import mods.flammpfeil.slashblade.event.client.BladeRuntimeSyncer;
+import mods.flammpfeil.slashblade.event.client.LayerSlashBladeInitEvent;
 import mods.flammpfeil.slashblade.event.client.SneakingMotionCanceller;
 import mods.flammpfeil.slashblade.event.client.UserPoseOverrider;
 import mods.flammpfeil.slashblade.event.handler.BlockPickCanceller;
@@ -44,9 +45,9 @@ import javax.annotation.Nullable;
 @EventBusSubscriber(modid = SlashBlade.MODID, value = Dist.CLIENT)
 @OnlyIn(Dist.CLIENT)
 public class ClientHandler {
-    
     @SubscribeEvent
     public static void doClientStuff(final FMLClientSetupEvent event) {
+        SlashBlade.MOD_EVENT_BUS.post(new LayerSlashBladeInitEvent());
         
         SneakingMotionCanceller.getInstance().register();
         BladeRuntimeSyncer.getInstance().register();

@@ -1,0 +1,37 @@
+{
+  "parent": "slashblade:arts/rapid_slash",
+  "criteria": {
+    "customtrigger": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "adv.slashblade.rising_star.desc",
+      "with": [
+        {
+          "keybind": "key.use"
+        },
+        {
+          "keybind": "key.forward"
+        },
+        {
+          "keybind": "key.sneak"
+        }
+      ]
+    },
+    "icon": {
+      "count": 1,
+      "id": "minecraft:blaze_powder"
+    },
+    "title": {
+      "translate": "adv.slashblade.rising_star"
+    }
+  },
+  "requirements": [
+    [
+      "customtrigger"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

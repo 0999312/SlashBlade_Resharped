@@ -1,0 +1,26 @@
+{
+  "parent": "slashblade:arts/combo_b",
+  "criteria": {
+    "customtrigger": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "adv.slashblade.combo_b_max.desc"
+    },
+    "icon": {
+      "count": 1,
+      "id": "minecraft:music_disc_11"
+    },
+    "title": {
+      "translate": "adv.slashblade.combo_b_max"
+    }
+  },
+  "requirements": [
+    [
+      "customtrigger"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

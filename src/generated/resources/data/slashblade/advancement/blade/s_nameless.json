@@ -1,0 +1,32 @@
+{
+  "parent": "slashblade:blade/s_white",
+  "criteria": {
+    "crafting": {
+      "conditions": {
+        "items": [
+          {}
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "item.slashblade.slashblade.desc"
+    },
+    "hidden": true,
+    "icon": {
+      "count": 1,
+      "id": "slashblade:slashblade"
+    },
+    "title": {
+      "translate": "item.slashblade.slashblade"
+    }
+  },
+  "requirements": [
+    [
+      "crafting"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

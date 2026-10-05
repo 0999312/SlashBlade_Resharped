@@ -1,0 +1,38 @@
+{
+  "parent": "slashblade:blade/s_wood",
+  "criteria": {
+    "crafting": {
+      "conditions": {
+        "items": [
+          {
+            "items": "slashblade:slashblade_white"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "item.slashblade.slashblade_white.desc"
+    },
+    "icon": {
+      "count": 1,
+      "id": "slashblade:slashblade_white"
+    },
+    "title": {
+      "translate": "item.slashblade.slashblade_white"
+    }
+  },
+  "requirements": [
+    [
+      "crafting"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "slashblade:slashblade"
+    ]
+  },
+  "sends_telemetry_event": true
+}

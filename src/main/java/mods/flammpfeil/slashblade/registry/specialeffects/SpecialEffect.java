@@ -7,6 +7,8 @@ import net.minecraft.core.Registry;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 
 import javax.annotation.Nullable;
 
@@ -40,10 +42,37 @@ public class SpecialEffect {
         return isRemovable;
     }
     
+    public boolean isEffective(Entity user) {
+        if (user instanceof Player player) {
+            return this.requestLevel <= player.experienceLevel;
+        }
+        return false;
+    }
+    
+    public static boolean isEffective(SpecialEffect se, Entity user) {
+        return se.isEffective(user);
+    }
+    
+    public static boolean isEffective(ResourceLocation id, Entity user) {
+        SpecialEffect specialEffect = SpecialEffectsRegistry.REGISTRY.get(id);
+        if (specialEffect == null) {
+            throw new NullPointerException("SpecialEffect with id " + id + " not found!");
+        }
+        return isEffective(specialEffect, user);
+    }
+    
+    /**
+     * Use {@link SpecialEffect#isEffective(SpecialEffect, Entity)} instead
+     */
+    @Deprecated
     public static boolean isEffective(SpecialEffect se, int level) {
         return se.requestLevel <= level;
     }
     
+    /**
+     * Use {@link SpecialEffect#isEffective(ResourceLocation, Entity)} instead
+     */
+    @Deprecated
     public static boolean isEffective(ResourceLocation id, int level) {
         SpecialEffect specialEffect = SpecialEffectsRegistry.REGISTRY.get(id);
         if (specialEffect == null) {

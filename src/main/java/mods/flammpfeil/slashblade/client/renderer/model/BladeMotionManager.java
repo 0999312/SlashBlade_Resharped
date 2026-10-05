@@ -1,8 +1,5 @@
 package mods.flammpfeil.slashblade.client.renderer.model;
 
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
 import jp.nyatla.nymmd.MmdException;
 import jp.nyatla.nymmd.MmdVmdMotionMc;
 import mods.flammpfeil.slashblade.SlashBlade;
@@ -10,15 +7,16 @@ import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
-import java.util.concurrent.Executors;
 
 import static mods.flammpfeil.slashblade.init.DefaultResources.ExMotionLocation;
 
 /**
- * Created by Furia on 2016/02/06.
+ * MMD（VMD）动画数据的缓存管理器，{@link AbstractBladeMotionManager} 的 MMD 实现。
+ * <p>
+ * 保留单例与 {@link #getInstance()} 入口，供 MMD 渲染链路（LayerMainBlade、VmdAnimation）使用；
+ * 其他动画格式可自行实现 {@link AbstractBladeMotionManager} 子类。
  */
-public class BladeMotionManager {
-    
+public class BladeMotionManager extends AbstractBladeMotionManager<MmdVmdMotionMc> {
     private static final class SingletonHolder {
         private static final BladeMotionManager instance = new BladeMotionManager();
     }
@@ -27,55 +25,23 @@ public class BladeMotionManager {
         return SingletonHolder.instance;
     }
     
-    @Nullable
-    MmdVmdMotionMc defaultMotion;
-    
-    LoadingCache<ResourceLocation, MmdVmdMotionMc> cache;
-    
     private BladeMotionManager() {
-        try {
-            defaultMotion = new MmdVmdMotionMc(ExMotionLocation);
-        } catch (IOException | MmdException e) {
-            SlashBlade.LOGGER.warn(e);
-        }
-        
-        cache = CacheBuilder.newBuilder()
-            .maximumSize(64)
-            .build(CacheLoader.asyncReloading(new CacheLoader<>() {
-                @SuppressWarnings("DataFlowIssue")
-                @Override
-                public MmdVmdMotionMc load(ResourceLocation key) {
-                    try {
-                        return new MmdVmdMotionMc(key);
-                    } catch (Exception e) {
-                        SlashBlade.LOGGER.warn(e);
-                        return defaultMotion;
-                    }
-                }
-                
-            }, Executors.newFixedThreadPool(2)));
+        super();
     }
     
-    public void reload() {
-        cache.invalidateAll();
-        
-        try {
-            defaultMotion = new MmdVmdMotionMc(ExMotionLocation);
-        } catch (IOException | MmdException e) {
-            SlashBlade.LOGGER.warn(e);
-        }
+    @Override
+    protected MmdVmdMotionMc loadMotion(ResourceLocation key) throws IOException, MmdException {
+        return new MmdVmdMotionMc(key);
     }
     
+    @Override
     @Nullable
-    public MmdVmdMotionMc getMotion(@Nullable ResourceLocation loc) {
-        if (loc != null) {
-            try {
-                return cache.get(loc);
-            } catch (Exception e) {
-                SlashBlade.LOGGER.warn(e);
-            }
+    protected MmdVmdMotionMc loadDefaultMotion() {
+        try {
+            return new MmdVmdMotionMc(ExMotionLocation);
+        } catch (IOException | MmdException e) {
+            SlashBlade.LOGGER.warn(e);
+            return null;
         }
-        return defaultMotion;
     }
-    
 }

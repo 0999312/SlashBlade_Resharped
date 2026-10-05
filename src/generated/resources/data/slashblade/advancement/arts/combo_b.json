@@ -1,0 +1,31 @@
+{
+  "parent": "slashblade:arts/combo_a",
+  "criteria": {
+    "customtrigger": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "adv.slashblade.combo_b.desc",
+      "with": [
+        {
+          "keybind": "key.use"
+        }
+      ]
+    },
+    "icon": {
+      "count": 1,
+      "id": "minecraft:iron_sword"
+    },
+    "title": {
+      "translate": "adv.slashblade.combo_b"
+    }
+  },
+  "requirements": [
+    [
+      "customtrigger"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

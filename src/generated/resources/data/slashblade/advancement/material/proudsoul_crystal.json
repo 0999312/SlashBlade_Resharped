@@ -1,0 +1,38 @@
+{
+  "parent": "slashblade:material/proudsoul_sphere",
+  "criteria": {
+    "BrokenBlade": {
+      "conditions": {
+        "items": [
+          {
+            "items": "slashblade:proudsoul_crystal"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "adv.slashblade.proudsoul_crystal"
+    },
+    "icon": {
+      "count": 1,
+      "id": "slashblade:proudsoul_crystal"
+    },
+    "title": {
+      "translate": "item.slashblade.proudsoul_crystal"
+    }
+  },
+  "requirements": [
+    [
+      "BrokenBlade"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "slashblade:material/trapezohedron_smoking"
+    ]
+  },
+  "sends_telemetry_event": true
+}

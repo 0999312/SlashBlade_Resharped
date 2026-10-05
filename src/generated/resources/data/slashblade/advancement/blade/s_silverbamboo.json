@@ -1,0 +1,34 @@
+{
+  "parent": "slashblade:blade/s_bamboo",
+  "criteria": {
+    "crafting": {
+      "conditions": {
+        "items": [
+          {
+            "items": "slashblade:slashblade_silverbamboo"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "item.slashblade.slashblade_silverbamboo.desc"
+    },
+    "hidden": true,
+    "icon": {
+      "count": 1,
+      "id": "slashblade:slashblade_silverbamboo"
+    },
+    "title": {
+      "translate": "item.slashblade.slashblade_silverbamboo"
+    }
+  },
+  "requirements": [
+    [
+      "crafting"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

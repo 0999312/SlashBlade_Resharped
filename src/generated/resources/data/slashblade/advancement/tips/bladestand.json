@@ -1,0 +1,52 @@
+{
+  "parent": "slashblade:root",
+  "criteria": {
+    "getitem1": {
+      "conditions": {
+        "items": [
+          {
+            "items": "slashblade:bladestand_1"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "getitem2": {
+      "conditions": {
+        "items": [
+          {
+            "items": "slashblade:bladestand_2"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "adv.slashblade.bladestand.desc"
+    },
+    "icon": {
+      "count": 1,
+      "id": "slashblade:bladestand_2"
+    },
+    "title": {
+      "translate": "adv.slashblade.bladestand"
+    }
+  },
+  "requirements": [
+    [
+      "getitem1",
+      "getitem2"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "slashblade:bladestand/bladestand_v",
+      "slashblade:bladestand/bladestand_s",
+      "slashblade:bladestand/bladestand_1w",
+      "slashblade:bladestand/bladestand_2w"
+    ]
+  },
+  "sends_telemetry_event": true
+}

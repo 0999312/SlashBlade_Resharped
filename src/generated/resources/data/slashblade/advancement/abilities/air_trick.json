@@ -1,0 +1,37 @@
+{
+  "parent": "slashblade:movesets",
+  "criteria": {
+    "customtrigger": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "adv.slashblade.air_trick.desc",
+      "with": [
+        {
+          "keybind": "key.slashblade.special_move"
+        },
+        {
+          "keybind": "key.forward"
+        },
+        {
+          "keybind": "key.sneak"
+        }
+      ]
+    },
+    "icon": {
+      "count": 1,
+      "id": "minecraft:ender_eye"
+    },
+    "title": {
+      "translate": "adv.slashblade.air_trick"
+    }
+  },
+  "requirements": [
+    [
+      "customtrigger"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

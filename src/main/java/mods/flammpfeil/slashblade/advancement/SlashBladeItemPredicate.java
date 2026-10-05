@@ -2,7 +2,6 @@ package mods.flammpfeil.slashblade.advancement;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import mods.flammpfeil.slashblade.SlashBlade;
 import mods.flammpfeil.slashblade.item.ItemSlashBlade;
 import mods.flammpfeil.slashblade.recipe.RequestDefinition;
 import mods.flammpfeil.slashblade.registry.SlashBladeItems;
@@ -20,7 +19,7 @@ public record SlashBladeItemPredicate(RequestDefinition request) implements Item
     public boolean matches(ItemStack stack) {
         var name = this.request().name();
         boolean requestCheck = this.request().test(stack);
-        if (name.equals(SlashBlade.prefix("none"))) {
+        if (name.equals(RequestDefinition.EMPTY_NAME)) {
             return requestCheck && stack.is(SlashBladeItems.SLASHBLADE.get());
         }
         if (BuiltInRegistries.ITEM.containsKey(name)) {

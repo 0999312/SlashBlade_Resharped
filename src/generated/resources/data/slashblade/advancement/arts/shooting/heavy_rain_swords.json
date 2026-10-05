@@ -1,0 +1,43 @@
+{
+  "parent": "slashblade:arts/shooting/blistering_swords",
+  "criteria": {
+    "customtrigger": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "adv.slashblade.heavy_rain_swords.desc",
+      "with": [
+        {
+          "translate": "key.pickItem"
+        },
+        {
+          "keybind": "key.pickItem"
+        },
+        {
+          "keybind": "key.back"
+        },
+        {
+          "keybind": "key.forward"
+        },
+        {
+          "keybind": "key.sneak"
+        }
+      ]
+    },
+    "icon": {
+      "count": 1,
+      "id": "minecraft:ghast_tear"
+    },
+    "title": {
+      "translate": "adv.slashblade.heavy_rain_swords"
+    }
+  },
+  "requirements": [
+    [
+      "customtrigger"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

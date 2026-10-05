@@ -1,0 +1,31 @@
+{
+  "parent": "slashblade:arts/judgement_cut_just",
+  "criteria": {
+    "customtrigger": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "adv.slashblade.quick_charge.desc",
+      "with": [
+        {
+          "keybind": "key.use"
+        }
+      ]
+    },
+    "icon": {
+      "count": 1,
+      "id": "minecraft:writable_book"
+    },
+    "title": {
+      "translate": "adv.slashblade.quick_charge"
+    }
+  },
+  "requirements": [
+    [
+      "customtrigger"
+    ]
+  ],
+  "sends_telemetry_event": true
+}
