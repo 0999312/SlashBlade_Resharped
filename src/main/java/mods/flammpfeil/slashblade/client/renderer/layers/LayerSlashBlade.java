@@ -10,11 +10,13 @@ import dev.kosmx.playerAnim.impl.animation.AnimationApplier;
 import mods.flammpfeil.slashblade.capability.slashblade.BladeStateAccess;
 import mods.flammpfeil.slashblade.capability.slashblade.ISlashBladeState;
 import mods.flammpfeil.slashblade.client.renderer.CarryType;
+import mods.flammpfeil.slashblade.client.renderer.CarryTypeRenderAction;
 import mods.flammpfeil.slashblade.client.renderer.model.BladeModelManager;
 import mods.flammpfeil.slashblade.client.renderer.model.obj.WavefrontObject;
 import mods.flammpfeil.slashblade.client.renderer.util.BladeRenderState;
 import mods.flammpfeil.slashblade.client.renderer.util.MSAutoCloser;
 import mods.flammpfeil.slashblade.data.tag.SlashBladeEntityTypeTagProvider.EntityTypeTags;
+import mods.flammpfeil.slashblade.event.client.LayerSlashBladeRegistry;
 import mods.flammpfeil.slashblade.event.client.UserPoseOverrider;
 import mods.flammpfeil.slashblade.init.DefaultResources;
 import mods.flammpfeil.slashblade.registry.ComboStateRegistry;
@@ -39,6 +41,7 @@ import net.neoforged.fml.ModList;
 import org.joml.Quaternionf;
 
 import javax.annotation.Nullable;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -71,6 +74,8 @@ public abstract class LayerSlashBlade<T extends LivingEntity, M extends EntityMo
     public static final Quaternionf CARRY_ROTATION_RNINJA =
         new Quaternionf().rotateZYX(-1.047198F, 0, 0);
     
+    public static final Map<CarryType, CarryTypeRenderAction> CARRY_TYPE_RENDER_ACTION_MAP = new HashMap<>();
+    
     protected static final String BLADE_LUMINOUS = "blade_luminous";
     protected static final String BLADE_DAMAGED_LUMINOUS = "blade_damaged_luminous";
     protected static final String SHEATH_LUMINOUS = "sheath_luminous";
@@ -87,8 +92,11 @@ public abstract class LayerSlashBlade<T extends LivingEntity, M extends EntityMo
      */
     protected final Map<ResourceLocation, LayerSlashBlade<T, M>> boundLayers = Maps.newHashMap();
     
+    @SuppressWarnings("unchecked")
     public LayerSlashBlade(RenderLayerParent<T, M> renderer) {
         super(renderer);
+        LayerSlashBladeRegistry.getEntries().forEach((comboRoot, factory) ->
+            this.registerBoundLayer(comboRoot, (LayerSlashBlade<T, M>) factory.apply(renderer)));
     }
     
     /**
@@ -180,14 +188,14 @@ public abstract class LayerSlashBlade<T extends LivingEntity, M extends EntityMo
                 // minecraft model neckPoint height = 1.5f
                 // mmd model neckPoint height = 12.0f
                 matrixStack.translate(0, 1.5f, 0);
-                CarryType carrytype = s.getCarryType();
+                CarryTypeRenderAction carryTypeRenderAction = CARRY_TYPE_RENDER_ACTION_MAP.getOrDefault(s.getCarryType(), CarryTypeRenderAction.DEFAULT_CARRY_TYPE_RENDER_ACTION);
                 final Minecraft mcinstance = Minecraft.getInstance();
-                if (carrytype.cancelFirstPersonRender
+                if (carryTypeRenderAction.cancelFirstPersonRender()
                     && mcinstance.options.getCameraType() == CameraType.FIRST_PERSON
                     && entity.equals(mcinstance.player)) {
                     return;
                 }
-                carrytype.standbyRenderAction.accept(matrixStack);
+                carryTypeRenderAction.standbyRenderAction().accept(matrixStack);
                 
                 float modelScale = (float) (modelScaleBase * (1.0f / motionScale));
                 matrixStack.scale((float) motionScale, (float) motionScale, (float) motionScale);
@@ -304,5 +312,14 @@ public abstract class LayerSlashBlade<T extends LivingEntity, M extends EntityMo
         if (comboRot != 0f) {
             matrixStack.mulPose(Axis.YP.rotationDegrees(comboRot));
         }
+    }
+    
+    static {
+        CARRY_TYPE_RENDER_ACTION_MAP.put(CarryType.NONE, CarryTypeRenderAction.NONE_CARRY_TYPE_RENDER_ACTION);
+        CARRY_TYPE_RENDER_ACTION_MAP.put(CarryType.DEFAULT, CarryTypeRenderAction.DEFAULT_CARRY_TYPE_RENDER_ACTION);
+        CARRY_TYPE_RENDER_ACTION_MAP.put(CarryType.PSO2, CarryTypeRenderAction.PSO2_CARRY_TYPE_RENDER_ACTION);
+        CARRY_TYPE_RENDER_ACTION_MAP.put(CarryType.NINJA, CarryTypeRenderAction.NINJA_CARRY_TYPE_RENDER_ACTION);
+        CARRY_TYPE_RENDER_ACTION_MAP.put(CarryType.KATANA, CarryTypeRenderAction.KATANA_CARRY_TYPE_RENDER_ACTION);
+        CARRY_TYPE_RENDER_ACTION_MAP.put(CarryType.RNINJA, CarryTypeRenderAction.RNINJA_CARRY_TYPE_RENDER_ACTION);
     }
 }
