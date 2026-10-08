@@ -15,6 +15,7 @@ import net.minecraft.util.Mth;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.common.NeoForge;
 
+import javax.annotation.Nullable;
 import java.util.Map;
 import java.util.function.Supplier;
 
@@ -23,7 +24,8 @@ import java.util.function.Supplier;
  * playeranimator 的 {@link AnimationStack} 第 0 层。
  */
 public class PlayerAnimationOverrider {
-    private final Map<ResourceLocation, Supplier<IAnimation>> animation = initAnimations();
+    @Nullable
+    private Map<ResourceLocation, Supplier<IAnimation>> animation = null;
     
     private static final class SingletonHolder {
         private static final PlayerAnimationOverrider instance = new PlayerAnimationOverrider();
@@ -36,12 +38,7 @@ public class PlayerAnimationOverrider {
     private PlayerAnimationOverrider() {
     }
     
-    /**
-     * 注册到游戏总线，并在初始化完成前发布 {@link PlayerAnimationInitEvent}，
-     * 允许附属 mod 在默认 VMD 绑定之上注册/覆盖 ComboState → IAnimation 绑定。
-     */
     public void register() {
-        SlashBlade.MOD_EVENT_BUS.post(new PlayerAnimationInitEvent(this.animation));
         NeoForge.EVENT_BUS.register(this);
     }
     
@@ -49,6 +46,9 @@ public class PlayerAnimationOverrider {
         "model/pa/player_motion.vmd");
     
     public Map<ResourceLocation, Supplier<IAnimation>> getAnimation() {
+        if (this.animation == null) {
+            this.animation = this.initAnimations();
+        }
         return this.animation;
     }
     
@@ -136,6 +136,7 @@ public class PlayerAnimationOverrider {
         map.put(ComboStateRegistry.WAVE_EDGE_VERTICAL.getId(), () -> new VmdAnimation(MotionLocation, 1600, 1693, false));
         map.put(ComboStateRegistry.JUDGEMENT_CUT_END.getId(), () -> new VmdAnimation(MotionLocation, 1923, 1963, false));
         
+        SlashBlade.MOD_EVENT_BUS.post(new PlayerAnimationInitEvent(map));
         return map;
     }
     
