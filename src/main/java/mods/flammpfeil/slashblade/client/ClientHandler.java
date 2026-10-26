@@ -173,14 +173,14 @@ public class ClientHandler {
         var renderer = evt.getSkin(skin);
         
         if (renderer instanceof LivingEntityRenderer livingRenderer) {
-            livingRenderer.addLayer(new LayerMainBlade<>(livingRenderer));
+            livingRenderer.addLayer(new LayerMainBlade<>(livingRenderer).initAsMainLayer());
         }
     }
     
     @SuppressWarnings({"unchecked", "rawtypes"})
     private static void addEntityLayer(EntityRenderersEvent.AddLayers evt, @Nullable EntityRenderer<?> renderer) {
         if (renderer instanceof LivingEntityRenderer livingRenderer) {
-            livingRenderer.addLayer(new LayerMainBlade<>(livingRenderer));
+            livingRenderer.addLayer(new LayerMainBlade<>(livingRenderer).initAsMainLayer());
         }
     }
     

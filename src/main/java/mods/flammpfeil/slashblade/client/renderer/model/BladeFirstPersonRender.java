@@ -40,7 +40,7 @@ public class BladeFirstPersonRender {
         
         EntityRenderer<?> renderer = mc.getEntityRenderDispatcher().getRenderer(mc.player);
         if (renderer instanceof RenderLayerParent) {
-            layer = new LayerMainBlade((RenderLayerParent) renderer);
+            layer = new LayerMainBlade((RenderLayerParent) renderer).initAsMainLayer();
         }
         
         return layer != null;

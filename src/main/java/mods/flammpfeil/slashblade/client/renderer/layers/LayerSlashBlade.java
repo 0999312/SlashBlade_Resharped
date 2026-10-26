@@ -91,21 +91,30 @@ public abstract class LayerSlashBlade<T extends LivingEntity, M extends EntityMo
      * 同渲染器下按 ComboRoot 索引的绑定层实例，由装配方（ClientHandler）填充。
      */
     protected final Map<ResourceLocation, LayerSlashBlade<T, M>> boundLayers = Maps.newHashMap();
+    private final RenderLayerParent<? extends LivingEntity, ? extends EntityModel<? extends LivingEntity>> renderer;
     
-    @SuppressWarnings("unchecked")
     public LayerSlashBlade(RenderLayerParent<T, M> renderer) {
         super(renderer);
+        this.renderer = renderer;
+    }
+    
+    @SuppressWarnings("unchecked")
+    public LayerSlashBlade<T, M> initAsMainLayer() {
+        this.boundLayers.clear();
         LayerSlashBladeRegistry.getEntries().forEach((comboRoot, factory) ->
-            this.registerBoundLayer(comboRoot, (LayerSlashBlade<T, M>) factory.apply(renderer)));
+            this.registerBoundLayer(comboRoot, (LayerSlashBlade<T, M>) factory.apply(renderer).setComboRoot(comboRoot)));
+        return this;
     }
     
     /**
      * 设置本层绑定的 ComboRoot；{@code null} 表示默认层。
      *
      * @param comboRoot 绑定目标 ComboRoot
+     * @return 自身
      */
-    public void setComboRoot(@Nullable ResourceLocation comboRoot) {
+    public LayerSlashBlade<T, M> setComboRoot(@Nullable ResourceLocation comboRoot) {
         this.comboRoot = comboRoot;
+        return this;
     }
     
     /**
